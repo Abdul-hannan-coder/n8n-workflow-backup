@@ -1,0 +1,445 @@
+{
+  "createdAt": "2025-09-04T09:59:41.194Z",
+  "updatedAt": "2025-09-10T12:29:58.000Z",
+  "id": "NCSX4crnJNtP0yv1",
+  "name": "Outbound Voice AI",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "assistant_id",
+              "value": "191df5f5-d530-4e35-996d-62c33c5cc525"
+            },
+            {
+              "name": "vapi_api_key",
+              "value": "18ebf098-b3b3-4183-aa0c-1936c4b0ad10"
+            },
+            {
+              "name": "phone_number_id",
+              "value": "9b329abb-f07c-4e26-bd91-aa6044c33f5b"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "isTesting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aedc2090-6d2b-4857-b90a-f958e9c13e78",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        352,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.vapi.ai/assistant/{{ $node['Set Variables'].json['assistant_id'] }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $node['Set Variables'].json['vapi_api_key'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "32c7b284-b005-4c91-98b6-4e53844949c6",
+      "name": "Get Assistant",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        560,
+        48
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "GiOlXa6n8TJXCdyu",
+          "name": "VAPI Bearer Auth Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5262f861-4125-48ab-bd4c-bb94f2254c97",
+      "name": "Set Dynamic Assistant",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        784,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create dynamic variables array\nconst dynamicVars = [\n  {\n    \"tag\": \"first_name\",\n    \"value\": $input.first().json.first_name || \"\"\n  }\n];\n\nreturn dynamicVars.map(item => ({ json: item }));"
+      },
+      "id": "3a275182-8ded-48dc-8646-76f032da2f4b",
+      "name": "Create Dynamic Variables",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the dynamic assistant data\nlet dynamicAssistant = $node['Set Dynamic Assistant'].json;\n\n// Process each dynamic variable\nfor (const item of $input.all()) {\n  const tag = item.json.tag;\n  const value = item.json.value;\n  \n  // Convert assistant object to string for replacement\n  let assistantString = JSON.stringify(dynamicAssistant);\n  \n  // Replace the placeholder with actual value\n  assistantString = assistantString.replace(`[${tag}]`, value);\n  \n  // Convert back to object\n  dynamicAssistant = JSON.parse(assistantString);\n}\n\n// Return the updated assistant configuration\nreturn [{ json: dynamicAssistant }];"
+      },
+      "id": "b6f0f460-d4e1-45e7-8c79-ecc1c7417fa6",
+      "name": "Process Dynamic Variables",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the processed assistant data\nconst assistantData = $input.first().json;\n\n// Whitelist only the required keys\nconst whitelistedKeys = [\n  'name',\n  'model', \n  'voice',\n  'serverUrl',\n  'transcriber',\n  'analysisPlan',\n  'firstMessage',\n  'hipaaEnabled',\n  'clientMessages',\n  'endCallMessage',\n  'endCallPhrases',\n  'serverMessages',\n  'backgroundSound',\n  'recordingEnabled',\n  'voicemailMessage',\n  'endCallFunctionEnabled',\n  'dialKeypadFunctionEnabled'\n];\n\n// Create filtered object with only whitelisted keys\nconst filteredAssistant = {};\nfor (const key of whitelistedKeys) {\n  if (assistantData.hasOwnProperty(key)) {\n    filteredAssistant[key] = assistantData[key];\n  }\n}\n\nreturn [{ json: filteredAssistant }];"
+      },
+      "id": "15d17d11-7ce8-44db-9819-2bcc7e355f66",
+      "name": "Key Whitelist",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d6855ad7-1b89-4cc9-b8a5-cc56c1770868",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        48,
+        48
+      ],
+      "id": "cb0b8105-5060-4172-85a1-8a92004ef6b1",
+      "name": "Webhook1",
+      "webhookId": "d6855ad7-1b89-4cc9-b8a5-cc56c1770868"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Take the input object and convert to JSON string\nconst inputObject = $input.first().json;\n\n// Transform to JSON with no spacing (equivalent to space: \"\")\nconst jsonString = JSON.stringify(inputObject);\n\nreturn [{ \n  json: {\n    jsonString: jsonString,\n    object: inputObject\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        48
+      ],
+      "id": "bef31a56-bfd3-4506-b509-223d1ef99c6b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/call/phone",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Variables').item.json.vapi_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phoneNumberId",
+              "value": "={{ $('Set Variables').item.json.phone_number_id }}"
+            },
+            {
+              "name": "customer",
+              "value": "={{ {\n  \"number\": $('Set Variables').item.json.body.phone,\n  \"name\": $('Set Variables').item.json.body.first_name\n} }}"
+            },
+            {
+              "name": "assistant",
+              "value": "={{ $('Code').item.json.object }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2fee4f49-107a-4c22-8ee4-3b16c78ce841",
+      "name": "Make VAPI Call1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1872,
+        48
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "GiOlXa6n8TJXCdyu",
+          "name": "VAPI Bearer Auth Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a4974c31-65ff-40bd-939a-903a48ba1677",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        48,
+        384
+      ],
+      "id": "4b5e707e-f09a-46c8-a7d9-63f48096c9d3",
+      "name": "Webhook",
+      "webhookId": "a4974c31-65ff-40bd-939a-903a48ba1677"
+    },
+    {
+      "parameters": {
+        "sendTo": "rehanzzz1590@gmail.com",
+        "subject": "CM Law Outbound Agent Call Summary",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CM Law Client Intake Summary</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333333;\n            max-width: 600px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background-color: #1a3e72;\n            color: white;\n            padding: 20px;\n            text-align: center;\n        }\n        .content {\n            padding: 20px;\n            border: 1px solid #dddddd;\n            border-top: none;\n        }\n        .footer {\n            margin-top: 20px;\n            font-size: 12px;\n            color: #777777;\n            text-align: center;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-weight: bold;\n            color: #1a3e72;\n            margin-bottom: 10px;\n            font-size: 18px;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            margin-bottom: 15px;\n        }\n        table, th, td {\n            border: 1px solid #dddddd;\n        }\n        th, td {\n            padding: 10px;\n            text-align: left;\n        }\n        th {\n            background-color: #f2f2f2;\n            width: 30%;\n        }\n        .call-summary, .call-transcript {\n            background-color: #f9f9f9;\n            padding: 15px;\n            border-left: 4px solid #1a3e72;\n        }\n        .transcript-line {\n            margin-bottom: 10px;\n            padding: 8px 12px;\n            border-radius: 4px;\n        }\n        .transcript-line.agent {\n            background-color: #f0f7ff;\n            border-left: 3px solid #1a3e72;\n            margin-right: 20%;\n        }\n        .transcript-line.user {\n            background-color: #f5f5f5;\n            border-left: 3px solid #cccccc;\n            margin-left: 20%;\n        }\n        .transcript-line strong {\n            color: #1a3e72;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h2>CM Law Client Outbound Call Summary</h2>\n    </div>\n    \n    <div class=\"content\">\n        <div class=\"section\">\n            <div class=\"section-title\">Client Information</div>\n            <table>\n<tr>\n                    <th>Phone:</th>\n                    <td>{{$json.body.message.call.customer.number}}</td>\n                </tr>\n                <tr>\n                    <th>Call Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.call_type }}</td>\n                </tr>\n                <tr>\n                    <th>State:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.work_state }}</td>\n                </tr>\n                <tr>\n                    <th>Company:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.company_name }}</td>\n                </tr>\n                <tr>\n                    <th>Status:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_status }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Case Details</div>\n            <table>\n                <tr>\n                    <th>Termination Reason:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.termination_reason }}</td>\n                </tr>\n                <tr>\n                    <th>Last Employment Date:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_end_date }}</td>\n                </tr>\n                <tr>\n                    <th>Severance Offered:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.severance_offered }}</td>\n                </tr>\n                <tr>\n                    <th>Case Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.case_category }}</td>\n                </tr>\n                <tr>\n                    <th>Situation Description:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.situation_description }}</td>\n                </tr>\n                <tr>\n                    <th>Recording URL:</th>\n                    <td>{{ $json.body.message.recordingUrl }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Summary</div>\n            <div class=\"call-summary\">\n                {{ $json.body.message.analysis.summary }}\n            </div>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Transcript</div>\n            <div class=\"call-transcript\">\n                <pre style=\"white-space: pre-wrap; font-family: Arial, sans-serif;\">{{ $json.body.message.transcript }}</pre>\n            </div>\n        </div>\n    </div>\n    \n    <div class=\"footer\">\n        <p>Castronovo & McKinney LLC | 420 Lexington Avenue, Suite 1830 | Phone: 646.755.3781</p>\n        <p>This email is confidential and intended solely for the use of the individual to whom it is addressed.</p>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        288
+      ],
+      "id": "111c1091-19c9-4c2d-8f96-50a3f29aea80",
+      "name": "Send a message",
+      "webhookId": "6dd9a404-c813-44ff-89bb-6088a6eeaa63",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZPabwd2uGmeGSBfG",
+          "name": "Gmail account Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "tom@cmlaw.com",
+        "subject": "CM Law Outbound Agent Call Summary",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CM Law Client Intake Summary</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333333;\n            max-width: 600px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background-color: #1a3e72;\n            color: white;\n            padding: 20px;\n            text-align: center;\n        }\n        .content {\n            padding: 20px;\n            border: 1px solid #dddddd;\n            border-top: none;\n        }\n        .footer {\n            margin-top: 20px;\n            font-size: 12px;\n            color: #777777;\n            text-align: center;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-weight: bold;\n            color: #1a3e72;\n            margin-bottom: 10px;\n            font-size: 18px;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            margin-bottom: 15px;\n        }\n        table, th, td {\n            border: 1px solid #dddddd;\n        }\n        th, td {\n            padding: 10px;\n            text-align: left;\n        }\n        th {\n            background-color: #f2f2f2;\n            width: 30%;\n        }\n        .call-summary, .call-transcript {\n            background-color: #f9f9f9;\n            padding: 15px;\n            border-left: 4px solid #1a3e72;\n        }\n        .transcript-line {\n            margin-bottom: 10px;\n            padding: 8px 12px;\n            border-radius: 4px;\n        }\n        .transcript-line.agent {\n            background-color: #f0f7ff;\n            border-left: 3px solid #1a3e72;\n            margin-right: 20%;\n        }\n        .transcript-line.user {\n            background-color: #f5f5f5;\n            border-left: 3px solid #cccccc;\n            margin-left: 20%;\n        }\n        .transcript-line strong {\n            color: #1a3e72;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h2>CM Law Client Outbound Call Summary</h2>\n    </div>\n    \n    <div class=\"content\">\n        <div class=\"section\">\n            <div class=\"section-title\">Client Information</div>\n            <table>\n<tr>\n                    <th>Phone:</th>\n                    <td>{{$json.body.message.call.customer.number}}</td>\n                </tr>\n                <tr>\n                    <th>Call Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.call_type }}</td>\n                </tr>\n                <tr>\n                    <th>State:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.work_state }}</td>\n                </tr>\n                <tr>\n                    <th>Company:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.company_name }}</td>\n                </tr>\n                <tr>\n                    <th>Status:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_status }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Case Details</div>\n            <table>\n                <tr>\n                    <th>Termination Reason:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.termination_reason }}</td>\n                </tr>\n                <tr>\n                    <th>Last Employment Date:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_end_date }}</td>\n                </tr>\n                <tr>\n                    <th>Severance Offered:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.severance_offered }}</td>\n                </tr>\n                <tr>\n                    <th>Case Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.case_category }}</td>\n                </tr>\n                <tr>\n                    <th>Situation Description:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.situation_description }}</td>\n                </tr>\n                <tr>\n                    <th>Recording URL:</th>\n                    <td>{{ $json.body.message.recordingUrl }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Summary</div>\n            <div class=\"call-summary\">\n                {{ $json.body.message.analysis.summary }}\n            </div>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Transcript</div>\n            <div class=\"call-transcript\">\n                <pre style=\"white-space: pre-wrap; font-family: Arial, sans-serif;\">{{ $json.body.message.transcript }}</pre>\n            </div>\n        </div>\n    </div>\n    \n    <div class=\"footer\">\n        <p>Castronovo & McKinney LLC | 420 Lexington Avenue, Suite 1830 | Phone: 646.755.3781</p>\n        <p>This email is confidential and intended solely for the use of the individual to whom it is addressed.</p>\n    </div>\n</body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        480
+      ],
+      "id": "42cfb51c-1e85-4989-8413-143e462b6b1b",
+      "name": "Send a message1",
+      "webhookId": "6dd9a404-c813-44ff-89bb-6088a6eeaa63",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZPabwd2uGmeGSBfG",
+          "name": "Gmail account Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "candmlegal71@gmail.com",
+        "toEmail": "rehanzzz1590@gmail.com",
+        "subject": "CM Law Outbound Agent Call Summary",
+        "html": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CM Law Client Intake Summary</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333333;\n            max-width: 600px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background-color: #1a3e72;\n            color: white;\n            padding: 20px;\n            text-align: center;\n        }\n        .content {\n            padding: 20px;\n            border: 1px solid #dddddd;\n            border-top: none;\n        }\n        .footer {\n            margin-top: 20px;\n            font-size: 12px;\n            color: #777777;\n            text-align: center;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-weight: bold;\n            color: #1a3e72;\n            margin-bottom: 10px;\n            font-size: 18px;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            margin-bottom: 15px;\n        }\n        table, th, td {\n            border: 1px solid #dddddd;\n        }\n        th, td {\n            padding: 10px;\n            text-align: left;\n        }\n        th {\n            background-color: #f2f2f2;\n            width: 30%;\n        }\n        .call-summary, .call-transcript {\n            background-color: #f9f9f9;\n            padding: 15px;\n            border-left: 4px solid #1a3e72;\n        }\n        .transcript-line {\n            margin-bottom: 10px;\n            padding: 8px 12px;\n            border-radius: 4px;\n        }\n        .transcript-line.agent {\n            background-color: #f0f7ff;\n            border-left: 3px solid #1a3e72;\n            margin-right: 20%;\n        }\n        .transcript-line.user {\n            background-color: #f5f5f5;\n            border-left: 3px solid #cccccc;\n            margin-left: 20%;\n        }\n        .transcript-line strong {\n            color: #1a3e72;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h2>CM Law Client Outbound Call Summary</h2>\n    </div>\n    \n    <div class=\"content\">\n        <div class=\"section\">\n            <div class=\"section-title\">Client Information</div>\n            <table>\n<tr>\n                    <th>Phone:</th>\n                    <td>{{$json.body.message.call.customer.number}}</td>\n                </tr>\n                <tr>\n                    <th>Call Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.call_type }}</td>\n                </tr>\n                <tr>\n                    <th>State:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.work_state }}</td>\n                </tr>\n                <tr>\n                    <th>Company:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.company_name }}</td>\n                </tr>\n                <tr>\n                    <th>Status:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_status }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Case Details</div>\n            <table>\n                <tr>\n                    <th>Termination Reason:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.termination_reason }}</td>\n                </tr>\n                <tr>\n                    <th>Last Employment Date:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_end_date }}</td>\n                </tr>\n                <tr>\n                    <th>Severance Offered:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.severance_offered }}</td>\n                </tr>\n                <tr>\n                    <th>Case Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.case_category }}</td>\n                </tr>\n                <tr>\n                    <th>Situation Description:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.situation_description }}</td>\n                </tr>\n                <tr>\n                    <th>Recording URL:</th>\n                    <td>{{ $json.body.message.recordingUrl }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Summary</div>\n            <div class=\"call-summary\">\n                {{ $json.body.message.analysis.summary }}\n            </div>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Transcript</div>\n            <div class=\"call-transcript\">\n                <pre style=\"white-space: pre-wrap; font-family: Arial, sans-serif;\">{{ $json.body.message.transcript }}</pre>\n            </div>\n        </div>\n    </div>\n    \n    <div class=\"footer\">\n        <p>Castronovo & McKinney LLC | 420 Lexington Avenue, Suite 1830 | Phone: 646.755.3781</p>\n        <p>This email is confidential and intended solely for the use of the individual to whom it is addressed.</p>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        688
+      ],
+      "id": "e8ab50f2-ebef-42c6-9dc2-d11093980ffb",
+      "name": "Send email",
+      "webhookId": "d86cf05a-10a0-40ef-9acb-821b3d3706a8",
+      "credentials": {
+        "smtp": {
+          "id": "VTrIwSIdretn9oWO",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "candmlegal71@gmail.com",
+        "toEmail": "tom@cmlaw.com",
+        "subject": "CM Law Outbound Agent Call Summary",
+        "html": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CM Law Client Intake Summary</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333333;\n            max-width: 600px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background-color: #1a3e72;\n            color: white;\n            padding: 20px;\n            text-align: center;\n        }\n        .content {\n            padding: 20px;\n            border: 1px solid #dddddd;\n            border-top: none;\n        }\n        .footer {\n            margin-top: 20px;\n            font-size: 12px;\n            color: #777777;\n            text-align: center;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-weight: bold;\n            color: #1a3e72;\n            margin-bottom: 10px;\n            font-size: 18px;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            margin-bottom: 15px;\n        }\n        table, th, td {\n            border: 1px solid #dddddd;\n        }\n        th, td {\n            padding: 10px;\n            text-align: left;\n        }\n        th {\n            background-color: #f2f2f2;\n            width: 30%;\n        }\n        .call-summary, .call-transcript {\n            background-color: #f9f9f9;\n            padding: 15px;\n            border-left: 4px solid #1a3e72;\n        }\n        .transcript-line {\n            margin-bottom: 10px;\n            padding: 8px 12px;\n            border-radius: 4px;\n        }\n        .transcript-line.agent {\n            background-color: #f0f7ff;\n            border-left: 3px solid #1a3e72;\n            margin-right: 20%;\n        }\n        .transcript-line.user {\n            background-color: #f5f5f5;\n            border-left: 3px solid #cccccc;\n            margin-left: 20%;\n        }\n        .transcript-line strong {\n            color: #1a3e72;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h2>CM Law Client Outbound Call Summary</h2>\n    </div>\n    \n    <div class=\"content\">\n        <div class=\"section\">\n            <div class=\"section-title\">Client Information</div>\n            <table>\n<tr>\n                    <th>Phone:</th>\n                    <td>{{$json.body.message.call.customer.number}}</td>\n                </tr>\n                <tr>\n                    <th>Call Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.call_type }}</td>\n                </tr>\n                <tr>\n                    <th>State:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.work_state }}</td>\n                </tr>\n                <tr>\n                    <th>Company:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.company_name }}</td>\n                </tr>\n                <tr>\n                    <th>Status:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_status }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Case Details</div>\n            <table>\n                <tr>\n                    <th>Termination Reason:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.termination_reason }}</td>\n                </tr>\n                <tr>\n                    <th>Last Employment Date:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_end_date }}</td>\n                </tr>\n                <tr>\n                    <th>Severance Offered:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.severance_offered }}</td>\n                </tr>\n                <tr>\n                    <th>Case Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.case_category }}</td>\n                </tr>\n                <tr>\n                    <th>Situation Description:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.situation_description }}</td>\n                </tr>\n                <tr>\n                    <th>Recording URL:</th>\n                    <td>{{ $json.body.message.recordingUrl }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Summary</div>\n            <div class=\"call-summary\">\n                {{ $json.body.message.analysis.summary }}\n            </div>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Transcript</div>\n            <div class=\"call-transcript\">\n                <pre style=\"white-space: pre-wrap; font-family: Arial, sans-serif;\">{{ $json.body.message.transcript }}</pre>\n            </div>\n        </div>\n    </div>\n    \n    <div class=\"footer\">\n        <p>Castronovo & McKinney LLC | 420 Lexington Avenue, Suite 1830 | Phone: 646.755.3781</p>\n        <p>This email is confidential and intended solely for the use of the individual to whom it is addressed.</p>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        880
+      ],
+      "id": "ea309ad3-52c2-4a19-8a2c-00819b7c1abe",
+      "name": "Send email1",
+      "webhookId": "d86cf05a-10a0-40ef-9acb-821b3d3706a8",
+      "credentials": {
+        "smtp": {
+          "id": "VTrIwSIdretn9oWO",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Get Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Assistant": {
+      "main": [
+        [
+          {
+            "node": "Set Dynamic Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Dynamic Assistant": {
+      "main": [
+        [
+          {
+            "node": "Create Dynamic Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Dynamic Variables": {
+      "main": [
+        [
+          {
+            "node": "Process Dynamic Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Dynamic Variables": {
+      "main": [
+        [
+          {
+            "node": "Key Whitelist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Key Whitelist": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Make VAPI Call1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7732f3cb-1120-4173-8491-e4569493b124",
+  "triggerCount": 2,
+  "shared": [
+    {
+      "createdAt": "2025-09-04T09:59:41.202Z",
+      "updatedAt": "2025-09-04T09:59:41.202Z",
+      "role": "workflow:owner",
+      "workflowId": "NCSX4crnJNtP0yv1",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
