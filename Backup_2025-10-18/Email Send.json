@@ -1,0 +1,102 @@
+{
+  "createdAt": "2025-09-06T12:00:48.667Z",
+  "updatedAt": "2025-09-06T19:16:21.000Z",
+  "id": "sXtaMTN9pmhe7lNe",
+  "name": "Email Send",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "8873dfe4-672c-4e3b-a8d0-9f712d21f052",
+      "name": "Execute Workflow Trigger",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "your@email.com",
+        "toEmail": "={{$json[\"to\"]}}",
+        "subject": "={{$json[\"subject\"]}}",
+        "text": "={{$json[\"body\"]}}",
+        "options": {}
+      },
+      "id": "d3bb799a-9186-4cf8-b497-1857b647618d",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        480,
+        192
+      ],
+      "webhookId": "da6f5026-da0c-4dc1-a9f7-b054f206e772",
+      "credentials": {
+        "smtp": {
+          "id": "JQhOoTHrcrksK1IJ",
+          "name": "AH-SMTP-account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.all();\nconst result = [];\n\nfor (const item of data) {\n  const parsedQuery = JSON.parse(item.json.query);\n  result.push({\n    json: parsedQuery\n  });\n}\n\nreturn result;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        192
+      ],
+      "id": "f3d5ccd8-4e9a-410f-950b-82404405cb6b",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "Execute Workflow Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "0f4f421d-de46-4800-897d-f6430f29d4f4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-06T12:00:48.671Z",
+      "updatedAt": "2025-09-06T12:00:48.671Z",
+      "role": "workflow:owner",
+      "workflowId": "sXtaMTN9pmhe7lNe",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
