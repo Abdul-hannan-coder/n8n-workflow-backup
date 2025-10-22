@@ -1,0 +1,343 @@
+{
+  "createdAt": "2025-09-07T14:39:14.881Z",
+  "updatedAt": "2025-10-01T19:32:52.000Z",
+  "id": "lZ16yP2GnsA1pmLa",
+  "name": "Task Managment",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"parameters\": {\n    \"description\": \"Manages tasks. Input: intent, title, dueDate, priority, description, status\",\n    \"workflowId\": {\n      \"__rl\": true,\n      \"value\": \"lZ16yP2GnsA1pmLa\",\n      \"mode\": \"list\",\n      \"cachedResultName\": \"Task Managment\"\n    },\n    \"workflowInputs\": {\n      \"mappingMode\": \"defineBelow\",\n      \"value\": {\n        \"intent\": \"={{ $parameter.intent }}\",\n        \"title\": \"={{ $parameter.title }}\",\n        \"dueDate\": \"={{ $parameter.dueDate }}\",\n        \"priority\": \"={{ $parameter.priority }}\",\n        \"description\": \"={{ $parameter.description }}\",\n        \"status\": \"={{ $parameter.status }}\"\n      }\n    }\n  }\n}\n"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        -176
+      ],
+      "id": "d20b8ff1-4477-4499-b252-f009873aed45",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const params = $json.parameters;\n\nreturn {\n  intent: params.intent,\n  title: params.title,\n  dueDate: params.dueDate,\n  priority: params.priority,\n  description: params.description,\n  status: params.status,\n  response: `Task ${params.intent}ed ✅ ${params.title} (due ${params.dueDate})`\n};\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -176
+      ],
+      "id": "fa088905-a644-451f-b4be-5be063b02b6c",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent  }}",
+                    "rightValue": "add",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e3147b7c-72ce-4e54-bb56-2fd7c08a22b0"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ac84a57b-87bf-403b-ad3a-153611045f86",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "get",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f5a3d9d3-f611-4867-bfbf-781f510b9515",
+                    "leftValue": "={{ $json.intent  }}",
+                    "rightValue": "edit",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "13f8d03a-81ef-4205-89a9-3073a6846335",
+                    "leftValue": "={{ $json.intent  }}",
+                    "rightValue": "delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        240,
+        -208
+      ],
+      "id": "77334d07-1f8e-4d08-ae37-046ce327e681",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YDVOl_T-HgQFyi5glGJublym3b0Mh4B0yc_7i6V3Kqw",
+          "mode": "list",
+          "cachedResultName": "Automated Task Manager",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YDVOl_T-HgQFyi5glGJublym3b0Mh4B0yc_7i6V3Kqw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YDVOl_T-HgQFyi5glGJublym3b0Mh4B0yc_7i6V3Kqw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ $json.title }}\n",
+            "Description": "={{ $json.description }}\n",
+            "Status": "={{ $json.status }}\n",
+            "Due Date": "={{ $json.dueDate }}",
+            "Praiority ": "={{ $json.priority }}\n"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Praiority ",
+              "displayName": "Praiority ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Due Date",
+              "displayName": "Due Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        -272
+      ],
+      "id": "6effb2a8-b73c-4324-9017-9dae2ac858d7",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eCB9yWXmoy2ISTTT",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1YDVOl_T-HgQFyi5glGJublym3b0Mh4B0yc_7i6V3Kqw",
+          "mode": "list",
+          "cachedResultName": "Automated Task Manager",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YDVOl_T-HgQFyi5glGJublym3b0Mh4B0yc_7i6V3Kqw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YDVOl_T-HgQFyi5glGJublym3b0Mh4B0yc_7i6V3Kqw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        464,
+        -80
+      ],
+      "id": "ca14c063-1a30-419e-a4e6-239903a77dda",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eCB9yWXmoy2ISTTT",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a0bf0fa9-2284-431c-bf27-134a7c0629ec",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-07T14:39:14.885Z",
+      "updatedAt": "2025-09-07T14:39:14.885Z",
+      "role": "workflow:owner",
+      "workflowId": "lZ16yP2GnsA1pmLa",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
