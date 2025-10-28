@@ -1,0 +1,642 @@
+{
+  "createdAt": "2025-09-25T05:06:10.469Z",
+  "updatedAt": "2025-10-24T11:36:54.000Z",
+  "id": "dgmmSn07En8mqRuO",
+  "name": "Telegram Image Generation Bot",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        -128
+      ],
+      "id": "061ffc33-47e9-4b18-887f-a05055352d7d",
+      "name": "Telegram Trigger",
+      "webhookId": "b6a45965-7965-4e0a-8aab-b2996443e031",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const msg = $('Telegram Trigger').first().json.message\n\nif (msg.photo) {\n  // Image exists → use kontext model\n  return [\n    {\n      json: {\n        type: \"image\",\n        caption: msg.caption || \"\",\n        file_id: msg.photo[msg.photo.length - 1].file_id // get highest resolution\n      }\n    }\n  ];\n} else {\n  // Text only → use nanobanana model\n  return [\n    {\n      json: {\n        type: \"text\",\n        text: msg.text\n      }\n    }\n  ];\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        -32
+      ],
+      "id": "2a54e241-fdac-45c6-8735-43c15fc4262b",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d018917e-8b14-4466-94ee-37bb1e2c9f5b",
+              "name": "prompt",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        -128
+      ],
+      "id": "fc53ca84-c158-455a-8b63-16b3bca2db94",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://text.pollinations.ai/openai",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert AI prompt engineer specialized in generating ultra-realistic, visually stunning image prompts. Your job is to take the user's input and rewrite it into a detailed, vivid, cinematic prompt optimized for photorealistic AI image generation. \\n\\nRules:\\n- Expand vague ideas into rich visual descriptions with realistic detail.\\n- Emphasize lighting, environment, mood, perspective, and camera details.\\n- Prioritize realism and accuracy, making the result look as close to reality as possible.\\n- Remove unnecessary words, symbols, or formatting.\\n- Return ONLY the polished prompt text, no explanations, no extra output.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.prompt }}\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        -128
+      ],
+      "id": "1523947d-dd09-40ff-80d6-b5621d022470",
+      "name": "writing with ai"
+    },
+    {
+      "parameters": {
+        "url": "=https://image.pollinations.ai/prompt/{{ $json.encodedPrompt }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "seedream"
+            },
+            {
+              "name": "width",
+              "value": "1024"
+            },
+            {
+              "name": "height",
+              "value": "1024"
+            },
+            {
+              "name": "nologo",
+              "value": "true"
+            },
+            {
+              "name": "token",
+              "value": "1ChxGn0NJU8GoeY4"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        -128
+      ],
+      "id": "43d1ecfd-227f-4dbe-834d-f0468d8a1676",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  json: {\n    encodedPrompt: encodeURIComponent($input.first().json.choices[0].message.content)\n  }\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        -128
+      ],
+      "id": "3e1648fb-d2a5-457d-bfba-91e7a6c5b069",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1632,
+        -128
+      ],
+      "id": "775bb139-8edb-4b31-98d1-aa319c9fef09",
+      "name": "Send a photo message",
+      "webhookId": "9e0f3729-993a-4c55-a301-4974d22de7c0",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d018917e-8b14-4466-94ee-37bb1e2c9f5b",
+              "name": "prompt",
+              "value": "={{ $json.caption }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        64
+      ],
+      "id": "8ef49068-3abf-4899-8974-278d06a1e5c7",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://text.pollinations.ai/openai",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert AI prompt engineer. The user will provide an instruction that should be applied to a reference image. Your job is to rewrite their instruction into a clear, powerful, image-to-image prompt.\\n\\nRules:\\n- Always make the prompt point to the fact that it should be applied to the reference image.\\n- Expand vague instructions into detailed descriptions, but keep them relevant to the image editing context.\\n- Do not invent unrelated elements; stay aligned with the user’s intent.\\n- Keep the output natural and descriptive — no extra explanations, no meta text.\\n- Return ONLY the polished prompt text.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.prompt }}\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        64
+      ],
+      "id": "25698a95-8462-4523-a4d5-77b08d5742b3",
+      "name": "writing with ai1"
+    },
+    {
+      "parameters": {
+        "url": "=https://image.pollinations.ai/prompt/ {{ $('Code2').item.json.encodedPrompt }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "={{ $('Code2').item.json.model }}"
+            },
+            {
+              "name": "width",
+              "value": "={{ $('Code2').item.json.width }}"
+            },
+            {
+              "name": "height",
+              "value": "={{ $('Code2').item.json.height }}"
+            },
+            {
+              "name": "nologo",
+              "value": "={{ $('Code2').item.json.nologo }}"
+            },
+            {
+              "name": "image",
+              "value": "={{ $json.file_url }}"
+            },
+            {
+              "name": "token",
+              "value": "1ChxGn0NJU8GoeY4"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1856,
+        64
+      ],
+      "id": "635f6698-d634-45c8-b102-0ae0e1bd7547",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get input\nconst input = $input.first().json;\n\n// Build values\nconst prompt = input.choices?.[0]?.message?.content || \"default prompt\";\nconst imageUrl = input.file_url || null; // if you're adding Telegram file_url before\nconst model = \"kontext\";\nconst width = 1024;\nconst height = 1024;\nconst nologo = true;\n\n// Return everything you’ll need\nreturn {\n  json: {\n    encodedPrompt: encodeURIComponent(prompt),\n    rawPrompt: prompt,\n    model,\n    width,\n    height,\n    nologo,\n    image: imageUrl ? encodeURIComponent(imageUrl) : null\n  }\n};\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        64
+      ],
+      "id": "d4805cc9-2eee-43dc-8722-de3ef85fffe7",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        64
+      ],
+      "id": "e3f9c375-3609-46f5-a22e-5461edb6ba7e",
+      "name": "Send a photo message1",
+      "webhookId": "c2458f9f-e15a-4741-8562-5f04271c7eb1",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[0].file_id }}",
+        "download": false
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        64
+      ],
+      "id": "25e2d8ce-5b7d-492f-9256-aca87b466c01",
+      "name": "Get a file",
+      "webhookId": "7028a44c-3a97-4cd0-a676-0297f8e0daee",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Replace with your bot token\nconst token = \"8375753655:AAFS8W07O-dfWMntLBXjZZsSxmi03p01uNg\";\n\n// Input: Telegram getFile response JSON\n// Example: { ok: true, result: { file_path: \"photos/file_0.jpg\" } }\nconst filePath = $input.first().json.result.file_path;\n\nreturn {\n  json: {\n    file_url: `https://api.telegram.org/file/bot${token}/${filePath}`\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        64
+      ],
+      "id": "c6168c1c-936c-4b8f-aa5d-b481aab62f2f",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "🔄 Processing your request, you’ll get your image soon.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        -32
+      ],
+      "id": "f73ad254-9c08-433c-a7d9-aa3de557282e",
+      "name": "Send a text message",
+      "webhookId": "d11d81b5-aba6-4c54-9fb3-991001953e84",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "24d62be3-c213-4a4b-a6fe-a6ef5ce9ec60",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -160,
+        -128
+      ],
+      "id": "1af96de4-4b48-459c-9801-4b7149fb0e32",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Welcome to my Image Generation Bot",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        -224
+      ],
+      "id": "3251124b-80c2-4251-afdb-95d1105ee959",
+      "name": "Send a text message1",
+      "webhookId": "cbaa9c25-11ab-4cfe-b15d-924720f899d0",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5194f540-0f0e-485a-ac91-ebafcd185bcf",
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        -32
+      ],
+      "id": "e0ba2963-b36a-4f62-b376-5482a3a99909",
+      "name": "If1"
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "writing with ai",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "writing with ai": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "writing with ai1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "writing with ai1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "57b4c966-8631-4520-8c2b-5647fb392246",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-09-25T05:06:10.472Z",
+      "updatedAt": "2025-09-25T05:06:10.472Z",
+      "role": "workflow:owner",
+      "workflowId": "dgmmSn07En8mqRuO",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
