@@ -1,0 +1,214 @@
+{
+  "createdAt": "2025-10-28T17:47:37.896Z",
+  "updatedAt": "2025-10-28T18:27:36.000Z",
+  "id": "22QQMr4tOOi2m5kY",
+  "name": "utm2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "4e5d0e65-a748-4d17-b2ea-a96de8b6d922",
+        "formTitle": "Contact Us",
+        "formDescription": "Please fill out the form below",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "bbad8051-4592-4855-8c7d-3478218e977d",
+      "webhookId": "4e5d0e65-a748-4d17-b2ea-a96de8b6d922"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.formQueryParameters.ghl_referrer }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "utm_source",
+              "description": "Source of the utm"
+            },
+            {
+              "name": "utm_medium",
+              "description": "medium of the utm"
+            },
+            {
+              "name": "utm_campaign",
+              "description": "campaign of the utm"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -128
+      ],
+      "id": "42b52062-b7ce-45cc-bbd7-78445b54b66a",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        32
+      ],
+      "id": "b5965e0c-ff42-4d7d-ab90-1492880282d3",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -128
+      ],
+      "id": "ce4ec05c-384a-482c-8b25-de3d4948e56e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        384,
+        -128
+      ],
+      "id": "bee366d2-d399-47d0-8406-40d160c6b1e1",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "13877f0c-89bb-4649-b07e-f94f5cf2d3cb",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-28T17:47:37.898Z",
+      "updatedAt": "2025-10-28T17:47:37.898Z",
+      "role": "workflow:owner",
+      "workflowId": "22QQMr4tOOi2m5kY",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
