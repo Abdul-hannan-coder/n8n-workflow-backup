@@ -1,0 +1,107 @@
+{
+  "createdAt": "2025-09-06T13:54:29.021Z",
+  "updatedAt": "2025-09-06T20:11:23.000Z",
+  "id": "2Cxg15Uz8seTPUWd",
+  "name": "Email Sumerizer",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "b6136ac8-e810-4c44-a21f-ed4c5af8363d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": "={{$json.value}}",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        -48
+      ],
+      "id": "bb4aa234-5174-4276-bb80-a0d77b7794d8",
+      "name": "Get many messages",
+      "webhookId": "681c70f4-93da-44cd-92c7-81d806827e24",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uExkq5hgLiMc9Yl6",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ value: $input.first().json.query }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        -48
+      ],
+      "id": "e1bcf53a-84e0-4718-b4a8-a4d46a93b81b",
+      "name": "Code"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "e02ac584-aa29-4bb0-9230-41691282af1c",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-06T13:54:29.025Z",
+      "updatedAt": "2025-09-06T13:54:29.025Z",
+      "role": "workflow:owner",
+      "workflowId": "2Cxg15Uz8seTPUWd",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
