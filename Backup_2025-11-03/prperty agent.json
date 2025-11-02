@@ -1,0 +1,539 @@
+{
+  "createdAt": "2025-10-28T17:31:19.545Z",
+  "updatedAt": "2025-10-28T17:41:38.000Z",
+  "id": "KzZOZeoRx5KaewYs",
+  "name": "prperty agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "property-agent",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "39674906-0798-4e0e-beca-6326d6879a1e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        128
+      ],
+      "webhookId": "property-agent-main"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and validate agent type\nconst agentType = $input.first().json.agent_type;\nconst validTypes = ['tenant_assistant', 'maintenance_scheduler', 'lease_renewal', 'owner_reporting'];\n\nif (!validTypes.includes(agentType)) {\n  return [{\n    json: {\n      error: true,\n      message: `Invalid agent type. Must be one of: ${validTypes.join(', ')}`,\n      agent_type: agentType\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    error: false,\n    agent_type: agentType,\n    ...($input.first().json)\n  }\n}];"
+      },
+      "id": "18077dd8-6e6b-4e58-800e-5fbfada135c7",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.agent_type }}",
+              "rightValue": "tenant_assistant",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e253395b-8bf8-45b6-b6eb-6fc4ca75f359",
+      "name": "Is Tenant Assistant",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.agent_type }}",
+              "rightValue": "maintenance_scheduler",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cf18d2ec-5ab7-4d2d-abb0-10e00604d2f6",
+      "name": "Is Maintenance Scheduler",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        0,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.agent_type }}",
+              "rightValue": "lease_renewal",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5e91ea4f-90ea-4ce2-8fb3-d0e53bd8a731",
+      "name": "Is Lease Renewal",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        0,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1",
+              "leftValue": "={{ $json.agent_type }}",
+              "rightValue": "owner_reporting",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "549b3fab-54f6-4e84-aa7f-86a6b6e4768d",
+      "name": "Is Owner Reporting",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        0,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat"
+      },
+      "id": "182d9822-2020-4983-a93a-161b6936a2d3",
+      "name": "Tenant Assistant AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat"
+      },
+      "id": "6f8b4f3b-fd63-4407-befd-fbdcfc65f00c",
+      "name": "Maintenance Scheduler AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        144
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat"
+      },
+      "id": "eb3d98c0-6158-47e9-acfc-c814d319ccf6",
+      "name": "Lease Renewal AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        288
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "40fgvfnvvEv58zyH",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simulate fetching owner financial data\n// In production, this would call your property management system API\n\nconst ownerId = $input.first().json.owner_id;\nconst period = $input.first().json.period || 'monthly';\n\n// Mock data structure\nconst reportData = {\n  owner_id: ownerId,\n  period: period,\n  financials: {\n    total_rent_collected: 12500,\n    outstanding_balance: 1200,\n    total_expenses: 3800,\n    net_income: 8700,\n    operating_expense_ratio: 0.30\n  },\n  occupancy: {\n    rate: 95,\n    total_units: 20,\n    occupied_units: 19,\n    vacant_units: 1\n  },\n  maintenance: {\n    total_requests: 15,\n    completed: 12,\n    pending: 3,\n    total_cost: 2400,\n    avg_response_time_hours: 24\n  },\n  properties: [\n    {\n      address: \"123 Main St, Unit 1A\",\n      rent: 1500,\n      status: \"occupied\",\n      tenant_since: \"2022-06-01\"\n    },\n    {\n      address: \"123 Main St, Unit 2B\",\n      rent: 1600,\n      status: \"occupied\",\n      tenant_since: \"2023-01-15\"\n    }\n  ],\n  period_start: $input.first().json.start_date,\n  period_end: $input.first().json.end_date\n};\n\nreturn [{ json: reportData }];"
+      },
+      "id": "a7384806-de7a-42fd-a27e-ebfe4e2fe936",
+      "name": "Fetch Owner Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat"
+      },
+      "id": "8bf68d53-1c5e-4d54-bc60-d5c2eb38ab52",
+      "name": "Owner Reporting AI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.4,
+      "position": [
+        448,
+        432
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "40fgvfnvvEv58zyH",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the AI response for tenant assistant\nconst aiResponse = $input.first().json.message?.content || $input.first().json.choices?.[0]?.message?.content || 'Response generated';\n\nconst result = {\n  success: true,\n  agent_type: 'tenant_assistant',\n  response: aiResponse,\n  timestamp: new Date().toISOString(),\n  tenant_id: $('Webhook').first().json.tenant_id,\n  action_taken: 'response_generated'\n};\n\nreturn [{ json: result }];"
+      },
+      "id": "287e8dcd-1609-4c2e-a58b-b7a2bdad3c65",
+      "name": "Format Tenant Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the AI response for maintenance scheduler\nconst aiResponse = $input.first().json.message?.content || $input.first().json.choices?.[0]?.message?.content || '';\n\n// Parse AI response to extract structured data\n// This is a simplified version - in production, use function calling or structured output\nconst result = {\n  success: true,\n  agent_type: 'maintenance_scheduler',\n  ai_analysis: aiResponse,\n  recommended_vendor_type: 'general_contractor', // Parsed from AI response\n  priority: 'urgent',\n  estimated_duration_hours: 2,\n  requires_tenant_presence: true,\n  scheduling_recommendation: 'Schedule within 24-48 hours',\n  timestamp: new Date().toISOString(),\n  request_id: $('Webhook').first().json.request_id,\n  action_taken: 'vendor_analysis_complete'\n};\n\nreturn [{ json: result }];"
+      },
+      "id": "e58db301-d794-4e33-98ff-dd7429c77c0c",
+      "name": "Format Maintenance Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the AI response for lease renewal\nconst aiResponse = $input.first().json.message?.content || $input.first().json.choices?.[0]?.message?.content || '';\n\n// Parse AI response - in production, use structured output\nconst webhookData = $('Webhook').first().json;\n\nconst result = {\n  success: true,\n  agent_type: 'lease_renewal',\n  tenant_id: webhookData.tenant_id,\n  tenant_name: webhookData.tenant_name,\n  unit_number: webhookData.unit_number,\n  current_rent: webhookData.current_rent,\n  proposed_rent: Math.round(webhookData.current_rent * 1.05), // 5% increase example\n  rent_increase_percentage: 5,\n  lease_term_months: 12,\n  incentives: ['Free parking for first month', 'Updated appliances'],\n  renewal_offer_text: aiResponse,\n  email_subject: `Lease Renewal Offer - ${webhookData.unit_number}`,\n  renewal_deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),\n  timestamp: new Date().toISOString(),\n  action_taken: 'renewal_offer_generated'\n};\n\nreturn [{ json: result }];"
+      },
+      "id": "2bb3f194-3e1d-4dbe-a15e-d19dc19f9a29",
+      "name": "Format Renewal Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format the AI response for owner reporting\nconst aiResponse = $input.first().json.message?.content || $input.first().json.choices?.[0]?.message?.content || '';\nconst ownerData = $('Fetch Owner Data').first().json;\nconst webhookData = $('Webhook').first().json;\n\nconst result = {\n  success: true,\n  agent_type: 'owner_reporting',\n  owner_id: webhookData.owner_id,\n  owner_name: webhookData.owner_name,\n  report_period: ownerData.period,\n  period_start: ownerData.period_start,\n  period_end: ownerData.period_end,\n  report_summary: aiResponse,\n  key_metrics: {\n    net_income: ownerData.financials.net_income,\n    occupancy_rate: ownerData.occupancy.rate,\n    total_expenses: ownerData.financials.total_expenses,\n    roi_percentage: ((ownerData.financials.net_income / (ownerData.financials.total_rent_collected + ownerData.financials.outstanding_balance)) * 100).toFixed(2)\n  },\n  email_subject: `Property Performance Report - ${new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`,\n  timestamp: new Date().toISOString(),\n  action_taken: 'owner_report_generated'\n};\n\nreturn [{ json: result }];"
+      },
+      "id": "21b6afe3-241b-44eb-8443-4ba7b3b8e46c",
+      "name": "Format Owner Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "40eb9e4c-2d02-43fd-86e3-6e933092532d",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        880,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Error handler\nreturn [{\n  json: {\n    success: false,\n    error: 'Invalid agent type or request format',\n    message: 'Please specify a valid agent_type: tenant_assistant, maintenance_scheduler, lease_renewal, or owner_reporting',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "fa82be52-6fcc-4cc9-abfa-282fb54f4d6e",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        560
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Is Tenant Assistant",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Maintenance Scheduler",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Lease Renewal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Owner Reporting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Tenant Assistant": {
+      "main": [
+        [
+          {
+            "node": "Tenant Assistant AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Maintenance Scheduler": {
+      "main": [
+        [
+          {
+            "node": "Maintenance Scheduler AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Lease Renewal": {
+      "main": [
+        [
+          {
+            "node": "Lease Renewal AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Owner Reporting": {
+      "main": [
+        [
+          {
+            "node": "Fetch Owner Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tenant Assistant AI": {
+      "main": [
+        [
+          {
+            "node": "Format Tenant Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maintenance Scheduler AI": {
+      "main": [
+        [
+          {
+            "node": "Format Maintenance Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lease Renewal AI": {
+      "main": [
+        [
+          {
+            "node": "Format Renewal Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Owner Data": {
+      "main": [
+        [
+          {
+            "node": "Owner Reporting AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Owner Reporting AI": {
+      "main": [
+        [
+          {
+            "node": "Format Owner Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Tenant Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Maintenance Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Renewal Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Owner Report": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "95be26f4-eef0-4e3d-8f0e-76abe163d7e9",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-28T17:31:19.549Z",
+      "updatedAt": "2025-10-28T17:31:19.549Z",
+      "role": "workflow:owner",
+      "workflowId": "KzZOZeoRx5KaewYs",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
