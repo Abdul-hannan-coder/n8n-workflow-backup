@@ -1,0 +1,413 @@
+{
+  "createdAt": "2025-10-27T19:26:20.496Z",
+  "updatedAt": "2025-10-27T19:33:54.000Z",
+  "id": "HtPDOwMcD9ggXVOk",
+  "name": "ghl validation",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ghl-contact-summary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "03144de9-8798-4f63-a57b-6134a9db76e3",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "646ab976-bf96-4c66-aaf1-03c74e654eb2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pass through the webhook payload\nconst input = $input.first().json;\n\nreturn {\n  contactId: input.id,\n  locationId: input.location?.id || input.location,\n  rawData: input\n};"
+      },
+      "id": "cc6561ff-fdf3-45bb-a915-c43d9d2a70fd",
+      "name": "Validate Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "dbf90229-a6cb-4c8d-96ea-ee4d66e183bb",
+      "name": "Get Contact History",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        448,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and summarize contact history\nconst contact = $input.item.json;\n\nconst summary = {\n  contactId: contact.id,\n  name: `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),\n  email: contact.email,\n  phone: contact.phone,\n  tags: contact.tags || [],\n  lastActivity: contact.lastActivity,\n  conversationCount: contact.conversations?.length || 0,\n  noteCount: contact.notes?.length || 0,\n  taskCount: contact.tasks?.length || 0,\n  timestamp: new Date().toISOString()\n};\n\nreturn summary;"
+      },
+      "id": "ed4ad652-4129-49eb-a8e0-5f6771f76593",
+      "name": "Process Contact History",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customField[summary]",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "72cad161-a04e-4fa5-87ba-4f944b1f60bf",
+      "name": "Update GHL Contact",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        880,
+        0
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Contact summary updated\", \"data\": $json } }}",
+        "options": {}
+      },
+      "id": "047bea53-0dfb-43a7-9888-2cd8b8d458f5",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log and format error\nconst error = $input.item.json.error || $input.item.json;\n\nconst errorResponse = {\n  success: false,\n  error: {\n    message: error.message || 'An error occurred',\n    code: error.code || 'UNKNOWN_ERROR',\n    timestamp: new Date().toISOString()\n  }\n};\n\nconsole.error('Workflow Error:', errorResponse);\n\nreturn errorResponse;"
+      },
+      "id": "b9a429ae-1d4e-49d5-beca-dbf4690d37d5",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "e734e03a-bbb5-48e7-a32f-9bfab7eab9ee",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        880,
+        208
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Get Contact History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact History": {
+      "main": [
+        [
+          {
+            "node": "Process Contact History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Contact History": {
+      "main": [
+        [
+          {
+            "node": "Update GHL Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update GHL Contact": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.srv990213.hstgr.cloud",
+            "user-agent": "axios/1.7.7",
+            "content-length": "4549",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "traceparent": "00-31055a36ba96e13e77b079f8efdf8445-cd035b62e5e94879-00",
+            "x-forwarded-for": "34.10.130.215",
+            "x-forwarded-host": "n8n.srv990213.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "e1cc8252c442",
+            "x-real-ip": "34.10.130.215"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Offer Calendar": "",
+            "Company Website (put \"na\" if none)": "",
+            "Offer": "",
+            "2/3: What your estimated annual revenue?": "",
+            "A.I. Question 5 - (Answer)": "",
+            "A.I. Question 3 - (Answer)": "",
+            "2️⃣ What's your target monthly revenue?": "",
+            "A.I. Question 5": "",
+            "What does success look like after completing this program?": "",
+            "3️⃣ What's your current monthly revenue?": "",
+            "Who's your ideal customer?": "",
+            "Radio 22908": "",
+            "A.I. Question 3": "",
+            "Customer Company Name": "",
+            "Please select all of the following you have in place:  ": "",
+            "What do you need from me as a coach to make this worth 10x your investment?": "",
+            "What are the top 2–3 challenges keeping you stuck right now?": "",
+            "Do you currently have a team? If yes, who’s on it and what are their roles?": "",
+            "Agent ID": "",
+            "Anything else I should know about you or your business before we kick off?": "",
+            "Where do you spend most of your time day-to-day?": "",
+            "3️⃣ Do you currently have a system in place that consistently brings in pre-sold, high-quality patients without relying on paid ads?": "",
+            "A.I. Question 1 - (Answer)": "",
+            "On a scale of 1–10, how committed are you to making big changes in your business right now? Why that number?": "",
+            "Business Name:": "",
+            "Start Date": "",
+            "Is there anything you're avoiding or procrastinating on in your business?": "",
+            "If I could wave a magic wand and fix one thing in your business, what would it be?": "",
+            "What would it mean for your practice if you were seen as the #1 A-List chiropractor in your city—verified on Google, local media, and getting 5-star reviews weekly?": "",
+            "Logo Upload": "",
+            "What's your offer/service/product for that business?": "",
+            "A.I. Question 4": "",
+            "Campaign": "",
+            "Your Timezone": "",
+            "ref": "",
+            "3/3: How many new customers can your business take on each month?": "",
+            "3/3: How much capital do you have available to use for growing your business?": "",
+            "A.I. Question 4 - (Answer)": "",
+            "What's your #1 goal for the next 90 days?": "",
+            "How do you prefer to receive feedback? (Blunt, tactical, collaborative, etc.)": "",
+            "1️⃣ How many new patients are you currently getting each month from inbound calls, walk-ins, website inquiries & referrals?": "",
+            "What's your guarantee? (put \"na\" if none)": "",
+            "A.I. Question 1": "",
+            "A.I. Question 2 - (Answer)": "",
+            "How are you currently generating leads or sales? (Be specific)": "",
+            "Signature:": "",
+            "What type of business are you & what's your biz model?": "",
+            "A.I. Question 2": "",
+            "favourate food": "",
+            "whats your fa fast food": "",
+            "fav movie": "",
+            "series": "",
+            "fav cartoon": "",
+            "fav series": "",
+            " movie": "",
+            " cartoon": "",
+            "band": "",
+            "aSingle Drodspdown 5ypr": "",
+            "utm_source": "fb",
+            "utm_medium": "cpc",
+            "utm_campaign": "sydney_laser_promo",
+            "Comment": "",
+            "Vet Name": "",
+            "call history": "",
+            "Vet Email": "",
+            "Condition After Treatment": "",
+            "Driving Minutes To Vet": "",
+            "Reason For Call": "",
+            "Emergency Treatment Administered": "",
+            "Pet Description": "",
+            "Closest Vet": "",
+            "contact_id": "ZXuGEPU7mObMb1it7nIX",
+            "first_name": "Testing on Soma 9th",
+            "last_name": "hi bye",
+            "full_name": "Testing on Soma 9th hi bye",
+            "tags": "meta ads",
+            "country": "US",
+            "timezone": "America/Los_Angeles",
+            "date_created": "2025-10-27T13:20:20.680Z",
+            "contact_source": "utm",
+            "full_address": "",
+            "contact_type": "lead",
+            "location": {
+              "name": "Abdul Rahman's Account",
+              "address": " ",
+              "city": "",
+              "state": "",
+              "country": "US",
+              "fullAddress": " , ",
+              "id": "p3KgzXkWjz5lSBTIvM2z"
+            },
+            "workflow": {
+              "id": "90e29407-6ee7-4c25-a9df-40a6d8832998",
+              "name": "contact changed"
+            },
+            "triggerData": {},
+            "contact": {
+              "attributionSource": {
+                "sessionSource": "Direct traffic",
+                "url": "https://somalasers.com.au/",
+                "utmSource": null,
+                "utmMedium": null,
+                "utmContent": null,
+                "utmTerm": null,
+                "utmKeyword": null,
+                "utmMatchtype": null,
+                "referrer": null,
+                "gclid": null,
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+                "ip": "178.152.121.92",
+                "gaClientId": null,
+                "gaSessionId": null,
+                "medium": "form",
+                "mediumId": "X2KKODHc4RlJZKMt9sFm",
+                "adName": null,
+                "adGroupId": null,
+                "adId": null,
+                "gbraid": null,
+                "wbraid": null
+              },
+              "lastAttributionSource": {
+                "sessionSource": "Direct traffic",
+                "url": "https://somalasers.com.au/",
+                "utmSource": null,
+                "utmMedium": null,
+                "utmContent": null,
+                "utmTerm": null,
+                "utmKeyword": null,
+                "utmMatchtype": null,
+                "referrer": null,
+                "gclid": null,
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+                "ip": "178.152.121.92",
+                "gaClientId": null,
+                "gaSessionId": null,
+                "medium": "form",
+                "mediumId": "X2KKODHc4RlJZKMt9sFm",
+                "adName": null,
+                "adGroupId": null,
+                "adId": null,
+                "gbraid": null,
+                "wbraid": null
+              }
+            },
+            "attributionSource": {},
+            "customData": {}
+          },
+          "webhookUrl": "https://n8n.srv990213.hstgr.cloud/webhook-test/ghl-contact-summary",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "3892e12e-080b-4a85-9a4d-e497078cb75b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-27T19:26:20.501Z",
+      "updatedAt": "2025-10-27T19:26:20.501Z",
+      "role": "workflow:owner",
+      "workflowId": "HtPDOwMcD9ggXVOk",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
