@@ -1,0 +1,162 @@
+{
+  "createdAt": "2025-09-23T06:43:06.128Z",
+  "updatedAt": "2025-11-15T06:40:53.000Z",
+  "id": "EECT5ieq7cyEXqR7",
+  "name": "GHL MCP",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        -64
+      ],
+      "id": "04756dd1-42b8-4ff9-81ed-46cedaded39e",
+      "name": "When chat message received",
+      "webhookId": "ba412fd6-4631-4088-ab1b-e69cab33ae84"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant. Here is the CRM Contacts location id https://app.gohighlevel.com/v2/location/sp4oFAGxTSY4xSndxHFc/contacts   if user wants somthing from crm or contact info always go for this location id."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        -64
+      ],
+      "id": "b2eb22be-2de8-4aa2-bf58-f700af034361",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "21bb13a6-800b-4596-b82f-2d3508c36ea9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://services.leadconnectorhq.com/mcp/",
+        "serverTransport": "httpStreamable",
+        "authentication": "headerAuth",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        112,
+        96
+      ],
+      "id": "7cc28be4-db77-4826-9492-e224fc73943d",
+      "name": "MCP Client",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "9s8TrqhvQIecJNXX",
+          "name": "Header Auth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "4d41f78f-c0ce-401e-b0f6-a6e45b954950",
+      "name": "Simple Memory"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7164ccff-56f5-4b39-accc-59ca443be487",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-09-23T06:43:06.132Z",
+      "updatedAt": "2025-09-23T06:43:06.132Z",
+      "role": "workflow:owner",
+      "workflowId": "EECT5ieq7cyEXqR7",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
