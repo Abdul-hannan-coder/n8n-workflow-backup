@@ -1,0 +1,87 @@
+{
+  "createdAt": "2025-09-25T05:44:10.254Z",
+  "updatedAt": "2025-09-25T05:45:03.000Z",
+  "id": "AbUj0Gqieiu75eO2",
+  "name": "My workflow 4",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        -64
+      ],
+      "id": "fa10f796-6891-455e-b0ac-362631bf9914",
+      "name": "Telegram Trigger",
+      "webhookId": "b1c78537-45d5-42d7-bd38-5c037b0d46ff",
+      "credentials": {
+        "telegramApi": {
+          "id": "9isgnrp94XdbjIk7",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "jhgjhg"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        -144
+      ],
+      "id": "5b641be1-3255-44eb-a397-db69c08fd474",
+      "name": "Send a chat action",
+      "webhookId": "4d222c3d-8510-4b29-8bcd-9eb798579f1f",
+      "credentials": {
+        "telegramApi": {
+          "id": "9isgnrp94XdbjIk7",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a chat action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "69b864a9-5eda-4979-b1c2-a1d29b70801b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-25T05:44:10.257Z",
+      "updatedAt": "2025-09-25T05:44:10.257Z",
+      "role": "workflow:owner",
+      "workflowId": "AbUj0Gqieiu75eO2",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
