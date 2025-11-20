@@ -1,0 +1,3015 @@
+{
+  "createdAt": "2025-10-30T10:14:35.489Z",
+  "updatedAt": "2025-10-30T10:48:10.000Z",
+  "id": "Lq4thWoa5cYfSYlm",
+  "name": "Logistics",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1520,
+        1664
+      ],
+      "id": "8b79d398-e1ba-46b5-90d1-c7307fa5579c",
+      "name": "Telegram Trigger",
+      "webhookId": "01c33200-ad2c-4afb-8e6a-0b7d84dba33a",
+      "credentials": {
+        "telegramApi": {
+          "id": "9isgnrp94XdbjIk7",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=🚛 Welcome on board, driver!\nLet’s make your delivery journey smooth, fast, and stress-free.\n\nOur goal is to help you focus on the road — while we handle the paperwork.\n\n📷 Just snap a clear photo of your delivery documents (CMR, POD, invoice, etc.)\n🎙️ Or indicate the discharged amount in a voice message \n✍️ Or simply write the number \n\nI’ll extract all the key info automatically and send it to the manager.\n\n🧾 You’ll get confirmations of the routes, helpful reminders, and updates — all in one place.\n\n↙️ You can use MENU button to see all options.\n\n📍 Ready to roll?\nSend your first document photo or voice when you're parked and good to go 👍",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=🧾 My voyages",
+                    "additionalFields": {
+                      "callback_data": "voyage"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚖️ Report weight",
+                    "additionalFields": {
+                      "callback_data": "weight"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "id": "e4017861-4962-40b9-aa47-8f085972f0bf",
+      "name": "Send Initial Keyboard Options",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -112
+      ],
+      "webhookId": "5261ee11-9579-45dc-9cb5-430f2b01a923",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqsS1ZZe1qsfNRm",
+          "mode": "list",
+          "cachedResultName": "Drivers",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblqsS1ZZe1qsfNRm"
+        },
+        "filterByFormula": "=({Telegram Username} = '{{ $json.username }}')",
+        "options": {
+          "fields": [
+            "Telegram Username",
+            "Full Name"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -976,
+        1664
+      ],
+      "id": "087ff39d-be13-4718-922c-274d31b69ae4",
+      "name": "Checking User",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "35dEtItpF7pMJMzS",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message?.chat?.id || $('Telegram Trigger').item.json.callback_query?.message?.chat?.id }}",
+        "text": "=🔐 Sorry, you are not authorized, please contact your administrator",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        1824
+      ],
+      "id": "713878ec-70c6-4f87-b199-3ff8fd2de0b3",
+      "name": "Wrong user",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "content": "## User validation",
+        "height": 500,
+        "width": 900,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        1504
+      ],
+      "typeVersion": 1,
+      "id": "d16f1846-af23-4b4e-840d-5f5ae080a0fe",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5c19c186-339a-4679-b093-7b93ae05991e",
+              "leftValue": "={{ $json[\"Telegram Username\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -816,
+        1664
+      ],
+      "id": "cd5190dc-081a-4147-ae7d-9bcb29c48b56",
+      "name": "If User Exists"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1696,
+        2080
+      ],
+      "id": "0c93761e-3956-4b21-923a-6ad233f2ec63",
+      "name": "OpenAI"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=✅ {{ $json.fields['Volume received'] }} tonnes by #{{ $json.fields['Vehicle Number'] }} was recorded",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3824,
+        2416
+      ],
+      "id": "144a792d-9c8e-43ae-9de8-c2667fbbdb82",
+      "name": "Successful response",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\n\nreturn inputItems.map(item => {\n  const borderPlace = item.json[\"Border Place\"] || '';\n  const purchaseContract = item.json[\"Purchase Contract\"] || '';\n  const supplierName = item.json[\"Supplier Name\"] || '';\n  const warehouseName = item.json[\"Warehouse Name\"] || '';\n  const siloName = item.json[\"Silo Name\"] || '';\n  const cargo = item.json[\"Cargo\"] || '';\n  const loadingLocation = item.json[\"Loading Location\"] || '';\n  const dischargeLocation = item.json[\"Discharge Location\"] || '';\n\n  return {\n    json: {\n      text: `📦 *${purchaseContract}* from *${supplierName}*\\n` +\n            `🚛 Cargo: ${cargo}\\n` +\n            `🏠 Warehouse: ${warehouseName}, Silo: ${siloName}\\n` +\n            `📍 Loading: ${loadingLocation} → Discharge: ${dischargeLocation}\\n` +\n            `🛂 Border: ${borderPlace}`\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2432,
+        784
+      ],
+      "id": "6acc87ec-4ce8-4e35-90c7-394280b224f3",
+      "name": "Markdown format"
+    },
+    {
+      "parameters": {
+        "content": "## Voice\n\n",
+        "height": 360,
+        "width": 1280,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        1936
+      ],
+      "typeVersion": 1,
+      "id": "aa83c455-4d46-44fd-805f-2f223f3bd8a7",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Searching For The Route\n",
+        "height": 420,
+        "width": 740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "43ac3f77-0a2c-488f-a8cb-16ecaf60a2d5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Respond to user with options",
+        "height": 420,
+        "width": 740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2096,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "a81749cf-a2b3-438b-b483-41ff7eb55bb4",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "## Recording update\n\n",
+        "height": 1120,
+        "width": 620,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3472,
+        1936
+      ],
+      "typeVersion": 1,
+      "id": "0ddf1989-0fab-4a6d-9077-a8c5bc0fe63b",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "User input",
+              "stringValue": "={{ $json.output.volume.replace(/,/g, '.') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Preparing data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3,
+      "position": [
+        2752,
+        2464
+      ],
+      "id": "72646345-373d-4125-972a-bda4b6a413a9"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=📥 Retrieving route... Wait for a while",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        800
+      ],
+      "id": "fd94e379-1054-49cb-836e-be2c70a968a2",
+      "name": "Ask user to wait for updates",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=🥲 We couldn't find updates by this counterparty",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1696,
+        896
+      ],
+      "id": "ab8534e0-a4bc-4211-b255-8971cc0d726c",
+      "name": "Nothing found response",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2cd6e0ec-d0a1-44f2-9652-904a333a2cc6",
+              "name": "Border Place",
+              "value": "={{ $json['Border Place'] }}",
+              "type": "string"
+            },
+            {
+              "id": "306891b4-62ff-4bbb-a89e-5e9b61065f4f",
+              "name": "Purchase Contract",
+              "value": "={{ $json['Purchase Contract'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3fb223eb-d0cb-43fd-946f-f212bcef1aa4",
+              "name": "Supplier Name",
+              "value": "={{ $json['Supplier Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "de359224-6d40-4864-b1e9-2a68b82cd0b1",
+              "name": "Warehouse Name",
+              "value": "={{ $json['Warehouse Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6458683f-888a-4a69-887e-ce5ed409de09",
+              "name": "Silo Name",
+              "value": "={{ $json['Silo Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c3368228-8556-4670-9a35-a4487d0ff68d",
+              "name": "Cargo",
+              "value": "={{ $json.Cargo }}",
+              "type": "string"
+            },
+            {
+              "id": "91907fa8-9b11-4436-a7c4-7229a618da9b",
+              "name": "Loading Location",
+              "value": "={{ $json['Loading Location'] }}",
+              "type": "string"
+            },
+            {
+              "id": "58d56f36-e6c8-45d8-881f-00f7f06054ba",
+              "name": "Discharge Location",
+              "value": "={{ $json['Discharge Location'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2176,
+        784
+      ],
+      "id": "887ecbae-350c-4ba5-ae16-e8880271b0ef",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=⚠️ {{ $json.message }}: {{ $json.error.description }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3824,
+        2624
+      ],
+      "id": "a0e9579d-a47f-43ef-bd19-69c2dae63bea",
+      "name": "Saving error",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=✍️ Report a final weight. You can write, send a photo or record a voice",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        160
+      ],
+      "id": "a6b66384-e711-4cb0-91cb-8ada72f6d3f8",
+      "name": "Ask user to write a name",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "filterByFormula": "=AND(\n  SEARCH(\"{{ $('Checking User').item.json[\"Full Name\"] }}\", ARRAYJOIN({Driver Full Name})) > 0, {Route status} = \"Accepted\"\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1424,
+        800
+      ],
+      "id": "437d6a5a-6e82-4d09-9ccb-f6eb27c1a2b0",
+      "name": "Search Routes",
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        784
+      ],
+      "id": "1d496a62-de1b-499a-bcbe-5fa866090aec",
+      "name": "Limit to 1"
+    },
+    {
+      "parameters": {
+        "content": "## Choosing a branch\n",
+        "height": 3200,
+        "width": 1400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "7e952056-30f3-4c73-9b1d-20540e882044",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ocr.space/parse/image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "<you api key here>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "isOverlayRequired",
+              "value": "false"
+            },
+            {
+              "name": "scale",
+              "value": "true"
+            },
+            {
+              "name": "isTable",
+              "value": "false"
+            },
+            {
+              "name": "OCREngine",
+              "value": "2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "26c0ad73-4b80-4161-8c50-018e9d05dc15",
+      "name": "Analyze Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1408,
+        2768
+      ],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=There is a problem with OCR recognition: {{ $json.error.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1d567007-3909-4ee3-bf16-31b0196445b7",
+      "name": "Response with OCR Error",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1696,
+        2896
+      ],
+      "webhookId": "f3282970-e773-4c7c-9de9-70d833e2809f"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize combined text\nlet combinedText = '';\n\n// Check if ParsedResults exists and is an array\nif ($input.all()[0].json.ParsedResults && Array.isArray($input.all()[0].json.ParsedResults)) {\n  // Loop through each parsed result\n  $input.all()[0].json.ParsedResults.forEach(result => {\n    // Add parsed text if it exists\n    if (result.ParsedText) {\n      combinedText += result.ParsedText + '\\n\\n'; // Add double newline between pages\n    }\n  });\n  \n  // Trim any extra whitespace\n  combinedText = combinedText.trim();\n}\n\n// Return the combined text\nreturn {\n  text: combinedText,\n  total_pages: $input.all()[0].json.ParsedResults ? $input.all()[0].json.ParsedResults.length : 0\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        2736
+      ],
+      "id": "2c07edd5-0bf4-4321-9a22-88ba31f1bab0",
+      "name": "Get all OCR pages"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=🥲 We couldn't find updates by this counterparty",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3216,
+        2640
+      ],
+      "id": "1757065e-8634-4203-ae72-e970e8a562ab",
+      "name": "Nothing found response1",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "filterByFormula": "=SEARCH(\"{{ $('Checking User').item.json[\"Full Name\"] }}\", ARRAYJOIN({Driver Full Name})) > 0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2944,
+        2464
+      ],
+      "id": "cfe66249-3116-4555-a59f-6edea1576f59",
+      "name": "Search Routes1",
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        3216,
+        2448
+      ],
+      "id": "a30c548f-66d1-46dc-ad08-44e50467f338",
+      "name": "Limit to "
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Key values').item.json.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "2754fa8a-2902-47b7-9119-b0570134516d",
+      "name": "Download Document",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        2768
+      ],
+      "webhookId": "2352e4af-e525-47b6-9a88-6c863c40854d"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "id": "2bf3a5ef-85b7-4f10-856a-d20787987937",
+      "name": "Download Voice",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1456,
+        2080
+      ],
+      "webhookId": "83bb7385-33f6-4105-8294-1a91c0ebbee5"
+    },
+    {
+      "parameters": {
+        "content": "## Document\n\n",
+        "height": 380,
+        "width": 1280,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        2688
+      ],
+      "typeVersion": 1,
+      "id": "5f6d133c-3bc4-4b28-9b03-4d1580ba99a4",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Preparing information\n\n",
+        "height": 1120,
+        "width": 820,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2624,
+        1936
+      ],
+      "typeVersion": 1,
+      "id": "f8422c5b-311e-45bc-87c0-ae9cf9d81a65",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqsS1ZZe1qsfNRm",
+          "mode": "list",
+          "cachedResultName": "Drivers",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblqsS1ZZe1qsfNRm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Chat ID": "={{ $('Key values').item.json.chat_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Surname",
+              "displayName": "Surname",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Telegram Username",
+              "displayName": "Telegram Username",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Assigned Vehicle Routes",
+              "displayName": "Assigned Vehicle Routes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Total Routes Assigned",
+              "displayName": "Total Routes Assigned",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Recent Route Details",
+              "displayName": "Recent Route Details",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Driver Contact Summary",
+              "displayName": "Driver Contact Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Route Assignment Insights",
+              "displayName": "Route Assignment Insights",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Chat ID",
+              "displayName": "Chat ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        1648
+      ],
+      "id": "64d9f4f7-7518-4622-b989-a10a81b62a93",
+      "name": "Record Chat ID",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=✅ You accepted the route",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        1248
+      ],
+      "id": "032c548f-7b4d-456e-a460-78d512c55c7c",
+      "name": "User accepted",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "content": "## User accepted\n",
+        "height": 380,
+        "width": 540,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        1088
+      ],
+      "typeVersion": 1,
+      "id": "4f5ad2e3-9509-4291-b1c2-7d205ace6e6b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Route Status": "Accepted"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Purchase Contract",
+              "displayName": "Purchase Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Supplier Name",
+              "displayName": "Supplier Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sales Contract",
+              "displayName": "Sales Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Export Contract",
+              "displayName": "Export Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Intermediate Contract",
+              "displayName": "Intermediate Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Passport",
+              "displayName": "Passport",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Border Place",
+              "displayName": "Border Place",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tariff Cost",
+              "displayName": "Tariff Cost",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Vehicle Number",
+              "displayName": "Vehicle Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Driver Name",
+              "displayName": "Driver Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Driver Full Name",
+              "displayName": "Driver Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Forwarder",
+              "displayName": "Forwarder",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cargo",
+              "displayName": "Cargo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Loading Location",
+              "displayName": "Loading Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Discharge Location",
+              "displayName": "Discharge Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Warehouse Name",
+              "displayName": "Warehouse Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Silo Name",
+              "displayName": "Silo Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Route Status",
+              "displayName": "Route Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Loading",
+                  "value": "Loading"
+                },
+                {
+                  "name": "In Transit",
+                  "value": "In Transit"
+                },
+                {
+                  "name": "Discharged",
+                  "value": "Discharged"
+                },
+                {
+                  "name": "Ready to depart",
+                  "value": "Ready to depart"
+                },
+                {
+                  "name": "Accepted",
+                  "value": "Accepted"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Volume received",
+              "displayName": "Volume received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Receiving date",
+              "displayName": "Receiving date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1664,
+        1216
+      ],
+      "id": "a74f1595-f3cf-487d-9464-fcfadf3b25d2",
+      "name": "Status Accepted",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "content": "## User declined\n",
+        "height": 440,
+        "width": 540,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        1488
+      ],
+      "typeVersion": 1,
+      "id": "3ddccd62-5627-4a46-ae3c-8664c9920695",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=✖️ You declined the route",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        1664
+      ],
+      "id": "1b9bce11-6c4b-45f4-8844-2255372ea372",
+      "name": "User declined",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Route Status": "Declined"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Purchase Contract",
+              "displayName": "Purchase Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Supplier Name",
+              "displayName": "Supplier Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sales Contract",
+              "displayName": "Sales Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Export Contract",
+              "displayName": "Export Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Intermediate Contract",
+              "displayName": "Intermediate Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Passport",
+              "displayName": "Passport",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Border Place",
+              "displayName": "Border Place",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tariff Cost",
+              "displayName": "Tariff Cost",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Vehicle Number",
+              "displayName": "Vehicle Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Driver Name",
+              "displayName": "Driver Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Driver Full Name",
+              "displayName": "Driver Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Forwarder",
+              "displayName": "Forwarder",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cargo",
+              "displayName": "Cargo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Loading Location",
+              "displayName": "Loading Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Discharge Location",
+              "displayName": "Discharge Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Warehouse Name",
+              "displayName": "Warehouse Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Silo Name",
+              "displayName": "Silo Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Route Status",
+              "displayName": "Route Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Loading",
+                  "value": "Loading"
+                },
+                {
+                  "name": "In Transit",
+                  "value": "In Transit"
+                },
+                {
+                  "name": "Discharged",
+                  "value": "Discharged"
+                },
+                {
+                  "name": "Ready to depart",
+                  "value": "Ready to depart"
+                },
+                {
+                  "name": "Declined",
+                  "value": "Declined"
+                },
+                {
+                  "name": "Accepted",
+                  "value": "Accepted"
+                },
+                {
+                  "name": "Decline",
+                  "value": "Decline"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Volume received",
+              "displayName": "Volume received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Receiving date",
+              "displayName": "Receiving date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1696,
+        1648
+      ],
+      "id": "37cfe2e6-9e28-4617-9eb2-a0998529f164",
+      "name": "Status Declined",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "filterByFormula": "=AND(\n  SEARCH(\"{{ $('Checking User').item.json[\"Full Name\"] }}\", ARRAYJOIN({Driver Full Name})) > 0, {Route status} = \"Ready to depart\"\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1408,
+        1248
+      ],
+      "id": "217b0626-1207-4630-83b8-f933bdc6e862",
+      "name": "Search Routes3",
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "filterByFormula": "=AND(\n  SEARCH(\"{{ $('Checking User').item.json[\"Full Name\"] }}\", ARRAYJOIN({Driver Full Name})) > 0, {Route status} = \"Ready to depart\"\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1424,
+        1664
+      ],
+      "id": "80423ed2-41e2-4a62-912b-10e86498f41e",
+      "name": "Search Routes4",
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Volume received": "={{ $('Preparing data').item.json['User input'] }}",
+            "Receiving date": "={{ DateTime.fromSeconds($('Telegram Trigger').item.json.message.date).toISO() }}\n",
+            "id": "={{ $json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Purchase Contract",
+              "displayName": "Purchase Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Supplier Name",
+              "displayName": "Supplier Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sales Contract",
+              "displayName": "Sales Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Export Contract",
+              "displayName": "Export Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Intermediate Contract",
+              "displayName": "Intermediate Contract",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Passport",
+              "displayName": "Passport",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Border Place",
+              "displayName": "Border Place",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tariff Cost",
+              "displayName": "Tariff Cost",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Vehicle Number",
+              "displayName": "Vehicle Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Driver Name",
+              "displayName": "Driver Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Driver Full Name",
+              "displayName": "Driver Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Forwarder",
+              "displayName": "Forwarder",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Cargo",
+              "displayName": "Cargo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Loading Location",
+              "displayName": "Loading Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Discharge Location",
+              "displayName": "Discharge Location",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Warehouse Name",
+              "displayName": "Warehouse Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Silo Name",
+              "displayName": "Silo Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Route Status",
+              "displayName": "Route Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Loading",
+                  "value": "Loading"
+                },
+                {
+                  "name": "In Transit",
+                  "value": "In Transit"
+                },
+                {
+                  "name": "Discharged",
+                  "value": "Discharged"
+                },
+                {
+                  "name": "Ready to depart",
+                  "value": "Ready to depart"
+                },
+                {
+                  "name": "Accepted",
+                  "value": "Accepted"
+                },
+                {
+                  "name": "Declined",
+                  "value": "Declined"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Volume received",
+              "displayName": "Volume received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Receiving date",
+              "displayName": "Receiving date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        3568,
+        2448
+      ],
+      "id": "35133705-b0b1-42eb-9b27-e64fc16b1d56",
+      "name": "Update volume",
+      "alwaysOutputData": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# Role\nYou a database AI assistant\n\n# Task\nYou will receive text input after OCR parse a document. This document contains information about volume or quantity in tonnes or in kilograms. You job is to identify this value and output it. \n\n# Output\nYou can output ONLY decimal. Do not use any measurements or any other words in your response"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        2464
+      ],
+      "id": "74d18e5f-8ce7-4a64-aed2-8230fd401eaf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2192,
+        2640
+      ],
+      "id": "2941d99d-3854-44d1-a598-b15e969eb302",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"volume\": \"Decimal\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        2352,
+        2640
+      ],
+      "id": "fda64b9a-2b7f-4c00-88c2-7ac43a2d141b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json;\nconst isCallback = !!raw.callback_query;\nconst msg = isCallback ? raw.callback_query.message : raw.message || raw;\n\n// Extract chat_id and username\nconst caption = msg.caption || null;\nconst chatId = msg.chat?.id || null;\nconst username = isCallback\n  ? raw.callback_query.from?.username || null\n  : raw.message?.from?.username || raw.from?.username || null;\n\n// Extract user_text, route_id, and message_id from callback_data\nlet userText = null;\nlet routeId = null;\nlet callbackMessageId = null;\n\nif (isCallback && raw.callback_query.data) {\n  const parts = raw.callback_query.data.split(\";\");\n  userText = parts[0] || null;           // e.g. /delete or /correct\n  routeId = parts[1] || null;            // e.g. rec4oL52wQpba9u7F\n  callbackMessageId = parts[2] || null;  // e.g. 225\n} else {\n  userText = msg.text || msg.caption || null;\n}\n\n// Return early for callback\nif (isCallback) {\n  return {\n    chat_id: chatId,\n    username,\n    file_id: null,\n    user_text: userText,\n    route_id: routeId,\n    message_id: callbackMessageId,\n    file_type: 'callback',\n    is_callback: true\n  };\n}\n\n// Handle photo\nif (msg.photo && msg.photo.length > 0) {\n  const largestPhoto = msg.photo[msg.photo.length - 1];\n  return {\n    chat_id: chatId,\n    caption: caption,\n    username,\n    file_id: largestPhoto.file_id,\n    user_text: userText,\n    file_type: 'photo',\n    is_callback: false,\n    photo_metadata: {\n      sizes: msg.photo.length,\n      width: largestPhoto.width,\n      height: largestPhoto.height\n    }\n  };\n}\n\n// Handle documents\nif (msg.document) {\n  const mimeType = msg.document.mime_type || '';\n  const isImage = mimeType.startsWith('image/');\n\n  return {\n    chat_id: chatId,\n    username,\n    file_id: msg.document.file_id,\n    user_text: userText,\n    file_type: isImage ? 'photo' : 'document',\n    mime_type: mimeType,\n    is_callback: false\n  };\n}\n\n// Handle voice messages\nif (msg.voice) {\n  return {\n    chat_id: chatId,\n    username,\n    file_id: msg.voice.file_id,\n    user_text: userText,\n    file_type: 'voice',\n    duration: msg.voice.duration || null,\n    mime_type: msg.voice.mime_type || null,\n    is_callback: false\n  };\n}\n\n// Handle plain text\nconst firstInput = $input.first();\nconst entities = firstInput?.json?.message?.entities || [];\nconst firstEntity = entities.length > 0 ? entities[0] : null;\n\nreturn {\n  chat_id: chatId,\n  username,\n  file_id: null,\n  user_text: userText,\n  file_type: 'text',\n  type: firstEntity?.type || null,\n  is_callback: false\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1232,
+        1664
+      ],
+      "id": "10fcd86c-0aa4-4e23-8bb8-b8c52ed8056b",
+      "name": "Key values"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "=/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "53d43554-b91d-431d-b6b3-8849ea55dc55"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Start"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7bed37a7-28df-4672-b440-58d346c1a140",
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "/record_weight",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Record"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d5b1e1fc-1d93-4135-928d-484321da55a2",
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "=/faq",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "FAQ"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "de2f851f-d591-4fcb-95cb-e371851e4d47",
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "/my_route",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "My Routes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        592,
+        384
+      ],
+      "id": "f04fd5b7-1cd7-46b6-94ea-d98b5c870286",
+      "name": "Menu items"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "132fa982-7831-4f8d-9b37-069ffafa732f",
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "weight",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Report weight"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "28648147-7223-4f84-a6c7-1ca637f4676f",
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "voyage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "My routes"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "=accept",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "53d43554-b91d-431d-b6b3-8849ea55dc55"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Accept"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "7bed37a7-28df-4672-b440-58d346c1a140",
+                    "leftValue": "={{ $('Key values').item.json.user_text }}",
+                    "rightValue": "decline",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Decline"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        608,
+        1216
+      ],
+      "id": "6931536c-3f4e-4bdf-b8e5-34fd43a1e644",
+      "name": "Callback items"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "302dcf73-b3d6-44e3-93a8-897e441368fe",
+                    "leftValue": "={{ $('Key values').item.json.file_type }}",
+                    "rightValue": "voice",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a17015ca-e862-4806-8d42-f61b1ecffc3b",
+                    "leftValue": "={{ $('Key values').item.json.file_type }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "42f39fb0-0367-45d7-92ac-1e420a81f5d4",
+                    "leftValue": "={{ $('Key values').item.json.file_type }}",
+                    "rightValue": "photo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Photo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "01385f74-6364-43fb-84fc-45747912cc51",
+                    "leftValue": "={{ $('Key values').item.json.file_type }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Document"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        624,
+        2464
+      ],
+      "id": "720877fb-1bd8-409e-9848-b0f5c338c04f",
+      "name": "File type"
+    },
+    {
+      "parameters": {
+        "content": "## Text\n\n",
+        "height": 340,
+        "width": 1280,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        2320
+      ],
+      "typeVersion": 1,
+      "id": "db1a02ef-01ab-412a-8f09-3548ecd2e628",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## FAQ",
+        "height": 320,
+        "width": 420,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        304
+      ],
+      "typeVersion": 1,
+      "id": "84fe9026-bfb3-4825-b063-a124bfa575a9",
+      "name": "Sticky Note35"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "=📷 How should I take document photos?\n\nTo ensure smooth processing, follow these tips:\n\nPlace the document on a flat surface\n\nTake the photo directly from above (not at an angle)\n\nMake sure all corners and text are clearly visible\n\nAvoid shadows, glare, or fingers covering any part of the page\n\nUse good lighting or flash if needed\n\nOne document per photo (unless it's a multi-page doc)\n\n🔍 What documents should I upload?\n\nPlease include all key delivery-related documents, such as:\n\nCMR (international waybill)\n\nDelivery notes / POD (Proof of Delivery)\n\nInvoices (if required)\n\nFuel receipts (if tracking expenses)\n\nAlways make sure the documents are complete and signed (if applicable).\n\n☎️ Need help or support?\n\nReach us at: support@graintrack.com\nOr contact your dispatcher directly in urgent cases.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1424,
+        416
+      ],
+      "id": "7a5b1977-2e94-41af-a8a0-007dbbb61a3b",
+      "name": "Send FAQ",
+      "webhookId": "ee4a1c3f-2318-4556-a634-1183247f19fb"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "766e24ab-3b31-4a59-9343-c1497bcd2463",
+              "name": "text",
+              "value": "={{ $('Key values').item.json.user_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1696,
+        2464
+      ],
+      "id": "a3e06de4-94d9-43d3-bbb8-4313d5b2258f",
+      "name": "User input"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Key values').item.json.type }}",
+                    "rightValue": "bot_command",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f37b6855-5032-41c9-964c-1ac441fcaf94"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Command"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d8cc61c8-e3f7-46e9-975a-6bc469af53dd",
+                    "leftValue": "={{ $('Key values').item.json.is_callback }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Callback"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "06682833-0a4e-4cb4-802c-15141da975b9",
+                    "leftValue": "={{ !$('Key values').item.json.is_callback && !$('Key values').item.json.type }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "User input"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -80,
+        1616
+      ],
+      "id": "26c050f8-ea32-4476-abfa-8b267acb01f2",
+      "name": "Callback or Command"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Key values').item.json.chat_id }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✖️ Decline",
+                    "additionalFields": {
+                      "callback_data": "decline"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "id": "3ed32a1d-9280-4691-9447-c0e9bee234d5",
+      "name": "Send Initial Keyboard Options1",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        784
+      ],
+      "webhookId": "ec305fd1-f554-43b2-b497-c62070f8438e",
+      "alwaysOutputData": false
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Key values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checking User": {
+      "main": [
+        [
+          {
+            "node": "If User Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If User Exists": {
+      "main": [
+        [
+          {
+            "node": "Record Chat ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wrong user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown format": {
+      "main": [
+        [
+          {
+            "node": "Send Initial Keyboard Options1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparing data": {
+      "main": [
+        [
+          {
+            "node": "Search Routes1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask user to wait for updates": {
+      "main": [
+        [
+          {
+            "node": "Search Routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Markdown format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Routes": {
+      "main": [
+        [
+          {
+            "node": "Limit to 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nothing found response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit to 1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Image": {
+      "main": [
+        [
+          {
+            "node": "Get all OCR pages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Response with OCR Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all OCR pages": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Routes1": {
+      "main": [
+        [
+          {
+            "node": "Limit to ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nothing found response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit to ": {
+      "main": [
+        [
+          {
+            "node": "Update volume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Document": {
+      "main": [
+        [
+          {
+            "node": "Analyze Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Voice": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Chat ID": {
+      "main": [
+        [
+          {
+            "node": "Callback or Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User accepted": {
+      "main": [
+        [
+          {
+            "node": "Search Routes3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User declined": {
+      "main": [
+        [
+          {
+            "node": "Search Routes4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Routes3": {
+      "main": [
+        [
+          {
+            "node": "Status Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Routes4": {
+      "main": [
+        [
+          {
+            "node": "Status Declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update volume": {
+      "main": [
+        [
+          {
+            "node": "Successful response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Saving error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Preparing data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Key values": {
+      "main": [
+        [
+          {
+            "node": "Checking User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Menu items": {
+      "main": [
+        [
+          {
+            "node": "Send Initial Keyboard Options",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask user to write a name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask user to wait for updates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback items": {
+      "main": [
+        [
+          {
+            "node": "Ask user to write a name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask user to wait for updates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "User accepted",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "User declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File type": {
+      "main": [
+        [
+          {
+            "node": "Download Voice",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "User input",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Document",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User input": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback or Command": {
+      "main": [
+        [
+          {
+            "node": "Menu items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Callback items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "File type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "03114621-0210-47a4-b7bf-8daded9c2697",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-30T10:14:35.496Z",
+      "updatedAt": "2025-10-30T10:14:35.496Z",
+      "role": "workflow:owner",
+      "workflowId": "Lq4thWoa5cYfSYlm",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
