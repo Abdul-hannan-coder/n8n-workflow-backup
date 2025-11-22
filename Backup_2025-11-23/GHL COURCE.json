@@ -1,0 +1,557 @@
+{
+  "createdAt": "2025-11-12T05:05:56.310Z",
+  "updatedAt": "2025-11-17T20:43:52.000Z",
+  "id": "msADfsfQ1lETJKrC",
+  "name": "GHL COURCE",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6a3e0407-8fea-47e0-b484-002e49457da8",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -48
+      ],
+      "id": "aa8d72d1-06ff-4966-b9c3-e17575f5aa3c",
+      "name": "Webhook",
+      "webhookId": "6a3e0407-8fea-47e0-b484-002e49457da8"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1BjCc_HApGMfWklqFWwg-3V2_OKCRPdpAQoRi9uxaf6o",
+          "mode": "list",
+          "cachedResultName": "AI Suggestions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BjCc_HApGMfWklqFWwg-3V2_OKCRPdpAQoRi9uxaf6o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BjCc_HApGMfWklqFWwg-3V2_OKCRPdpAQoRi9uxaf6o/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Script Input": "={{ $json.body['Script Input'] }}",
+            "GHL Contact ID": "={{ $json.body.contact_id }}",
+            "Date": "={{ $json.body.date_created }}"
+          },
+          "matchingColumns": [
+            "GHL Contact ID"
+          ],
+          "schema": [
+            {
+              "id": "GHL Contact ID",
+              "displayName": "GHL Contact ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Script Input",
+              "displayName": "Script Input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Formula",
+              "displayName": "AI Formula",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI Suggestions (Final)",
+              "displayName": "AI Suggestions (Final)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        -32
+      ],
+      "id": "3fe9e0c2-965d-4464-9d20-65eb4a44b89d",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1OTJtwVzZjFqFxPP",
+          "name": "Google Sheets account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please analyze this script and provide 3 suggestions: {{ $json.body['Script Input'] }}",
+        "options": {
+          "systemMessage": "You are a highly-paid real estate sales and coaching expert. Your task is to check the given script against sales psychology principles and provide exactly 3 actionable, bullet-pointed suggestions to increase its conversion rate. Your response must contain ONLY the suggestions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        64
+      ],
+      "id": "266e7c3d-fb09-4a4d-8047-3f4d31197afb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        192
+      ],
+      "id": "6b2a1266-9fb5-4005-9df8-1cd6722c08be",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        -208
+      ],
+      "id": "24c2b1a2-5389-4707-b249-1ebcf4da950b",
+      "name": "Ghl ai suggestion results",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "\nAction Detail\t\nMethod: PUT\n\n\nURL: .../contacts/{{contactId}}\n\n\nBody: Node 2 se aaya hua AI result nikal kar AI Suggestions Custom Field mein update karein.",
+        "height": 224,
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -272
+      ],
+      "id": "78095dd6-3419-4d00-9829-9e86ced30780",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        320
+      ],
+      "id": "5038e677-7b31-44b0-b8de-0c1f181b9e39",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        80
+      ],
+      "id": "047814d6-4210-4ae0-952b-6b8a12e9068a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "jh",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -32
+      ],
+      "id": "9e98115c-ade9-4762-8381-46104b4c34f7",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        560
+      ],
+      "id": "08d03328-f9c1-47e8-8a96-dbf890cc2982",
+      "name": "When chat message received",
+      "webhookId": "ca3fce39-d560-48d6-a1ab-a036a0648dc6"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        560
+      ],
+      "id": "24d9aa69-7760-4cdb-ad2a-5d13cd588695",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        768
+      ],
+      "id": "a453273a-b70b-487c-b165-fdf23de12ff0",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "h4EP9JvolXcX0qVk",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bytez.com/models/v2/openai/gpt-4o",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "BYTEZ_KEY"
+            },
+            {
+              "name": "provider-key",
+              "value": "eb2de943badf263454ab679704021b6f"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a friendly chatbot\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"Hello, Im a friendly bot\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello bot, what is the capital of England?\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        704
+      ],
+      "id": "481fa033-c345-4055-b5c4-835c33e4e2b4",
+      "name": "HTTP Request1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.srv990213.hstgr.cloud",
+            "user-agent": "axios/1.12.2",
+            "content-length": "2691",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "traceparent": "00-0330e166ff17873bee294824b3540f44-39b3ca8aeae24704-00",
+            "x-forwarded-for": "34.41.15.218",
+            "x-forwarded-host": "n8n.srv990213.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "e1cc8252c442",
+            "x-real-ip": "34.41.15.218"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Lead Score": "",
+            "Last Login Date": "",
+            "Script Input": "Hello",
+            "AI Suggestions": "",
+            "contact_id": "kIM91qGyu0hajNza9UX6",
+            "first_name": "Abdulrehman",
+            "full_name": "Abdulrehman",
+            "email": "abdulrehmansultan581@gmail.com",
+            "tags": "",
+            "country": "US",
+            "timezone": "America/Los_Angeles",
+            "date_created": "2025-11-12T05:12:32.619Z",
+            "contact_source": "ai script submission form",
+            "full_address": "",
+            "contact_type": "lead",
+            "location": {
+              "name": "List catcher",
+              "address": "500 S State St\nApt C",
+              "city": "Bellingham",
+              "state": "Washington",
+              "country": "US",
+              "postalCode": "98225-6134",
+              "fullAddress": "500 S State St\nApt C, Bellingham Washington 98225-6134",
+              "id": "oMSQnyrfoNQjY3doTzQW"
+            },
+            "workflow": {
+              "id": "a7230b5a-80ce-4c31-a53f-6ddd0d157ffd",
+              "name": "Script Analyzer - Send to n8n"
+            },
+            "triggerData": {},
+            "contact": {
+              "attributionSource": {
+                "sessionSource": "Referral",
+                "url": "https://api.leadconnectorhq.com/widget/form/nsmAVI5fpCEsExNbgeXY?notrack=true",
+                "utmSource": null,
+                "utmMedium": null,
+                "utmContent": null,
+                "utmTerm": null,
+                "utmKeyword": null,
+                "utmMatchtype": null,
+                "referrer": "https://leadgen-apps-form-survey-builder.leadconnectorhq.com",
+                "gclid": null,
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+                "ip": "178.152.121.92",
+                "gaClientId": null,
+                "gaSessionId": null,
+                "medium": "form",
+                "mediumId": "nsmAVI5fpCEsExNbgeXY",
+                "adName": null,
+                "adGroupId": null,
+                "adId": null,
+                "gbraid": null,
+                "wbraid": null
+              },
+              "lastAttributionSource": {
+                "sessionSource": "Referral",
+                "url": "https://api.leadconnectorhq.com/widget/form/nsmAVI5fpCEsExNbgeXY?notrack=true",
+                "utmSource": null,
+                "utmMedium": null,
+                "utmContent": null,
+                "utmTerm": null,
+                "utmKeyword": null,
+                "utmMatchtype": null,
+                "referrer": "https://leadgen-apps-form-survey-builder.leadconnectorhq.com",
+                "gclid": null,
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+                "ip": "178.152.121.92",
+                "gaClientId": null,
+                "gaSessionId": null,
+                "medium": "form",
+                "mediumId": "nsmAVI5fpCEsExNbgeXY",
+                "adName": null,
+                "adGroupId": null,
+                "adId": null,
+                "gbraid": null,
+                "wbraid": null
+              }
+            },
+            "attributionSource": {
+              "sessionSource": "Referral",
+              "url": "https://api.leadconnectorhq.com/widget/form/nsmAVI5fpCEsExNbgeXY?notrack=true",
+              "utmSource": null,
+              "utmMedium": null,
+              "utmContent": null,
+              "utmTerm": null,
+              "utmKeyword": null,
+              "utmMatchtype": null,
+              "referrer": "https://leadgen-apps-form-survey-builder.leadconnectorhq.com",
+              "gclid": null,
+              "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+              "ip": "178.152.121.92",
+              "gaClientId": null,
+              "gaSessionId": null,
+              "medium": "form",
+              "mediumId": "nsmAVI5fpCEsExNbgeXY",
+              "adName": null,
+              "adGroupId": null,
+              "adId": null,
+              "gbraid": null,
+              "wbraid": null
+            },
+            "customData": {}
+          },
+          "webhookUrl": "https://n8n.srv990213.hstgr.cloud/webhook-test/6a3e0407-8fea-47e0-b484-002e49457da8",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "versionId": "de44dfd3-8a67-4d3b-aac5-ed1f37e79023",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-12T05:05:56.315Z",
+      "updatedAt": "2025-11-12T05:05:56.315Z",
+      "role": "workflow:owner",
+      "workflowId": "msADfsfQ1lETJKrC",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
