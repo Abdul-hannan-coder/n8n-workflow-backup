@@ -1,0 +1,3395 @@
+{
+  "createdAt": "2025-10-28T10:45:02.953Z",
+  "updatedAt": "2025-10-28T10:45:02.000Z",
+  "id": "Y1vCfNDkiF4CSv7J",
+  "name": "My workflow 8",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        2032
+      ],
+      "id": "09bd1670-efde-4295-b84e-2f031c26e663",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('ClickUp Trigger').item.json.task_id }}",
+            "Status": "={{ $json.statusCap }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -368,
+        496
+      ],
+      "id": "08ba880e-77ea-4b86-822d-a48ca3712e3e",
+      "name": "Status Changed",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('ClickUp Trigger').item.json.task_id }}",
+            "Priority": "={{ $json.priorityCap }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -368,
+        336
+      ],
+      "id": "7d0b30df-ef38-4ef2-855d-651b5425069e",
+      "name": "Priority Changed",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "team": "42613680",
+        "events": [
+          "taskUpdated",
+          "taskCreated",
+          "taskDeleted"
+        ],
+        "filters": {
+          "folderId": "90165867975"
+        }
+      },
+      "type": "n8n-nodes-base.clickUpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1264,
+        608
+      ],
+      "id": "cd5bf9ee-4cc5-469e-865b-20dea09086d5",
+      "name": "ClickUp Trigger",
+      "webhookId": "e416c8d3-e087-46f1-8e3d-00fe3b751189",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "height": 1668,
+        "width": 1252,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        48
+      ],
+      "id": "03099116-e3e0-404c-847d-e78d623a59cc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "height": 292,
+        "width": 1260,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1936
+      ],
+      "id": "3b6b435a-b647-480c-b5dc-180d63e7f16c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f1c09a83-3cd0-4e1f-a5f8-3ff942c0a6ed",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        48,
+        784
+      ],
+      "id": "f850b5a4-0664-416b-aa0c-b341c6d51815",
+      "name": "Webhook",
+      "webhookId": "f1c09a83-3cd0-4e1f-a5f8-3ff942c0a6ed"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "99c39b68-9e08-4936-8f3b-049f31b2dc92",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "d1688418-1af7-4320-8bc8-c3fe9f0e697d",
+              "leftValue": "={{ $json.body.value }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5f2572bd-2305-4e73-8374-01521d67555b",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "Team Task List",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        976
+      ],
+      "id": "cf8ab030-28fa-4cdb-82cc-247d734a6878",
+      "name": "Priority"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d379e40e-504a-44c7-b2c4-a243d25cff4e",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 6,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "489f1d8f-3084-4005-a383-cabd4786940d",
+              "leftValue": "={{ $json.body.value }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b35c6561-6590-41d8-8c58-cbe0a8ec2730",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "Team Task List",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        1216
+      ],
+      "id": "62955d75-098f-40ad-a008-b491289ef7e0",
+      "name": "Status"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $('Priority').item.json.body.rowValues[0]['1'] }}",
+        "updateFields": {
+          "priority": "=1"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        720,
+        688
+      ],
+      "id": "28639d1a-1e44-4fe8-8860-70677274c899",
+      "name": "Clickup Priority",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $json.body.rowValues[0][\"1\"] }}",
+        "updateFields": {
+          "status": "={{ $json.body.rowValues[0][\"5\"] }}"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        496,
+        1216
+      ],
+      "id": "9915a01d-b8ae-4915-9ef5-fe8d6ebb641a",
+      "name": "Clickup Status",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.value }}",
+                    "rightValue": "Urgent",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "749ce288-0c28-464d-a945-c958757e3f55"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f7eb5475-c9e9-41fa-a93e-0bbe9bd541c7",
+                    "leftValue": "={{ $json.body.value }}",
+                    "rightValue": "High",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "869cc76e-cce7-4493-abd7-ccb107bd3169",
+                    "leftValue": "={{ $json.body.value }}",
+                    "rightValue": "Normal",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2c7522fd-c874-4fe7-8e48-f17d1528ed7f",
+                    "leftValue": "={{ $json.body.value }}",
+                    "rightValue": "Low",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        496,
+        960
+      ],
+      "id": "ccfb1b41-1b02-417b-b387-8341ef6adf43",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $('Priority').item.json.body.rowValues[0]['1'] }}",
+        "updateFields": {
+          "priority": "=2"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        720,
+        880
+      ],
+      "id": "857bd8a1-4acb-47ad-927e-df0a61568dce",
+      "name": "Clickup Priority1",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $('Priority').item.json.body.rowValues[0]['1'] }}",
+        "updateFields": {
+          "priority": "=3"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1088
+      ],
+      "id": "2aa1185a-b818-46dc-bb4a-04d102e496fd",
+      "name": "Clickup Priority2",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $('Priority').item.json.body.rowValues[0]['1'] }}",
+        "updateFields": {
+          "priority": "=4"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        736,
+        1296
+      ],
+      "id": "cab244f5-aa52-4e06-89d5-c7768c940525",
+      "name": "Clickup Priority3",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "height": 1728,
+        "width": 1412,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "55d84c9d-fb42-48e3-8167-9f07c4acb837",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sort by oldest first, then map to your desired shape\n\nconst roleNames = [\n  \"Web Developer\", \n  \"SEO Specialist\", \n  \"GHL Specialist\", \n  \"Google Ads\", \n  \"Project Manager / Admin\", \n  \"Graphics/Video Editor\", \n  \"Technical Lead / Tech Support\"\n];\n\nfunction formatDate(timestamp) {\n  if (!timestamp) return \"\";\n  const num = parseInt(timestamp, 10);\n  if (isNaN(num)) return \"\";\n  const date = new Date(num);\n  const day = String(date.getDate()).padStart(2, '0');\n  const month = String(date.getMonth() + 1).padStart(2, '0'); // 0-based\n  const year = date.getFullYear();\n  return `${month}/${day}/${year}`;\n}\n\n// 1) Pull in all items from previous node\nconst items = $input.all();\n\n// 2) Sort by date_created ascending (oldest → newest)\nitems.sort((a, b) => {\n  const dateA = Number(a.json?.date_created ?? 0);\n  const dateB = Number(b.json?.date_created ?? 0);\n  return dateA - dateB;\n});\n\n// 3) Map to your desired output structure\nreturn items.map(task => {\n  const t = task.json || {};\n  const customFields = t.custom_fields || [];\n\n  // Role field lookup\n  const roleField = customFields.find(f => f.id === \"a1fc0839-bad7-4f29-b1dc-d08ba5026352\");\n  let roleValue = \"\";\n  if (roleField && roleField.value !== null && roleField.value !== undefined) {\n    const value = roleField.value;\n    const orderIndex = typeof value === \"object\" ? value?.orderindex : Number(value);\n    if (!isNaN(orderIndex)) {\n      roleValue = roleNames[orderIndex] || \"\";\n    }\n  }\n\n  // Website field lookup\n  const websiteField = customFields.find(f => f.id === \"a967eeae-631a-4db2-868a-be861aa92052\");\n  const websiteUrl = websiteField?.value || \"\";\n\n  // Priority text (handle object or null)\n  const priorityText = t.priority?.priority || \"\";\n\n  return {\n    json: {\n      \"Task ID\": t.id,\n      \"Task Name\": t.name,\n      \"Status\": t.status?.status || \"\",\n      \"Due Date\": formatDate(t.due_date),\n      \"Assignee\": Array.isArray(t.assignees) ? t.assignees.map(a => a.username).join(\", \") : \"\",\n      \"Description\": t.description || \"\",\n      \"Date Created\": formatDate(t.date_created),\n      \"Date Updated\": formatDate(t.date_updated),\n      \"Date Closed\": formatDate(t.date_closed),\n      \"Date Done\": formatDate(t.date_done),\n      \"URL\": t.url,\n      \"Priority\": priorityText,\n      \"Role\": roleValue,\n      \"Website\": websiteUrl\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        2032
+      ],
+      "id": "b3a10a65-db18-4c7e-b5b3-09ec1425e8fb",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract role information from ClickUp task update event\nconst roleUpdate = $input.all().find(item => \n  item.json.history_items && \n  item.json.history_items.some(hi => hi.field === 'custom_field' && hi.custom_field.name === 'Role')\n);\n\nif (!roleUpdate) {\n  return [];\n}\n\n// Get the role change details\nconst roleChange = roleUpdate.json.history_items.find(hi => \n  hi.field === 'custom_field' && hi.custom_field.name === 'Role'\n);\n\nif (!roleChange) {\n  return [];\n}\n\n// Extract role options from the custom field definition\nconst roleOptions = roleChange.custom_field.type_config.options;\n\n// Find the selected role\nconst selectedRole = roleOptions.find(opt => opt.id === roleChange.after);\n\n// Prepare output\nreturn [{\n  json: {\n    task_id: roleUpdate.json.task_id,\n    role_id: roleChange.after,\n    role_name: selectedRole ? selectedRole.name : 'Unknown Role',\n    role_orderindex: selectedRole ? selectedRole.orderindex : -1,\n    updated_by: roleChange.user.username,\n    update_timestamp: new Date(parseInt(roleChange.date)).toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        832
+      ],
+      "id": "cc055b12-4958-4079-a70e-3f5872ff893a",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('ClickUp Trigger').item.json.task_id }}",
+            "(Role)": "={{ $json.role_name }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -224,
+        880
+      ],
+      "id": "1bd5128f-7bc2-46a3-bd20-dd62778dfafe",
+      "name": "Task Catagory1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "team": "42613680",
+        "space": "90161085119",
+        "folder": "90165867975",
+        "list": "901609792635",
+        "name": "={{ $json.body.rowValues[0]['3'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        528,
+        480
+      ],
+      "id": "9d131c25-c78f-493e-a92e-098e7e291d1f",
+      "name": "Create a task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Code7').item.json.task_id }}",
+            "Date Created": "={{ $('Code7').item.json.date_created }}",
+            "*Fourth Wave Internal* - LINK to task": "={{ $('Create a task').item.json.url }}",
+            "Field ID": "={{ $('Create a task').item.json.custom_fields[0].id }}",
+            "What (Task Title)": "={{ $('Code7').item.json.task_name }}",
+            "Status": "={{ $json.statusCap }}",
+            "Date Updated": "={{ $('Code7').item.json.date_updated }}"
+          },
+          "matchingColumns": [
+            "What (Task Title)"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delete Task",
+              "displayName": "Delete Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1152,
+        480
+      ],
+      "id": "68f60de6-d240-4791-8ad3-8b1da15a3649",
+      "name": "Task Catagory2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ensure your helper functions are defined first:\nfunction padTo2(num) {\n  return num.toString().padStart(2, '0');\n}\n\nfunction formatDateDDMMYYYY(date) {\n  const d = padTo2(date.getDate());\n  const m = padTo2(date.getMonth() + 1);\n  const y = date.getFullYear();\n  return `${m}/${d}/${y}`;\n}\n\n// Now do the mapping for both created and updated dates:\nreturn $input.all().map(item => {\n  // Convert the timestamps to proper Date objects\n  const createdTs = parseInt(item.json.date_created, 10);\n  const updatedTs = parseInt(item.json.date_updated, 10);\n  \n  return {\n    json: {\n      task_id:       item.json.id,\n      task_name:     item.json.name,\n      date_created:  formatDateDDMMYYYY(new Date(createdTs)),\n      date_updated:  formatDateDDMMYYYY(new Date(updatedTs))\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        480
+      ],
+      "id": "6e293496-3e15-4ae5-bb1a-47e629119d7b",
+      "name": "Code7"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('ClickUp Trigger').item.json.task_id }}",
+            "What (Task Title)": "={{ $('ClickUp Trigger').item.json.history_items[0].after }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -368,
+        656
+      ],
+      "id": "adbf9115-ed40-4a28-adb5-0344f24774bb",
+      "name": "Task Name",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "34efe4eb-5792-4991-9ea3-81e5b2d459d0",
+              "leftValue": "={{ $json.body.oldValue }}",
+              "rightValue": "={{ $json.body.value }}",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "f05b9a36-57a0-4084-99b0-5da905f0ae25",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "8359bafb-ee1d-41cc-b087-116a984adb88",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "Team Task List",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        480
+      ],
+      "id": "1783a788-e4b0-4603-8975-8a8710d49736",
+      "name": "New Task Created"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "id": "={{ $json['Task ID'] }}",
+        "updateFields": {
+          "name": "={{ $('Task Name Updated').item.json.body.value }}"
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        720,
+        288
+      ],
+      "id": "20e3818f-ea0d-4c35-a469-fc54f9bae30c",
+      "name": "Update a task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "What (Task Title)",
+              "lookupValue": "={{ $json.body.rowValues[0]['3'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        496,
+        288
+      ],
+      "id": "d053ea91-3553-4f49-975c-4cc7918ef8a8",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "41045407-ebe6-4039-8794-d9caa7e15dc5",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 4,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "36bcbaa4-6324-48ae-a848-7e6ca961d934",
+              "leftValue": "={{ $json.body.oldValue }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "dd8a1cc7-3d98-416f-b8a7-ced149b56a84",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "Team Task List",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        288
+      ],
+      "id": "9e7ca67a-563a-4f80-be90-1c3c1493952f",
+      "name": "Task Name Updated"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Task ID",
+              "lookupValue": "={{ $('Role Updated').item.json.body.rowValues[0]['1'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        704,
+        96
+      ],
+      "id": "89af1def-c676-467f-9fdc-ec396aec28fc",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "36bcbaa4-6324-48ae-a848-7e6ca961d934",
+              "leftValue": "={{ $json.body.oldValue }}",
+              "rightValue": "={{ $json.body.value }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "46748ccc-8ec5-4402-a0b0-a24a8ff4826a",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 3,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "b6e1b2b9-4177-4568-9d06-772f7b6df878",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "Team Task List",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        96
+      ],
+      "id": "2523de95-71fe-490f-a88d-0b9cf37145e1",
+      "name": "Role Updated"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.history_items[0].field }}",
+                    "rightValue": "priority",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7420d7ac-fb1e-4e43-9a5f-730aace42469"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Priority"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6389332c-c2dc-49db-b3bf-16ad6e2b8ed2",
+                    "leftValue": "={{ $json.history_items[0].field }}",
+                    "rightValue": "status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Status"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8ef248bc-2192-40e6-beba-fee304d702a6",
+                    "leftValue": "={{ $('Filter').item.json.history_items[0].field }}",
+                    "rightValue": "name",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Task Name"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "724a9c05-523a-439b-97e1-f1cc5f141489",
+                    "leftValue": "={{ $('Filter').item.json.history_items[0].field }}",
+                    "rightValue": "custom_field",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Task Catagory"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -848,
+        576
+      ],
+      "id": "923b36c1-3992-4994-9846-d483d3b1b888",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "457122b3-392c-4049-9800-07547874d67a",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "taskUpdated",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1056,
+        608
+      ],
+      "id": "4656e538-0c13-4736-a622-5c6d810a15c0",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "30299c7f-057a-44b5-b478-07f6dc1a8f4e",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "taskCreated",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "3abdb4af-608c-4b0a-8a75-ad80f76e8311",
+              "leftValue": "={{ $json.history_items[1].source }}",
+              "rightValue": "api",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1040,
+        1024
+      ],
+      "id": "8e7bd66a-f279-4bba-a3c9-b443b2f6c943",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        992
+      ],
+      "id": "81813a42-94f0-4a7d-9e15-fa9758edf323",
+      "name": "Get a task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date Created": "={{ $('Code5').item.json['Date Created'] }}",
+            "Status": "={{ $json.statusCap }}",
+            "Priority": "={{ $json.priorityCap }}",
+            "*Fourth Wave Internal* - LINK to task": "={{ $('Code5').item.json.URL }}",
+            "Task ID": "={{ $('Code5').item.json['Task ID'] }}",
+            "Field ID": "={{ $('Get many tasks2').item.json.custom_fields[0].id }}",
+            "What (Task Title)": "={{ $('Code5').item.json[\"Task Name\"] }}",
+            "Resource (Website URL) Custom Feild": "={{ $('Code5').item.json.Website }}",
+            "Date Updated": "={{ $('Code5').item.json[\"Date Updated\"] }}",
+            "(Role)": "={{ $('Code5').item.json.Role }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        384,
+        2032
+      ],
+      "id": "5f3478af-bee2-44a0-94a2-11dacdfd40f8",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "getAll",
+        "team": "42613680",
+        "space": "90161085119",
+        "folder": "90165867975",
+        "list": "901609792635",
+        "filters": {
+          "includeClosed": true,
+          "subtasks": true
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        2032
+      ],
+      "id": "c234d4bb-4bd1-436e-9745-9e08ea2202e6",
+      "name": "Get many tasks2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "739c2b93-081d-48fd-84da-175fcb5dcc6e",
+              "name": "statusCap",
+              "value": "={{ $json.Status.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "1d9064b5-f415-47f3-8527-1d04dbbf1412",
+              "name": "priorityCap",
+              "value": "={{ $json.Priority.priority.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "171483c5-3f0e-4e06-84ef-ac8d086fd1d6",
+              "name": "roleCap",
+              "value": "={{ $json.Role.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        2032
+      ],
+      "id": "2944c6fc-35f1-43a3-983e-71c7628286c7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "setCustomField",
+        "task": "={{ $json['Task ID'] }}",
+        "field": "={{ $json['Field ID'] }}",
+        "value": "={{ $('Code3').item.json.roleOptionId }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        928,
+        96
+      ],
+      "id": "b13f3d6f-11cc-4cc4-bfe1-74191e7fe015",
+      "name": "Set a custom Field on a task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Map incoming role name to ClickUp dropdown option ID\nconst roleName = ($input.first().json.body.rowValues[0][\"2\"] || \"\").trim().toLowerCase();\n\nconst roleMap = {\n  \"web developer\":    \"17a363ac-2a40-43a6-868a-964793430d93\",\n  \"seo specialist\":   \"ef70e674-23c8-433c-9e59-e56cca796906\",\n  \"ghl specialist\":   \"efd1372f-e4c7-4136-bb11-d3c4ae9d73f4\",\n  \"google ads\":       \"026f056f-8a01-4a05-9772-b80e2939407a\",\n  \"project manager / admin\": \"86f4d72d-ec78-48a1-b825-66a82b41f783\",\n  \"graphics/video editor\":   \"86278344-d9ed-4362-b50c-47403ed6dec0\",\n  \"technical lead / tech support\": \"d2646ec2-1244-403d-9b03-4600f2edb838\"\n};\n\nconst optionId = roleMap[roleName];\n\nif (!optionId) {\n  throw new Error(`Unrecognized role name: \"${inputData.roleName}\"`);\n}\n\n// Return JSON object your workflow can use:\nreturn { roleOptionId: optionId };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        96
+      ],
+      "id": "80fe01da-b0a5-4bff-80ee-7332df61f8fd",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bfc92704-6d89-4584-8fb6-17a259a62216",
+              "name": "statusCap",
+              "value": "={{ $('Create a task').item.json.status.status.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        480
+      ],
+      "id": "e5323660-0fe0-4637-bfea-c6deb86da67b",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1a1d8932-8d99-4e0e-ba37-9628b14022c7",
+              "name": "priorityCap",
+              "value": "={{$json.history_items[0].after.priority.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        336
+      ],
+      "id": "3a588739-4e22-428b-b3dc-e46a7f8137b6",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bfc92704-6d89-4584-8fb6-17a259a62216",
+              "name": "statusCap",
+              "value": "={{$json.history_items[0].after.status.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        496
+      ],
+      "id": "b362edd7-eeb1-4ac2-bee9-8095d62c8cad",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $('Get a task').item.json.date_updated }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        1136
+      ],
+      "id": "1a418923-ee42-4694-8563-5d1556039129",
+      "name": "Date Updated"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.date_created }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        1136
+      ],
+      "id": "0e8582d7-c24f-4b6c-894f-8981af8a3055",
+      "name": "Date Created"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bfc92704-6d89-4584-8fb6-17a259a62216",
+              "name": "statusCap",
+              "value": "={{ $('Get a task').item.json.status.status.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "50466059-89f9-4357-a10e-a950cccb2a34",
+              "name": "priorityCap",
+              "value": "={{ $('Get a task').item.json.priority.priority.toLowerCase().toTitleCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -416,
+        1136
+      ],
+      "id": "16e829a3-8528-466c-b33d-acb416e4fbd5",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "startIndex": "={{ $json.body.range.rowStart }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        560,
+        1488
+      ],
+      "id": "6b763470-afcb-4eb8-9675-9b7f2edef608",
+      "name": "Delete rows or columns from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "id": "={{ $('Delete Task').item.json.body.rowValues[0]['1'] }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        768,
+        1488
+      ],
+      "id": "37c4b05f-43fa-4a05-8260-22818bb9303b",
+      "name": "Delete a task",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d379e40e-504a-44c7-b2c4-a243d25cff4e",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 11,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "97a9302f-c94e-4c5e-a758-0dd6a7d2773e",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "Team Task List",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        1488
+      ],
+      "id": "dc961e1e-df2c-4040-9729-70db470e6f1d",
+      "name": "Delete Task"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "30299c7f-057a-44b5-b478-07f6dc1a8f4e",
+              "leftValue": "={{ $json.event }}",
+              "rightValue": "taskDeleted",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -1072,
+        1360
+      ],
+      "id": "7820e707-4b71-415a-89e1-b86333241915",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -656,
+        1360
+      ],
+      "id": "2fbe448f-6ff1-4975-8dcb-7c54aabb06b2",
+      "name": "Delete rows or columns from sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Task ID",
+              "lookupValue": "={{ $json.task_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -864,
+        1360
+      ],
+      "id": "cc2cef77-d47b-4c94-bf7d-0e89f51c58de",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get a task').item.json.id }}",
+            "Date Created": "={{ $('Date Created').item.json.formattedDate }}",
+            "*Fourth Wave Internal* - LINK to task": "={{ $('Get a task').item.json.url }}",
+            "What (Task Title)": "={{ $('Get a task').item.json.name }}",
+            "Field ID": "={{ $('Get a task').item.json.custom_fields[0].id }}",
+            "Date Updated": "={{ $('Date Updated').item.json.formattedDate }}",
+            "Status": "={{ $json.statusCap }}",
+            "Priority": "={{ $json.priorityCap }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Delete Task",
+              "displayName": "Delete Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -224,
+        1136
+      ],
+      "id": "df560712-be76-4ebd-902d-bb66a03a31db",
+      "name": "Task Name2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "71816e7d-3247-4db6-929d-cc0f7ec8a610",
+              "leftValue": "={{ $json.role_name }}",
+              "rightValue": "Unknown Role",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -432,
+        832
+      ],
+      "id": "82e3c885-743f-43ba-a8b0-93d6dc8adca4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "list",
+          "cachedResultName": "Inside Out Security",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('ClickUp Trigger').item.json.task_id }}",
+            "(Role)": "={{ $json.role_id }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delete Task",
+              "displayName": "Delete Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -224,
+        752
+      ],
+      "id": "35066214-6545-4fa1-9fca-f9589f442374",
+      "name": "Role Changed1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "id": "={{ $('ClickUp Trigger').item.json.task_id }}"
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        160
+      ],
+      "id": "57b2c111-9e02-4500-83f4-044177c95121",
+      "name": "Get a task2",
+      "credentials": {
+        "clickUpApi": {
+          "id": "9GYN9BKqoakZM7t8",
+          "name": "ClickUp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.date_updated }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        160
+      ],
+      "id": "50f082d3-e46f-4118-9a62-6e77bc6f3201",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2007980081,
+          "mode": "list",
+          "cachedResultName": "Team Task List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zhF794uJSGSNUvppU2ee008tR7tMUmzq6nx-GMC5BLU/edit#gid=2007980081"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $('Get a task2').item.json.id }}",
+            "Date Updated": "={{ $json.formattedDate }}"
+          },
+          "matchingColumns": [
+            "Task ID"
+          ],
+          "schema": [
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "(Role)",
+              "displayName": "(Role)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "What (Task Title)",
+              "displayName": "What (Task Title)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resource (Website URL) Custom Feild",
+              "displayName": "Resource (Website URL) Custom Feild",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date Updated",
+              "displayName": "Date Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "*Fourth Wave Internal* - LINK to task",
+              "displayName": "*Fourth Wave Internal* - LINK to task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Field ID",
+              "displayName": "Field ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Delete Task",
+              "displayName": "Delete Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -384,
+        160
+      ],
+      "id": "17b3907e-c242-4d75-b9b5-2800adeb2116",
+      "name": "Date Update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many tasks2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Priority",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "New Task Created",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Task Name Updated",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Role Updated",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status": {
+      "main": [
+        [
+          {
+            "node": "Clickup Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Clickup Priority",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clickup Priority1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clickup Priority2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clickup Priority3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a task": {
+      "main": [
+        [
+          {
+            "node": "Code7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code7": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Task Created": {
+      "main": [
+        [
+          {
+            "node": "Create a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Update a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Task Name Updated": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Set a custom Field on a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Role Updated": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Task Name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get a task2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Get a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task": {
+      "main": [
+        [
+          {
+            "node": "Date Created",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks2": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Task Catagory2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "Priority Changed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "Status Changed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Updated": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Created": {
+      "main": [
+        [
+          {
+            "node": "Date Updated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Task Name2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete rows or columns from sheet": {
+      "main": [
+        [
+          {
+            "node": "Delete a task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Task": {
+      "main": [
+        [
+          {
+            "node": "Delete rows or columns from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Delete rows or columns from sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Role Changed1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Task Catagory1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task2": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Date Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "4098e7aa-4260-4e35-85b4-0ff8b822b56d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-28T10:45:02.959Z",
+      "updatedAt": "2025-10-28T10:45:02.959Z",
+      "role": "workflow:owner",
+      "workflowId": "Y1vCfNDkiF4CSv7J",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
