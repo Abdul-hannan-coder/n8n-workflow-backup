@@ -1,0 +1,569 @@
+{
+  "createdAt": "2025-11-25T06:46:03.905Z",
+  "updatedAt": "2025-11-25T06:46:03.000Z",
+  "id": "CcyIajJh27F7QMUw",
+  "name": "Google Buisness Profile Conetent Posting Automation",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=COMPREHENSIVE WEBSITE RESEARCH & GOOGLE BUSINESS POST GENERATOR\n\nYou are an expert digital marketing researcher and content strategist. Your task is to conduct an exhaustive analysis of the provided website and keywords to generate high-quality, engaging content for Google Business page posts.\n\nWEBSITE TO ANALYZE:{{ $json.body.rowValues[0]['3'] }}\nTARGET KEYWORDS: {{ $json.body.rowValues[0]['2'] }}\n\n\nRESEARCH FRAMEWORK - ANALYZE ALL OF THE FOLLOWING:\n\n1. WEBSITE DEEP DIVE ANALYSIS\n   - Company overview, mission, values, and unique selling propositions\n   - Products/services offered with detailed descriptions\n   - Target audience and customer demographics\n   - Brand voice, tone, and messaging style\n   - Visual branding elements and design approach\n   - Contact information and location details\n   - Team/leadership information\n   - Customer testimonials and reviews\n   - Awards, certifications, or recognition\n   - Company history and milestones\n\n2. CONTENT & SEO ANALYSIS\n   - Main content themes and topics covered\n   - Blog posts, case studies, and resource materials\n   - Keyword usage and SEO optimization level\n   - Meta descriptions and page titles\n   - Internal linking structure\n   - Content gaps and opportunities\n   - Technical SEO elements (site speed, mobile optimization)\n\n3. COMPETITIVE LANDSCAPE\n   - Direct and indirect competitors identified from website\n   - Competitive advantages mentioned\n   - Market positioning statements\n   - Pricing strategy (if available)\n   - Unique differentiators highlighted\n\n4. CUSTOMER EXPERIENCE ANALYSIS\n   - User journey and conversion paths\n   - Call-to-action placements and effectiveness\n   - Contact forms and lead generation methods\n   - Social proof elements (testimonials, logos, stats)\n   - Trust signals and credibility indicators\n\n5. SOCIAL MEDIA & DIGITAL PRESENCE\n   - Social media links and activity level\n   - Online reputation indicators\n   - Digital marketing strategies evident\n   - Community engagement approaches\n\n6. KEYWORD RESEARCH & OPTIMIZATION\n   - Primary keyword relevance to business\n   - Secondary and long-tail keyword opportunities\n   - Local SEO keywords (if applicable)\n   - Industry-specific terminology usage\n   - Search intent analysis for provided keywords\n\nGOOGLE BUSINESS POST CONTENT GENERATION:\n\nBased on your comprehensive research, create 10 DIFFERENT types of Google Business posts:\n\n1. EDUCATIONAL POST\n   - Share valuable industry insights or tips\n   - Include relevant statistics or data\n   - Position business as thought leader\n\n2. PRODUCT/SERVICE SPOTLIGHT\n   - Highlight specific offering with benefits\n   - Include compelling features and outcomes\n   - Add clear call-to-action\n\n3. CUSTOMER SUCCESS STORY\n   - Share testimonial or case study\n   - Include specific results achieved\n   - Build trust and credibility\n\n4. BEHIND-THE-SCENES\n   - Show company culture or process\n   - Humanize the brand\n   - Build personal connection\n\n5. LOCAL COMMUNITY ENGAGEMENT\n   - Highlight local involvement or events\n   - Show community support\n   - Build local relevance\n\n6. INDUSTRY NEWS/TRENDS\n   - Comment on relevant industry developments\n   - Share expert perspective\n   - Demonstrate market knowledge\n\n7. SEASONAL/TIMELY CONTENT\n   - Connect to current events or seasons\n   - Create urgency or relevance\n   - Tie to business offerings\n\n8. FAQ/PROBLEM-SOLVING\n   - Address common customer questions\n   - Provide helpful solutions\n   - Establish expertise\n\n9. PROMOTIONAL/OFFER\n   - Announce special deals or services\n   - Create compelling value proposition\n   - Include clear terms and CTA\n\n10. COMPANY MILESTONE/NEWS\n    - Share achievements or updates\n    - Build brand credibility\n    - Engage audience with progress\n\nFOR EACH POST, PROVIDE:\n- Engaging headline (under 60 characters)\n- Main content (150-300 words optimized for engagement)\n- Relevant hashtags (5-10 industry and local tags)\n- Call-to-action suggestion\n- Best posting time recommendation\n- Target audience segment\n- Expected engagement type (likes, comments, shares, clicks)\n\nADDITIONAL RESEARCH DELIVERABLES:\n\n1. CONTENT CALENDAR SUGGESTIONS\n   - 30-day posting schedule\n   - Content themes by week\n   - Seasonal content opportunities\n\n2. KEYWORD OPTIMIZATION STRATEGY\n   - Primary keywords for each post type\n   - Local SEO keyword integration\n   - Long-tail keyword opportunities\n\n3. COMPETITOR ANALYSIS SUMMARY\n   - Top 3 competitors' Google Business strategies\n   - Content gaps to exploit\n   - Differentiation opportunities\n\n4. ENGAGEMENT OPTIMIZATION TIPS\n   - Best practices for this specific industry\n   - Local market considerations\n   - Audience behavior insights\n\n5. PERFORMANCE TRACKING RECOMMENDATIONS\n   - Key metrics to monitor\n   - Success indicators\n   - Optimization suggestions\n\nRESEARCH QUALITY STANDARDS:\n- Cite specific examples from the website\n- Include exact quotes when relevant\n- Provide actionable insights, not generic advice\n- Ensure all content aligns with brand voice\n- Optimize for local search when applicable\n- Consider mobile user experience\n- Include accessibility considerations\n- Ensure compliance with Google Business guidelines\n\nOUTPUT FORMAT:\nPresent findings in clear, organized sections with bullet points, specific examples, and actionable recommendations. Include confidence levels for insights and mark any assumptions clearly.\n\nBegin your comprehensive research and content generation now. ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        544
+      ],
+      "id": "b5c18fe3-ebfd-402c-9600-45e540faee6c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        464
+      ],
+      "id": "1e1f7d35-b7ce-4980-8815-9b78b8b95049",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8e269a4b-a2a5-4eb1-af7f-6106b9f74f9e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        224,
+        544
+      ],
+      "id": "65e2b0b6-ae34-44f3-be6e-302eaa969b26",
+      "name": "Webhook1",
+      "webhookId": "8e269a4b-a2a5-4eb1-af7f-6106b9f74f9e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de4072bb-f49e-430a-bae2-70769cd47ead",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "=GMB Post Content",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c75a033d-e79e-4e07-8666-88e3765d2cf1",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        544
+      ],
+      "id": "df97bc29-cde6-4f05-97f5-9c0bf7e598e0",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        768,
+        768
+      ],
+      "id": "1c48e663-fc06-45dc-a294-14de5ce160dc",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook1').item.json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Q&A ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "64372fe0-a43f-4e07-b920-26b292311bff"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Q&A"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e84355d5-1706-4968-a9d7-d1f335b5c0e3",
+                    "leftValue": "={{ $('Webhook1').item.json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Post",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Post"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1072,
+        544
+      ],
+      "id": "45efcad0-661f-420b-a5dd-cebd25238c15",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Q&A STYLE GOOGLE MY BUSINESS POST GENERATOR\n\nYou are an expert Google My Business content creator specializing in Q&A format posts that drive engagement and provide valuable information to potential customers.\n\nRESEARCH DATA INPUT:\n{{ $('AI Agent').item.json.output }}\nQ&A STYLE GOOGLE MY BUSINESS POST GENERATOR\n\nYou are an expert Google My Business content creator specializing in Q&A format posts that drive engagement and provide valuable information to potential customers.\n\nRESEARCH DATA INPUT:\n[INSERT COMPREHENSIVE RESEARCH DATA HERE - Include website analysis, competitor insights, customer demographics, services/products, brand voice, testimonials, and keyword analysis]\n\nCRITICAL INSTRUCTION: Only use information that is explicitly provided in the research data above. If specific details are not mentioned in the research, use general industry-appropriate language without making assumptions about the business.\n\nTASK: Create a compelling Q&A style Google My Business post using the research data provided.\n\nQ&A POST STRUCTURE REQUIREMENTS:\n\n1. QUESTION SELECTION CRITERIA:\n   - Choose questions that potential customers would realistically ask\n   - Base questions on services/products mentioned in research data\n   - Address pain points or concerns identified in research\n   - Focus on differentiators highlighted in competitive analysis\n   - Consider local market needs if geographic data is provided\n\n2. QUESTION TYPES TO CONSIDER:\n   - Service/product specific questions from research data\n   - Pricing inquiries (only if pricing info is in research)\n   - Process or methodology questions\n   - Experience or qualification questions\n   - Location or availability questions\n   - Comparison questions with competitors (if mentioned in research)\n   - Customer concern questions based on testimonials/reviews\n\n3. ANSWER REQUIREMENTS:\n   - Use exact company information from research data\n   - Include specific services/products mentioned in research\n   - Reference actual credentials, certifications, or awards from research\n   - Use the brand voice and tone identified in research\n   - Include specific benefits or outcomes mentioned in research\n   - Reference actual customer testimonials or case studies if provided\n   - Mention specific locations, team members, or company details from research\n\n4. CONTENT OPTIMIZATION:\n   - Integrate primary keywords from research naturally\n   - Include secondary keywords where relevant\n   - Use local SEO terms if geographic data is provided\n   - Match the communication style identified in research\n   - Reference specific company values or mission if mentioned\n\nPOST FORMAT:\n\n**Question:** [Compelling customer question based on research data]\n\n**Answer:** [Detailed response using specific information from research - 150-250 words]\n\nKey elements to include in answer:\n- Specific company information from research\n- Exact services/products mentioned\n- Actual credentials or differentiators\n- Real customer outcomes if provided\n- Specific process details if available\n- Contact information or next steps\n\n**Call-to-Action:** [Specific action based on research data - website visit, phone call, consultation booking, etc.]\n\n**Hashtags:** [5-8 relevant hashtags based on keywords and industry from research]\n\nQUALITY CHECKLIST:\n□ Question addresses real customer need identified in research\n□ Answer uses only information provided in research data\n□ Brand voice matches tone identified in research\n□ Keywords from research are naturally integrated\n□ Specific company details are accurately referenced\n□ Call-to-action aligns with business goals from research\n□ Local relevance included if geographic data provided\n□ No assumptions made beyond research data\n\nENGAGEMENT OPTIMIZATION:\n- Structure answer to encourage comments or follow-up questions\n- Include conversation starters based on research insights\n- Reference community involvement if mentioned in research\n- Use storytelling elements from company background if provided\n\nCOMPLIANCE NOTES:\n- Ensure all claims are supported by research data\n- Avoid superlatives unless backed by research evidence\n- Include disclaimers if required by industry (based on research)\n- Follow Google My Business content guidelines\n\nFINAL OUTPUT REQUIREMENT:\n\nGenerate one complete Q&A style GMB post following this exact structure:\n\n---\n\n**QUESTION:** [Write the customer question here]\n\n**ANSWER:**\n[Write 150-250 word detailed answer using research data]\n\n\n\n**HASHTAGS:** [List 5-8 relevant hashtags]\n\n\n\n**TARGET AUDIENCE:** [Specific audience segment from research]\n\n---\n\nGenerate the complete structured post now, ensuring every detail comes directly from the provided research data.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        240
+      ],
+      "id": "1057334b-16ad-4dcd-a4fa-563e0aa9b9ad",
+      "name": "write Q&A Post"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1161992758,
+          "mode": "list",
+          "cachedResultName": "GMB Post Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=1161992758"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook1').item.json.body.rowValues[0]['0'] }}",
+            "GMB Post": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type Of Page",
+              "displayName": "Type Of Page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GMB Post",
+              "displayName": "GMB Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1696,
+        336
+      ],
+      "id": "ceffc2bf-2bd8-4687-acad-ab4be59800ba",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1392,
+        976
+      ],
+      "id": "637be84f-a030-4d26-b20d-629a0f36abf3",
+      "name": "OpenAI Chat Model2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1161992758,
+          "mode": "list",
+          "cachedResultName": "GMB Post Content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=1161992758"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook1').item.json.body.rowValues[0]['0'] }}",
+            "GMB Post": "={{ $json.output }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type Of Page",
+              "displayName": "Type Of Page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GMB Post",
+              "displayName": "GMB Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1696,
+        752
+      ],
+      "id": "f646947f-fc09-4f82-8bcc-0144b8d6b38a",
+      "name": "Append or update row in sheet1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SIMPLE GOOGLE MY BUSINESS POST GENERATOR\n\nYou are an expert Google My Business content creator specializing in engaging, straightforward posts that drive customer action and build brand awareness.\n\nRESEARCH DATA INPUT:\n{{ $json.output }}\nCRITICAL INSTRUCTION: Only use information that is explicitly provided in the research data above. If specific details are not mentioned in the research, use general industry-appropriate language without making assumptions about the business.\n\nTASK: Create a compelling simple Google My Business post using the research data provided.\n\nSIMPLE POST STRUCTURE REQUIREMENTS:\n\n1. POST TYPE SELECTION (Choose based on research data):\n   - Service/Product Highlight (if specific offerings mentioned)\n   - Customer Success Story (if testimonials provided)\n   - Company Update/News (if milestones mentioned)\n   - Educational/Tips (if expertise areas identified)\n   - Behind-the-Scenes (if team/process info available)\n   - Seasonal/Timely (if relevant to business from research)\n   - Community Involvement (if local engagement mentioned)\n   - Special Offer/Promotion (if pricing/deals in research)\n\n2. CONTENT REQUIREMENTS:\n   - Hook: Attention-grabbing opening line using research insights\n   - Main Content: 100-200 words using specific research data\n   - Value Proposition: Clear benefit based on research findings\n   - Social Proof: Include testimonials/reviews if provided in research\n   - Specific Details: Use exact company information from research\n\n3. INFORMATION TO INCLUDE (Only if available in research):\n   - Specific services/products with exact names\n   - Company credentials, certifications, awards\n   - Team member names or expertise areas\n   - Customer testimonials or success metrics\n   - Location details or service areas\n   - Company values or mission statements\n   - Process details or methodologies\n   - Industry experience or specializations\n\n4. CONTENT OPTIMIZATION:\n   - Primary keywords from research integrated naturally\n   - Secondary keywords where appropriate\n   - Local SEO terms if geographic data provided\n   - Brand voice matching research findings\n   - Emotional triggers based on customer demographics\n   - Industry-specific language from research\n\nPOST FORMAT:\n\n**Hook Line:** [Compelling opening based on research data - 1 sentence]\n\n**Main Content:** [Engaging content using specific research information - 100-200 words]\n\nStructure:\n- Opening statement with research-backed claim\n- Specific details from research (services, credentials, etc.)\n- Customer benefit or outcome (if mentioned in research)\n- Supporting evidence from research (testimonials, stats, etc.)\n- Closing statement that reinforces value\n\n**Call-to-Action:** [Specific action based on research data and business goals]\n\n**Hashtags:** [6-10 relevant hashtags based on keywords and industry from research]\n\nCONTENT VARIATIONS TO CONSIDER:\n\n1. **Informational Focus:**\n   - Share expertise mentioned in research\n   - Educate about services from research data\n   - Address customer pain points identified\n\n2. **Promotional Focus:**\n   - Highlight specific offerings from research\n   - Announce updates mentioned in research\n   - Feature special services identified\n\n3. **Social Proof Focus:**\n   - Share customer testimonials from research\n   - Highlight achievements mentioned in research\n   - Showcase credentials from research data\n\n4. **Community Focus:**\n   - Reference local involvement from research\n   - Highlight community service mentioned\n   - Connect with local audience using research insights\n\nQUALITY CHECKLIST:\n□ All information comes directly from research data\n□ Brand voice matches research findings\n□ Keywords naturally integrated from research\n□ Specific company details accurately used\n□ No assumptions made beyond research\n□ Call-to-action aligns with business goals\n□ Local relevance included if data available\n□ Post type matches available research information\n\nENGAGEMENT STRATEGIES:\n- Ask questions based on research insights\n- Encourage sharing if community involvement mentioned\n- Invite comments about services from research\n- Create urgency if time-sensitive info in research\n- Use storytelling elements from company background\n\nCOMPLIANCE GUIDELINES:\n- Verify all claims against research data\n- Include required disclaimers if industry-specific\n- Follow Google My Business content policies\n- Ensure accuracy of all referenced information\n- Avoid misleading statements not supported by research\n\nFINAL OUTPUT REQUIREMENT:\n\nGenerate one complete simple GMB post following this exact structure:\n\n---\n\n**POST TYPE:** [Specify which type: Service Highlight/Customer Story/Company Update/Educational/etc.]\n\n**HOOK:** [Attention-grabbing opening line]\n\n**MAIN CONTENT:**\n[Write 100-200 word engaging content using research data]\n\n**CALL-TO-ACTION:** [Specific action for customers]\n\n**HASHTAGS:** [List 6-10 relevant hashtags]\n\n**POST TIMING:** [Best time to post based on research/industry]\n\n**TARGET AUDIENCE:** [Specific audience segment from research]\n\n**ENGAGEMENT GOAL:** [Expected customer response: likes/comments/calls/visits]\n\n---\n\nGenerate the complete structured post now, ensuring every detail is sourced directly from the provided research data and maintaining authenticity to the business profile.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1296,
+        752
+      ],
+      "id": "fb6540ec-0181-4279-9841-c4260585cbd6",
+      "name": "write a Simple Post"
+    },
+    {
+      "parameters": {
+        "content": "## GMB Automation\n",
+        "height": 1104,
+        "width": 2096
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "089cb263-aaa8-4968-b6b5-00be8cdb7eb9",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "write Q&A Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "write Q&A Post",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "write a Simple Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write Q&A Post": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "write a Simple Post",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "write a Simple Post": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "a9350d4a-bcfe-406d-bc2c-e7d6c30b408b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-25T06:46:03.910Z",
+      "updatedAt": "2025-11-25T06:46:03.910Z",
+      "role": "workflow:owner",
+      "workflowId": "CcyIajJh27F7QMUw",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
