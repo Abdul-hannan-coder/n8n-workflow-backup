@@ -1,0 +1,297 @@
+{
+  "createdAt": "2025-10-28T17:47:37.896Z",
+  "updatedAt": "2025-10-29T11:22:27.000Z",
+  "id": "22QQMr4tOOi2m5kY",
+  "name": "utm2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "4e5d0e65-a748-4d17-b2ea-a96de8b6d922",
+        "formTitle": "Contact Us",
+        "formDescription": "Please fill out the form below",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Phone"
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "bbad8051-4592-4855-8c7d-3478218e977d",
+      "webhookId": "4e5d0e65-a748-4d17-b2ea-a96de8b6d922"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1VmM8rIXqE54o_VMWNXoMqDoIfqMJUnoZbd4LR0hg45Q",
+          "mode": "list",
+          "cachedResultName": "UTM CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VmM8rIXqE54o_VMWNXoMqDoIfqMJUnoZbd4LR0hg45Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VmM8rIXqE54o_VMWNXoMqDoIfqMJUnoZbd4LR0hg45Q/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Source": "={{ $json.utm_source }}",
+            "Medium": "={{ $json.utm_medium }}",
+            "Campaign": "={{ $json.utm_campaign }}",
+            "Name": "={{ $json.Name }}",
+            "Email": "={{ $json.Email }}",
+            "Phone": "={{ $json.Phone }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Medium",
+              "displayName": "Medium",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campaign",
+              "displayName": "Campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        432,
+        16
+      ],
+      "id": "ce4ec05c-384a-482c-8b25-de3d4948e56e",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mzFVjTFtA1KzYL1l",
+          "name": "Google Sheets account Abdulrehman"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bee366d2-d399-47d0-8406-40d160c6b1e1",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Helper function to get parameter value from URL string\nfunction getParameterByName(name, url) {\n  if (!url) return null;\n  name = name.replace(/[\\[\\]]/g, '\\\\$&');\n  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),\n      results = regex.exec(url);\n  if (!results) return null;\n  if (!results[2]) return '';\n  return decodeURIComponent(results[2].replace(/\\+/g, ' '));\n}\n\n// Pichle node se aane wala pehla item lein.\nconst item = items[0];\n\n// Sahi key se URL nikaalein.\nconst inputUrl = item.json['formQueryParameters.ghl_referrer'];\n\n// Agar URL mila hai tabhi aage badhein\nif (inputUrl) {\n  // Manual function ka istemal karke values nikaalein\n  const utmSource = getParameterByName('utm_source', inputUrl);\n  const utmMedium = getParameterByName('utm_medium', inputUrl);\n  const utmCampaign = getParameterByName('utm_campaign', inputUrl);\n\n  // Result object banayein\n  const outputData = {\n    utm_source: utmSource,\n    utm_medium: utmMedium,\n    utm_campaign: utmCampaign,\n  };\n\n  // Final result return karein\n  return [{ json: outputData }];\n\n} else {\n  // Agar URL hi na mile to error dein\n  return [{\n    json: {\n      error: \"URL key nahi mili. Please dobara console check karein.\"\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -176
+      ],
+      "id": "66c7b78f-2c0e-4a39-ac47-1c437728c7f4",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "formQueryParameters.ghl_referrer",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -192
+      ],
+      "id": "694be98a-5f04-4494-85f7-97239c584e8c",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "formTitle": "ab",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "ab"
+            }
+          ]
+        },
+        "options": {
+          "customCss": "input[name=\"utm_source\"],\ninput[name=\"utm_medium\"],\ninput[name=\"utm_campaign\"],\ninput[name=\"utm_term\"],\ninput[name=\"utm_content\"] {\n  display: none !important;\n}\n"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "93d3c19b-d38c-4ed6-8b2b-714937104277",
+      "name": "On form submission",
+      "webhookId": "3410cfc3-93f5-4d29-a50e-078385fbda84"
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1fbb6ab2-f8e9-4eaa-a3e9-03d008a25d42",
+  "triggerCount": 2,
+  "shared": [
+    {
+      "createdAt": "2025-10-28T17:47:37.898Z",
+      "updatedAt": "2025-10-28T17:47:37.898Z",
+      "role": "workflow:owner",
+      "workflowId": "22QQMr4tOOi2m5kY",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
