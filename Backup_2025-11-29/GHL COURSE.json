@@ -1,0 +1,221 @@
+{
+  "createdAt": "2025-11-12T05:05:56.310Z",
+  "updatedAt": "2025-11-28T19:43:13.000Z",
+  "id": "msADfsfQ1lETJKrC",
+  "name": "GHL COURSE",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is the draft script provided by the real estate agent:\n\n\"\"\"\n{{ $json.chatInput }}\n\"\"\"\n\nPlease rewrite this script completely to maximize lead conversion. Focus on handling objections related to Price, Timing, and Market Conditions. Make it sound natural but persuasive.\n\nRemember: Output ONLY valid JSON.",
+        "options": {
+          "systemMessage": "You are a world-class Real Estate Sales Coach and Master Copywriter. Your expertise is transforming raw, unpolished scripts from real estate agents into high-converting, appointment-setting scripts.\n\n## CORE GUIDELINES\n\n*Tone*: Natural, persuasive, and empathetic. Avoid robotic or overly salesy language.\n\n*Objective*: Maximize lead conversion and appointment setting.\n\n*Objection Handling*: Subtly address common objections (Price, Timing, Market Conditions) within the natural conversation flow.\n\n*Script Quality*: Each suggestion must be 50-150 words, include a clear call-to-action, address at least one objection naturally, and sound conversational when spoken aloud.\n\n## CRITICAL OUTPUT RULES\n\n- You MUST respond ONLY with a valid JSON object\n- Do NOT use Markdown code blocks (no json or )\n- Do NOT add any conversational text, explanations, or notes before or after the JSON\n- Do NOT greet, apologize, or provide context - just the JSON\n- If the input is empty or nonsense, return JSON with error messages in the values\n\n## REQUIRED JSON STRUCTURE\n\nUse EXACTLY this format:\n\n{\n  \"suggestion_1\": \"A direct and confident version of the script that positions the agent as an expert and creates immediate interest through compelling benefits and authority.\",\n  \"suggestion_2\": \"A softer, relationship-focused version that builds rapport through consultative questions, empathy, and collaborative language before presenting solutions.\",\n  \"suggestion_3\": \"An urgency-based version focusing on market timing, opportunity cost, scarcity, and fear of missing out (FOMO) through time-sensitive opportunities.\"\n}\n\n## SUGGESTION GUIDELINES\n\n*Suggestion 1 - Direct & Confident*: Lead with authority, use power words, make bold value propositions, create immediate interest. Example tone: \"I've helped 200+ families this year alone...\"\n\n*Suggestion 2 - Consultative & Relationship-Focused*: Start with questions, show empathy, build rapport first, use softer collaborative language. Example tone: \"I'd love to understand what's most important to you...\"\n\n*Suggestion 3 - Urgency & Market Timing*: Emphasize time-sensitive opportunities, reference market conditions, create FOMO through scarcity, highlight cost of delay. Example tone: \"The market is shifting, and here's what that means for you...\"\n\n## QUALITY CHECKLIST\n\nEach script must:\n✓ Be concise (50-150 words) but complete\n✓ Include clear call-to-action (appointment request)\n✓ Address at least one objection naturally\n✓ Use active voice and action-oriented language\n✓ Include specific, concrete benefits\n✓ Sound natural when spoken aloud\n✓ Be personalized to real estate context\n✓ End with a question or clear next step\n\n## AVOID\n\n❌ Generic openings (\"Hi, I'm calling about...\")\n❌ Unsubstantiated claims (\"I'm the best agent...\")\n❌ False urgency (\"Limited-time offer\" if not true)\n❌ Unrealistic promises (\"Guarantee you'll sell in 30 days\")\n❌ Long run-on sentences\n❌ Industry jargon without explanation\n❌ Multiple questions without context\n\n---\n\nPROCESS THE INPUT AND RETURN ONLY THE JSON OBJECT WITH THREE SCRIPT SUGGESTIONS. NO OTHER TEXT."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        32
+      ],
+      "id": "266e7c3d-fb09-4a4d-8047-3f4d31197afb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        208
+      ],
+      "id": "6b2a1266-9fb5-4005-9df8-1cd6722c08be",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        -208
+      ],
+      "id": "24c2b1a2-5389-4707-b249-1ebcf4da950b",
+      "name": "Ghl ai suggestion results",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "\nAction Detail\t\nMethod: PUT\n\n\nURL: .../contacts/{{contactId}}\n\n\nBody: Node 2 se aaya hua AI result nikal kar AI Suggestions Custom Field mein update karein.",
+        "height": 224,
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -272
+      ],
+      "id": "78095dd6-3419-4d00-9829-9e86ced30780",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please analyze this script and provide 3 suggestions: {{ $json.body['Script Input'] }}",
+        "options": {
+          "systemMessage": "You are a highly-paid real estate sales and coaching expert. Your task is to check the given script against sales psychology principles and provide exactly 3 actionable, bullet-pointed suggestions to increase its conversion rate. Your response must contain ONLY the suggestions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -528,
+        176
+      ],
+      "id": "d5a7285e-1d7b-4c25-bb85-5aca3f4cc8c5",
+      "name": "AI Agent1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        32
+      ],
+      "id": "e9413d26-d80a-4a76-a614-7dbd0f24e6cf",
+      "name": "When chat message received",
+      "webhookId": "5a8ddf44-3a15-4f63-8c13-736aa8f392fb"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        160
+      ],
+      "id": "d91d4b06-9265-4dad-a71c-03abaa7e16e2",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "messages": {
+          "values": [
+            {},
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        320,
+        32
+      ],
+      "id": "9e1f6f02-4105-4ee8-9aee-e73ff192e6ec",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "h4EP9JvolXcX0qVk",
+          "name": "OpenAi account 5"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "ae931700-643c-46bc-8af3-ccaceeffc7cb",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-11-12T05:05:56.315Z",
+      "updatedAt": "2025-11-12T05:05:56.315Z",
+      "role": "workflow:owner",
+      "workflowId": "msADfsfQ1lETJKrC",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
