@@ -1,0 +1,75 @@
+{
+  "createdAt": "2025-11-24T20:17:53.008Z",
+  "updatedAt": "2025-11-24T20:17:53.008Z",
+  "id": "DQvrwje8heqtQxLT",
+  "name": "My workflow 16",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "79488eb3-0236-4081-a3ba-dd4b01536282",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "prompt": "create image of elephant",
+        "model": "midijourney",
+        "seed": 0
+      },
+      "type": "n8n-nodes-pollinations.pollinationsAIText",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8e875892-4074-40fa-8bdc-83bed20b3179",
+      "name": "Pollinations.AI Text",
+      "credentials": {
+        "pollinationsAIApi": {
+          "id": "uXRaa30uFuA3JwGm",
+          "name": "Pollinations.AI account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Pollinations.AI Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "53107f5a-e502-4e41-a5e5-e38aabf57d32",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-24T20:17:53.010Z",
+      "updatedAt": "2025-11-24T20:17:53.010Z",
+      "role": "workflow:owner",
+      "workflowId": "DQvrwje8heqtQxLT",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
