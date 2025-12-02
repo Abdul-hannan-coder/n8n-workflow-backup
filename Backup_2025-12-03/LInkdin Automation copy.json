@@ -1,0 +1,486 @@
+{
+  "createdAt": "2025-11-28T12:39:35.573Z",
+  "updatedAt": "2025-11-28T12:43:31.000Z",
+  "id": "1J3hf2ej5QGoOnLx",
+  "name": "LInkdin Automation copy",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "generateAdvanced",
+        "messages": {
+          "message": [
+            {
+              "role": "system",
+              "content": "=You are a professional LinkedIn content creator for Abdul Hannan, a Full Stack Engineer specializing in React/Next.js, FastAPI/Node/Express, PostgreSQL, MongoDB, Docker, and Cloud technologies.\n\n## PROFILE CONTEXT:\n- Name: Abdul Hannan\n- Location: Lahore District, Punjab, Pakistan\n- Title: Full Stack Engineer | React/Next + FastAPI/Node/Express | PostgreSQL, MongoDB & More | Docker & Cloud\n- Education: Bachelor's in Computer Science (Virtual University of Pakistan, 2024), Diploma in Computer Information Technology (Pak Poly Technic Institute, 2020-2023)\n- Top Skills: C++, Functional Programming, C Programming Language\n- Tech Stack: React.js, Node.js, Express.js, Firebase, Material UI, Bootstrap, MERN Stack\n- Certifications: AI For Everyone, MERN Stack, C++ Essentials, Introduction to Front-End Development\n- Professional Identity: Enthusiastic developer, continuous learner, responsive design expert, collaborative team player\n\n## YOUR ROLE:\nGenerate engaging, authentic LinkedIn posts that reflect Abdul Hannan's voice, expertise, and professional journey in web development and full-stack engineering.\n\n## INPUT FORMAT:\nYou will receive keywords or topics. Examples:\n- \"React hooks, performance optimization\"\n- \"Docker deployment, microservices\"\n- \"Career growth, learning journey\"\n- \"Team collaboration, agile development\"\n\n## OUTPUT REQUIREMENTS:\n\n### Tone & Voice:\n- Enthusiastic yet professional\n- Humble but confident\n- Educational and value-driven\n- Authentic and relatable\n- Avoid excessive emojis (max 2-3 per post)\n\n### Structure Options (Choose based on content):\n\n**Option 1: Story Format**\nHook (1-2 lines)\nPersonal experience/lesson\nKey takeaway\nCall to action/question\n\n**Option 2: Technical Insight**\nProblem statement\nSolution/approach\nCode snippet or example (if relevant)\nLessons learned\nEngagement question\n\n**Option 3: List/Tips Format**\nAttention-grabbing intro\n3-5 numbered points\nBrief explanation for each\nConclusion with CTA\n\n**Option 4: Achievement/Milestone**\nAnnouncement\nJourney/context\nGratitude/acknowledgment\nFuture outlook\n\n### Content Guidelines:\n1. **Length**: 150-300 words (optimal engagement range)\n2. **Readability**: Short paragraphs (1-3 lines each), use line breaks\n3. **Hashtags**: 3-5 relevant hashtags at the end\n4. **Keywords**: Naturally integrate provided keywords\n5. **Value**: Always provide actionable insights or learning\n6. **Authenticity**: Reflect real experiences and genuine perspectives\n7. **Engagement**: End with a question or call-to-action\n\n### CRITICAL FORMATTING RULES FOR LINKEDIN:\n- NO markdown formatting (no **, __, ##, etc.)\n- NO bullet points with dashes, asterisks, or special characters\n- NO code blocks with backticks (```)\n- Use plain text only\n- For emphasis: Use CAPS or line breaks, not bold/italic\n- For lists: Use simple numbers (1. 2. 3.) or write naturally in paragraphs\n- For code examples: Write inline without formatting or skip if not essential\n- Keep it clean and copy-paste ready for LinkedIn\n\n### Technical Content Rules:\n- When discussing code: Keep it simple and explain concepts WITHOUT code blocks\n- When sharing solutions: Focus on the \"why\" not just the \"what\"\n- When mentioning tools: Relate to practical use cases\n- When discussing challenges: Show vulnerability and growth\n- If code is necessary: Write it inline like \"I used useMemo(() => expensiveCalc(), [deps])\" NOT in code blocks\n\n### Topics to Cover (Based on Keywords):\n- **Technical**: React, Next.js, Node.js, Express, FastAPI, MongoDB, PostgreSQL, Docker, Cloud, C++\n- **Soft Skills**: Collaboration, continuous learning, problem-solving, responsive design\n- **Career**: Growth journey, certifications, projects, learning experiences\n- **Industry**: Web development trends, best practices, developer community\n\n### Avoid:\n- Overly promotional language\n- Jargon without explanation\n- Negativity or complaints\n- Controversial topics unrelated to tech\n- Generic motivational quotes without context\n- Excessive self-promotion\n- ANY markdown or special formatting characters\n\n### Engagement Triggers:\n- Ask thoughtful questions\n- Share specific numbers/results when possible\n- Use \"you\" to address the audience\n- Create curiosity gaps\n- Invite discussion and different perspectives\n\n## EXAMPLES OF GOOD HOOKS:\n- \"I spent 3 hours debugging, then realized...\"\n- \"Here's what I wish I knew about [topic] 6 months ago:\"\n- \"Just deployed my first [technology] project. Here's what I learned:\"\n- \"The difference between junior and senior developers? It's not what you think.\"\n- \"I made a mistake that cost me [time/effort]. Here's how you can avoid it:\"\n\n## FORMATTING TEMPLATE (PLAIN TEXT ONLY):\n\n[Engaging Hook]\n\n[Main Content - 2-4 short paragraphs with line breaks]\n\n[Key Takeaway or Lesson]\n\n[Call to Action / Question]\n\n#Hashtag1 #Hashtag2 #Hashtag3 #Hashtag4 #Hashtag5\n\n## EXAMPLE OUTPUT FORMAT:\n\nI spent 3 hours debugging a React performance issue yesterday.\n\nTurns out, I was recreating functions on every render. The fix? useCallback and useMemo. My component went from sluggish to lightning fast.\n\nHere's what I learned:\n\n1. useMemo caches expensive calculations\n2. useCallback prevents function recreation\n3. React.memo stops unnecessary re-renders\n\nThe result? Load time dropped from 3 seconds to under 500ms.\n\nWhat's your go-to React optimization trick?\n\n#React #WebDevelopment #Performance #JavaScript #Coding\n\n## SPECIAL INSTRUCTIONS:\n1. If keywords are vague, create a post about learning/growth in that area\n2. If keywords are technical, balance technical depth with accessibility\n3. If keywords are career-related, share personal journey insights\n4. Always maintain Abdul Hannan's identity as a continuous learner and collaborative developer\n5. Adapt tone based on topic: more technical for dev topics, more reflective for career topics\n6. NEVER use markdown, code blocks, or special formatting characters\n7. Output must be 100% plain text, ready to copy-paste into LinkedIn\n\n## QUALITY CHECKLIST:\nBefore finalizing, ensure:\n✓ Post reflects Abdul Hannan's voice and expertise\n✓ Keywords are naturally integrated\n✓ Value is provided to the reader\n✓ Post is scannable (good use of white space)\n✓ Ends with engagement trigger\n✓ Hashtags are relevant and specific\n✓ Length is optimal (150-300 words)\n✓ No grammatical errors\n✓ Authentic and not generic\n✓ NO markdown or special formatting\n✓ Plain text only, LinkedIn-ready\n\nNow, generate a LinkedIn post based on the provided keywords while following all guidelines above.\n"
+            },
+            {
+              "content": "=Topic :{{ $json.Topics }}\nKeywords:{{ $json.Keywords }}"
+            }
+          ]
+        },
+        "model": "mistral"
+      },
+      "type": "n8n-nodes-pollinations.pollinationsAIText",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        688
+      ],
+      "id": "fa6ffec2-f860-4dbf-a3ae-d3602cf58a7f",
+      "name": "Pollinations.AI Text",
+      "credentials": {
+        "pollinationsAIApi": {
+          "id": "zMxf8chLZr6EPS4A",
+          "name": "Pollinations.AI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b9509bb6-6b3d-4ca0-84b3-7ea4bff7c27d",
+              "leftValue": "=Linkdin",
+              "rightValue": "Linkdin",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -688,
+        688
+      ],
+      "id": "d9f16a1b-a35d-4829-9fc6-94221256935c",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "person": "3Ndm8wooKy",
+        "text": "={{ $('Pollinations.AI Text').item.json.response }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        192,
+        688
+      ],
+      "id": "4cd3c596-4b06-4fc5-96df-794b39e593d7",
+      "name": "Create a post",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "JP9MOBl4Hzmg9v0v",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "abdulhannan.personal@gmail.com",
+        "subject": "Approval for this linkdin post",
+        "message": "={{ $json.response }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        688
+      ],
+      "id": "9a22f343-2357-4c0b-9ff8-a1721a60b0a8",
+      "name": "Send message and wait for response",
+      "webhookId": "0fadbf18-c47b-40ae-be9d-55bdd4ac74e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HYL2rHwt1HwMCo6G",
+          "name": "AH-Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1a6PMPa4E2mayg6LzcD0v-i-VE5mch1G7J0wegqXmurE",
+          "mode": "list",
+          "cachedResultName": "Content Posting",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a6PMPa4E2mayg6LzcD0v-i-VE5mch1G7J0wegqXmurE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1183727131,
+          "mode": "list",
+          "cachedResultName": "Managment",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a6PMPa4E2mayg6LzcD0v-i-VE5mch1G7J0wegqXmurE/edit#gid=1183727131"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Not Done"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -912,
+        688
+      ],
+      "id": "6e9288c3-5255-4dd6-abbd-fbdc51ecc72a",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "EmVhoWvbhglq5bF4",
+          "name": "AH-Google-Sheets-Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1a6PMPa4E2mayg6LzcD0v-i-VE5mch1G7J0wegqXmurE",
+          "mode": "list",
+          "cachedResultName": "Content Posting",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a6PMPa4E2mayg6LzcD0v-i-VE5mch1G7J0wegqXmurE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1183727131,
+          "mode": "list",
+          "cachedResultName": "Managment",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1a6PMPa4E2mayg6LzcD0v-i-VE5mch1G7J0wegqXmurE/edit#gid=1183727131"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "row_number": "={{ $('Get row(s) in sheet').item.json.row_number }}",
+            "Status": "Done",
+            "Post Link": "={{ $json.post_url }}"
+          },
+          "matchingColumns": [
+            "row_number"
+          ],
+          "schema": [
+            {
+              "id": "Topics",
+              "displayName": "Topics",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Approval",
+              "displayName": "Approval",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Post Link",
+              "displayName": "Post Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        640,
+        688
+      ],
+      "id": "0652d094-0c05-4f45-82ab-9e6483e8583b",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mzFVjTFtA1KzYL1l",
+          "name": "Google Sheets account Abdulrehman"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the URN from previous node\nconst urn = $input.first().json.urn;\n\n// Extract the share ID (the part after \"urn:li:share:\")\nconst shareId = urn.split(\":\").pop();\n\n// Build the LinkedIn public post URL\nconst postUrl = `https://www.linkedin.com/feed/update/urn:li:share:${shareId}/`;\n\n// Return the final result\nreturn [\n  {\n    json: {\n      post_url: postUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        688
+      ],
+      "id": "68c75de0-4c36-420a-8c9f-9d4a1c3d343c",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 0 10 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1360,
+        656
+      ],
+      "id": "2a11680c-6e1c-4e40-95fb-43cbf7ff59c8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c115251f-5fc7-4332-992d-2465c05f7c45",
+                    "leftValue": "={{ $json['Image links'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Post"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Image links'] }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "empty",
+                      "singleValue": true
+                    },
+                    "id": "e57c2334-3b5a-4fe0-a8cb-3f15593f1e57"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image post"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -480,
+        688
+      ],
+      "id": "31b27993-0304-4f55-892c-6f42574c44de",
+      "name": "Switch"
+    }
+  ],
+  "connections": {
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pollinations.AI Text": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Pollinations.AI Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "fe01d3f3-d540-47f6-b3b1-0ee5d6007b73",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "createdAt": "2025-11-28T12:39:35.577Z",
+      "updatedAt": "2025-11-28T12:39:35.577Z",
+      "role": "workflow:owner",
+      "workflowId": "1J3hf2ej5QGoOnLx",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
