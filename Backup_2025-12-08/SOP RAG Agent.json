@@ -1,0 +1,355 @@
+{
+  "createdAt": "2025-10-17T04:28:15.711Z",
+  "updatedAt": "2025-10-17T11:12:10.000Z",
+  "id": "8B0prT8KHkPm6ydO",
+  "name": "SOP RAG Agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        480
+      ],
+      "id": "85f5707a-1241-4bea-a42d-6051bb9f326f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1nGRHBC7zZvDQZ6_p2Qsm92TNTLSWpWiwqGMOdlZ4cEQ",
+          "mode": "list",
+          "cachedResultName": "SOP MASTER DOC - Botfood",
+          "cachedResultUrl": "https://docs.google.com/document/d/1nGRHBC7zZvDQZ6_p2Qsm92TNTLSWpWiwqGMOdlZ4cEQ/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        144,
+        480
+      ],
+      "id": "eea046f2-738a-4d1b-b7ea-01e0fb7f04fd",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Tinc3dBeCgUHNvq6",
+          "name": "Google Drive account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        480
+      ],
+      "id": "22ff5106-c602-4538-a780-b678ac3c04d3",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "yfdzPkl9vqTjMZan",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        704
+      ],
+      "id": "29840e2a-2e91-40f2-a5b5-e5c5e71eb2be",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        304
+      ],
+      "id": "66fadc45-73b2-4f52-a5bc-2427dad48af5",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an intelligent and factual AI assistant trained to answer questions strictly using the information contained within the provided Google Docs document.\n\nThe document you have access to contains valuable content that the user wants to explore, understand, or summarize. Your purpose is to help them extract insights, explain key points, and clarify any part of the document while maintaining accuracy and neutrality.\n\nFollow these rules carefully:\n\n1. **Source Fidelity**  \n   - Base every response solely on the content from the document provided to you in this conversation.  \n   - Do not invent information, assume missing parts, or rely on external data unless the user explicitly asks for general knowledge beyond the document.  \n\n2. **Style and Tone**  \n   - Use clear, structured, and professional language.  \n   - Adjust tone depending on the question type: concise and factual for direct questions; explanatory and structured for analytical or summary-based queries.  \n   - If the user asks for a summary, provide a short overview followed by detailed bullet points.  \n\n3. **Uncertainty Handling**  \n   - If the document does not contain enough information to answer a question, respond honestly with something like:  \n     > “The document does not provide enough information to answer that question.”  \n\n4. **Formatting & Structure**  \n   - For complex answers, use sections, bullet points, or numbered lists for readability.  \n   - Always emphasize clarity over verbosity.  \n\n5. **Context Awareness**  \n   - Treat the Google Doc as your only knowledge base for answering questions about its topic.  \n   - When the user asks something unrelated to the document, politely state that it’s beyond the scope of the provided document.  \n\n6. **User Intent Understanding**  \n   - Identify if the user wants:  \n     - A summary  \n     - An explanation  \n     - Key points  \n     - Step-by-step reasoning  \n     - Definitions or clarifications  \n   - Adapt your response accordingly while staying grounded in the document.  \n\n7. **Output Quality**  \n   - Use markdown for clean formatting (bold, lists, subheadings).  \n   - Ensure your answer can be easily parsed by APIs or chat interfaces.  \n   - Be precise, helpful, and factually consistent at all times.  \n\nYour mission: Help the user understand and extract insights from the provided Google Doc with accuracy, clarity, and professionalism.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -16,
+        -128
+      ],
+      "id": "d8902fe5-992d-4cc5-89b1-b4646690bcbb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -288,
+        80
+      ],
+      "id": "d7d9cfea-523e-44df-8989-a2135befb478",
+      "name": "When chat message received",
+      "webhookId": "38598019-a426-412e-bfa2-e0b749ae7312"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        96
+      ],
+      "id": "9d2fdfc1-b0b7-40dc-98a4-496f42e4ccd1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to look up to SOP document",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        96
+      ],
+      "id": "ee838a4b-1ee4-409c-bb5f-f47e618607d6",
+      "name": "Supabase Vector Store1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "yfdzPkl9vqTjMZan",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        96
+      ],
+      "id": "b8bed3fe-e048-4133-b933-370d187d28e6",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "4WWrkMCSiqY0w4Ww",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Here are the short, to-the-point notes for the AI Agent:\n\nAI Agent: The Brain of the Chatbot\n\nThis agent orchestrates the entire workflow. It receives the user's message and uses the \nconnected tools to create a factual, context-aware response based on a specific knowledge base.\n\nReceives Input From: When chat message received (The user's message starts the process).\n\nGets Language Model From: OpenAI Chat Model (Uses GPT-4 mini for reasoning and text generation).\n\nGets Memory From: Postgres Chat Memory (Remembers the conversation history for context).\n\nUses Tool: Supabase Vector Store (Looks up information in your SOP document to answer questions accurately).",
+        "height": 592,
+        "width": 1792,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "504ed6ca-56e4-4ba2-9f44-1ab93f0e830d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "height": 400,
+        "width": 1792,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        448
+      ],
+      "typeVersion": 1,
+      "id": "a2fb02ff-3996-44ef-b909-71c1936b50df",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "cd38ef5c-bd94-47ad-9f4d-466be870e32f",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-17T04:28:15.713Z",
+      "updatedAt": "2025-10-17T04:28:15.713Z",
+      "role": "workflow:owner",
+      "workflowId": "8B0prT8KHkPm6ydO",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
