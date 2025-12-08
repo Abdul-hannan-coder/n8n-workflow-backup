@@ -1,0 +1,535 @@
+{
+  "createdAt": "2025-10-27T19:44:07.035Z",
+  "updatedAt": "2025-10-27T19:49:18.000Z",
+  "id": "FpfGm6k5zRlWxBG8",
+  "name": "My workflow 6",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-summary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "cf0c8917-b1a0-45ac-9e7f-4412b3cc43d3",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        160
+      ],
+      "webhookId": "243a3d9d-6a15-446c-9dcb-984307b0c84b"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "contactId",
+              "value": "={{ $json.body.contactId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22190097-0e5e-4454-aebb-f23f01b3d046",
+      "name": "Extract Contact ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.body.location.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "highLevelApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "={\n  \"contactId\": \"\",\n  \"trigger\": \"manual_button\",\n  \"locationId\": \"{{ $json.body.location.id }}\"\n}\n",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "41809ba1-f3f3-4962-a55b-3b81928f428c",
+      "name": "Fetch Contact Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -224,
+        160
+      ],
+      "credentials": {
+        "highLevelApi": {
+          "id": "stBzkSBoV5BJRGRT",
+          "name": "HighLevel account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}/notes",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "99f7c003-34eb-4e7a-b6c5-088e1e5d6c73",
+      "name": "Fetch Notes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/conversations/search?contactId={{ $json.contactId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "highLevelApi",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "87cb6152-e9f1-4a34-b3c8-5212141442b9",
+      "name": "Fetch Conversations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        112
+      ],
+      "credentials": {
+        "highLevelApi": {
+          "id": "stBzkSBoV5BJRGRT",
+          "name": "HighLevel account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.contactId }}/appointments",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "d1bad0f3-cf84-4b90-b0f0-fa4c4b034c52",
+      "name": "Fetch Appointments",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://services.leadconnectorhq.com/opportunities/search?contact_id={{ $json.contactId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "ffe6c2c8-19d3-4a5e-84d3-eed9f7675c6c",
+      "name": "Fetch Opportunities/Deals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "c102681a-1850-4abe-aadc-e3e70dfbac94",
+      "name": "Merge All Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalize and trim events for AI processing\nconst MAX_EVENTS = 120;\nconst MAX_CONTENT_LENGTH = 8000;\n\n// Get data from previous nodes\nconst items = $input.all();\n\n// Helper to safely extract data\nfunction safeExtract(items, key) {\n  for (let item of items) {\n    if (item.json[key]) return item.json[key];\n    if (item.json.body && item.json.body[key]) return item.json.body[key];\n    if (item.json.data && item.json.data[key]) return item.json.data[key];\n  }\n  return [];\n}\n\nconst contact = items[0]?.json?.contact || items[0]?.json || {};\nconst notes = safeExtract(items, 'notes');\nconst conversations = safeExtract(items, 'conversations');\nconst appointments = safeExtract(items, 'appointments');\nconst opportunities = safeExtract(items, 'opportunities');\n\n// Normalize to standard event format\nfunction toEvent(type, obj) {\n  const content = (obj.body || obj.message || obj.transcript || obj.note || obj.description || JSON.stringify(obj)).toString();\n  \n  return {\n    type,\n    id: obj.id || obj._id || obj.eventId || `${type}_${Math.random().toString(36).substr(2, 6)}`,\n    timestamp: obj.date || obj.createdAt || obj.dateAdded || obj.updatedAt || new Date().toISOString(),\n    direction: obj.direction || obj.type || 'internal',\n    participant: obj.userName || obj.userId || obj.agentName || obj.user || null,\n    content: content.slice(0, MAX_CONTENT_LENGTH),\n    attachments: obj.attachments || [],\n    metadata: {\n      status: obj.status,\n      appointmentStatus: obj.appointmentStatus,\n      pipelineStage: obj.pipelineStage,\n      monetaryValue: obj.monetaryValue,\n      raw: obj\n    }\n  };\n}\n\nlet events = [];\n\n// Process each data type\nif (Array.isArray(notes)) {\n  notes.forEach(n => events.push(toEvent('note', n)));\n}\n\nif (Array.isArray(conversations)) {\n  conversations.forEach(c => {\n    if (c.messages && Array.isArray(c.messages)) {\n      c.messages.forEach(m => events.push(toEvent('sms', m)));\n    } else {\n      events.push(toEvent('conversation', c));\n    }\n  });\n}\n\nif (Array.isArray(appointments)) {\n  appointments.forEach(a => events.push(toEvent('appointment', a)));\n}\n\nif (Array.isArray(opportunities)) {\n  opportunities.forEach(o => events.push(toEvent('deal', o)));\n}\n\n// Sort by timestamp (most recent first)\nevents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));\n\nconst totalEvents = events.length;\nlet truncated = false;\n\nif (events.length > MAX_EVENTS) {\n  events = events.slice(0, MAX_EVENTS);\n  truncated = true;\n}\n\nreturn {\n  json: {\n    contactId: contact.id,\n    contactName: `${contact.firstName || ''} ${contact.lastName || ''}`.trim(),\n    contactEmail: contact.email,\n    contactPhone: contact.phone,\n    events,\n    metadata: {\n      totalEvents,\n      includedEvents: events.length,\n      truncated,\n      generatedAt: new Date().toISOString()\n    }\n  }\n};"
+      },
+      "id": "9021d283-4e03-439b-8039-700c37dfe97c",
+      "name": "Normalize & Trim Events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build AI prompt with strict JSON schema\nconst data = $input.first().json;\n\nconst systemMessage = `You are a deterministic data summarizer for a real estate CRM. Produce EXACTLY one JSON object that matches the schema provided below. Do NOT provide any explanatory text before or after the JSON. Use 'unknown' when evidence is missing. Use ISO dates YYYY-MM-DD for dates. Output must be valid JSON only.`;\n\nconst schema = {\n  contact_id: \"string\",\n  summary_generated_at: \"ISO8601\",\n  deal_closed: \"yes|no|unknown\",\n  canceled_deals: [{\n    deal_id: \"string\",\n    date: \"YYYY-MM-DD\",\n    reason: \"string\"\n  }],\n  has_sent_properties: \"yes|no|unknown\",\n  properties_shared: [{\n    property_id: \"string\",\n    date: \"YYYY-MM-DD\",\n    status: \"passed|offer_submitted|other\",\n    notes: \"string\"\n  }],\n  offers_submitted: [{\n    property_id: \"string\",\n    amount: \"number\",\n    date: \"YYYY-MM-DD\",\n    status: \"accepted|rejected|pending\",\n    notes: \"string\"\n  }],\n  relationship_status: \"string\",\n  history_bullets: [\"string\"],\n  recommended_next_steps: [\"call|email|send-doc|no-action\"],\n  confidence_score: \"0.0-1.0\"\n};\n\nconst rules = `\nRULES:\n1) Set deal_closed=yes if there is any event showing a deal moved to won/closed. Set 'no' if explicitly lost/refunded. Else unknown.\n2) canceled_deals: include deals where text shows 'cancel' or status updated to canceled. Extract date and reason if present.\n3) has_sent_properties: yes if messages/notes include property links/attachments or explicit 'sent you listings'.\n4) properties_shared: find property identifiers (URLs or IDs). Mark status as 'offer_submitted' if any event mentions 'offer submitted' for that property.\n5) offers_submitted: extract offers found in notes/calls/emails; include numeric amount if present.\n6) relationship_status: one short sentence summarizing engagement and trust level.\n7) history_bullets: 3-5 key events in chronological order.\n8) recommended_next_steps: array of actions based on current status.\n9) confidence_score: 0.0-1.0 representing evidence completeness and data quality.\n10) If events were truncated, note this in history_bullets.\n`;\n\nconst userMessage = `SCHEMA:\n${JSON.stringify(schema, null, 2)}\n\n${rules}\n\nCONTACT INFO:\nID: ${data.contactId}\nName: ${data.contactName}\nEmail: ${data.contactEmail}\nPhone: ${data.contactPhone}\n\nINPUT_EVENTS (${data.events.length} events, truncated: ${data.metadata.truncated}):\n${JSON.stringify(data.events, null, 2)}\n\nNow produce the single JSON object matching the schema exactly. Output ONLY the JSON, nothing else.`;\n\nreturn {\n  json: {\n    messages: [\n      { role: \"system\", content: systemMessage },\n      { role: \"user\", content: userMessage }\n    ],\n    metadata: data.metadata\n  }\n};"
+      },
+      "id": "c0730b61-b4cb-4708-8ac1-e53ac54e63c8",
+      "name": "Build AI Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gpt-4o-mini"
+            },
+            {
+              "name": "messages",
+              "value": "={{ $json.messages }}"
+            },
+            {
+              "name": "temperature",
+              "value": 0
+            },
+            {
+              "name": "max_tokens",
+              "value": 1500
+            }
+          ]
+        },
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "3fbe5caf-268b-4c31-9598-b12f4996c05d",
+      "name": "Call OpenAI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        880,
+        160
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "40fgvfnvvEv58zyH",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Validate and parse AI JSON response\nconst response = $input.first().json;\nconst aiText = response.choices[0].message.content.trim();\n\nlet parsedSummary;\nlet parseError = null;\n\ntry {\n  // Try to extract JSON if there's text around it\n  const jsonMatch = aiText.match(/\\{[\\s\\S]*\\}/);\n  const jsonStr = jsonMatch ? jsonMatch[0] : aiText;\n  \n  parsedSummary = JSON.parse(jsonStr);\n  \n  // Validate required fields\n  const requiredFields = ['contact_id', 'summary_generated_at', 'deal_closed', 'relationship_status'];\n  for (let field of requiredFields) {\n    if (!(field in parsedSummary)) {\n      throw new Error(`Missing required field: ${field}`);\n    }\n  }\n  \n} catch (error) {\n  parseError = error.message;\n  console.error('AI JSON Parse Error:', error);\n  console.error('Raw AI Response:', aiText);\n  \n  // Create fallback summary\n  parsedSummary = {\n    contact_id: $('Extract Contact ID').first().json.contactId,\n    summary_generated_at: new Date().toISOString(),\n    deal_closed: \"unknown\",\n    canceled_deals: [],\n    has_sent_properties: \"unknown\",\n    properties_shared: [],\n    offers_submitted: [],\n    relationship_status: \"Unable to generate summary - parsing error\",\n    history_bullets: [\"Error processing contact history\"],\n    recommended_next_steps: [\"no-action\"],\n    confidence_score: 0.0,\n    error: parseError,\n    raw_ai_response: aiText.substring(0, 500)\n  };\n}\n\n// Create human-readable summary\nconst humanSummary = `${parsedSummary.relationship_status}\\n\\nKey Points:\\n${parsedSummary.history_bullets.slice(0, 3).map(b => '• ' + b).join('\\n')}\\n\\nNext Steps: ${parsedSummary.recommended_next_steps.join(', ')}`;\n\nreturn {\n  json: {\n    summary: parsedSummary,\n    humanSummary,\n    parseError,\n    tokensUsed: response.usage?.total_tokens || 0\n  }\n};"
+      },
+      "id": "e2d3b966-9854-4004-8063-15fe52a439ca",
+      "name": "Validate & Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://services.leadconnectorhq.com/contacts/{{ $json.summary.contact_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "customFields",
+              "value": "={{ { \"ai_contact_summary_json\": JSON.stringify($json.summary), \"ai_contact_summary_text\": $json.humanSummary, \"ai_summary_generated_at\": new Date().toISOString() } }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "4ca5e2de-b979-4fe4-934f-13489b7279d1",
+      "name": "Update GHL Custom Fields",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1328,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/contacts/{{ $('Validate & Parse JSON').first().json.summary.contact_id }}/notes",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "goHighLevelApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "body",
+              "value": "=🤖 AI Contact Summary\\n\\n{{ $('Validate & Parse JSON').first().json.humanSummary }}\\n\\nConfidence: {{ ($('Validate & Parse JSON').first().json.summary.confidence_score * 100).toFixed(0) }}%\\nGenerated: {{ new Date().toLocaleString() }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "92cdaece-6440-4a46-ae87-98e47dba0495",
+      "name": "Create GHL Note",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1552,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"contactId\": $('Validate & Parse JSON').first().json.summary.contact_id, \"summary\": $('Validate & Parse JSON').first().json.humanSummary, \"confidence\": $('Validate & Parse JSON').first().json.summary.confidence_score, \"tokensUsed\": $('Validate & Parse JSON').first().json.tokensUsed, \"metadata\": $('Normalize & Trim Events').first().json.metadata } }}",
+        "options": {}
+      },
+      "id": "2783d4ef-ee12-4df1-b14b-6c00e6e7885b",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Handle workflow errors\nconst error = $input.first().json.error || $input.first().json;\n\nconst errorResponse = {\n  success: false,\n  error: {\n    message: error.message || 'Workflow error occurred',\n    code: error.code || 'WORKFLOW_ERROR',\n    step: error.node || 'unknown',\n    timestamp: new Date().toISOString()\n  }\n};\n\nconsole.error('Workflow Error:', JSON.stringify(errorResponse, null, 2));\n\nreturn { json: errorResponse };"
+      },
+      "id": "764a3d22-fac0-4285-ad8e-079113273ba2",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "9961bb68-40f3-4036-931e-0067f7061ab0",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        384
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Contact ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Contact ID": {
+      "main": [
+        [
+          {
+            "node": "Fetch Contact Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Contact Info": {
+      "main": [
+        [
+          {
+            "node": "Fetch Notes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Conversations",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Appointments",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Opportunities/Deals",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Notes": {
+      "main": [
+        [
+          {
+            "node": "Merge All Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Data": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Trim Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & Trim Events": {
+      "main": [
+        [
+          {
+            "node": "Build AI Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build AI Prompt": {
+      "main": [
+        [
+          {
+            "node": "Call OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Validate & Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Update GHL Custom Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update GHL Custom Fields": {
+      "main": [
+        [
+          {
+            "node": "Create GHL Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create GHL Note": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d4005c84-0b24-4354-9ef7-82a20683a984",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-27T19:44:07.038Z",
+      "updatedAt": "2025-10-27T19:44:07.038Z",
+      "role": "workflow:owner",
+      "workflowId": "FpfGm6k5zRlWxBG8",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
