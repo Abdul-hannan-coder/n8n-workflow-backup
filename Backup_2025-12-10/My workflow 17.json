@@ -1,0 +1,478 @@
+{
+  "createdAt": "2025-11-25T05:52:47.547Z",
+  "updatedAt": "2025-11-25T06:43:06.000Z",
+  "id": "zrO2MVtO2s8jTnzS",
+  "name": "My workflow 17",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            },
+            {
+              "triggerAtHour": 17
+            }
+          ]
+        }
+      },
+      "id": "3828f445-3051-4fe0-8d97-9935c112917e",
+      "name": "Schedule Twice Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "approvalEmail",
+              "value": "aiml21stnov25n8n@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "googleSheetId",
+              "value": "Linkedin Media Posts",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "sheetName",
+              "value": "Sheet1",
+              "type": "string"
+            },
+            {
+              "id": "id-6",
+              "name": "linkedInPersonUrn",
+              "value": "https://www.linkedin.com/in/ased-butt-ba726116",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "e140da5c-741a-49c3-962f-51f7afbb6437",
+      "name": "Workflow Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1T2Ea6E-7q0G6-IaaZvMgAEidq7sBiLwjTMt_MuRYfI8",
+          "mode": "list",
+          "cachedResultName": "Linkedin Media Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T2Ea6E-7q0G6-IaaZvMgAEidq7sBiLwjTMt_MuRYfI8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T2Ea6E-7q0G6-IaaZvMgAEidq7sBiLwjTMt_MuRYfI8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "af45510d-9bff-4da6-952d-af2d5e57b469",
+      "name": "Get Topic from Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        -112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mzFVjTFtA1KzYL1l",
+          "name": "Google Sheets account Abdulrehman"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "postContent",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "id-3",
+              "name": "topic",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "bc5d628a-48f9-4117-8cf5-d0b8abeba16e",
+      "name": "Prepare Email Draft",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "={{ $('Workflow Configuration').first().json.approvalEmail }}",
+        "subject": "Social Media Post Draft - Approval Required",
+        "message": "=<h2>Social Media Post Draft</h2><p><strong>Topic:</strong> {{ $json.topic }}</p><p><strong>Post Content (100 words):</strong></p><p>{{ $json.postContent }}</p><p><strong>Thumbnail:</strong></p><img src=\"{{ $json.thumbnailUrl }}\" style=\"max-width: 400px;\"><hr><p>Please review and approve this post. Click the approval link in the next email to publish.</p>",
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeUnit": "minutes"
+            }
+          }
+        }
+      },
+      "id": "c1da32cc-19c0-4c93-912e-90664de1e2d2",
+      "name": "Send Draft Email for Approval",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        112
+      ],
+      "webhookId": "c75ae8fb-387e-4afd-bcb8-1ab9ceab8de6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZPabwd2uGmeGSBfG",
+          "name": "Gmail account Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resume": "webhook",
+        "options": {
+          "responseData": "Post approved and will be published to all platforms"
+        }
+      },
+      "id": "82cdcbd5-79bb-4171-91b3-85f95eac6b29",
+      "name": "Wait for Approval",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        112
+      ],
+      "webhookId": "ba5c55be-32ec-4a16-bcb9-9ea6b121010f",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "postAs": "organization",
+        "organization": "110284093",
+        "text": "={{ $('Prepare Email Draft').item.json.content.parts[0].text }}",
+        "additionalFields": {}
+      },
+      "id": "641a8ae1-a1f0-42b8-b1b7-04bd5b521fa9",
+      "name": "Post to LinkedIn",
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        608,
+        112
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert short-form social media content writer. Write a concise, engaging 50-word Linkedin post about the topic: {{ $json.topic }} \nRequirements:\n- Friendly tone\n- Use hashtags \n- Create audience-engaging text\n- Do NOT mention “AI” or “automation.”\n- Output only the final post text without quotes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        -112
+      ],
+      "id": "ed5bec5c-d896-4477-8b48-72496ef670b5",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NzvUp8uEBfs9MYqI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1T2Ea6E-7q0G6-IaaZvMgAEidq7sBiLwjTMt_MuRYfI8",
+          "mode": "list",
+          "cachedResultName": "Linkedin Media Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T2Ea6E-7q0G6-IaaZvMgAEidq7sBiLwjTMt_MuRYfI8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1T2Ea6E-7q0G6-IaaZvMgAEidq7sBiLwjTMt_MuRYfI8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic": "={{ $('Get Topic from Google Sheet').item.json.topic }}",
+            "Comment": "Posted",
+            "urn": "={{ $json.urn }}",
+            "Linkedin": "Okay"
+          },
+          "matchingColumns": [
+            "topic"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "topic",
+              "displayName": "topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Comment",
+              "displayName": "Comment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Linkedin",
+              "displayName": "Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "urn",
+              "displayName": "urn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        112
+      ],
+      "id": "033d79af-6e59-46c1-a157-458a9ad01751",
+      "name": "Append or update row in sheet"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an expert short-form social media content writer. Write a concise, engaging 200-word Linkedin post from the text {{ $json.content.parts[0].text }}\nRequirements:\n- Friendly tone\n- Use hashtags \n- Create audience-engaging text\n- Do NOT mention “AI” or “automation.”\n- Output only the final post text without quotes"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        848,
+        -112
+      ],
+      "id": "41022a18-082d-4e5a-a9f8-6e895602b443",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NzvUp8uEBfs9MYqI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Twice Daily": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Topic from Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Topic from Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email Draft": {
+      "main": [
+        [
+          {
+            "node": "Send Draft Email for Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Draft Email for Approval": {
+      "main": [
+        [
+          {
+            "node": "Wait for Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Approval": {
+      "main": [
+        [
+          {
+            "node": "Post to LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "48b1a7a9-eb54-44cd-ba7b-606c26d13138",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-25T05:52:47.550Z",
+      "updatedAt": "2025-11-25T05:52:47.550Z",
+      "role": "workflow:owner",
+      "workflowId": "zrO2MVtO2s8jTnzS",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
