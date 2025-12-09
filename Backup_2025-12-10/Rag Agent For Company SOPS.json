@@ -1,0 +1,377 @@
+{
+  "createdAt": "2025-11-25T06:45:17.580Z",
+  "updatedAt": "2025-11-25T06:45:17.000Z",
+  "id": "9GnEEiJmcHuRuuFE",
+  "name": "Rag Agent For Company SOPS",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        320,
+        624
+      ],
+      "id": "e47c1bf4-341a-46cd-9c26-1082d959abdf",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1nGRHBC7zZvDQZ6_p2Qsm92TNTLSWpWiwqGMOdlZ4cEQ",
+          "mode": "list",
+          "cachedResultName": "SOP MASTER DOC - Botfood",
+          "cachedResultUrl": "https://docs.google.com/document/d/1nGRHBC7zZvDQZ6_p2Qsm92TNTLSWpWiwqGMOdlZ4cEQ/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        768,
+        624
+      ],
+      "id": "31cda257-a7ee-4da4-8f81-627a6b3a6d67",
+      "name": "Download file"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        624
+      ],
+      "id": "555230b2-5178-4598-9528-4014add0fd20",
+      "name": "Supabase Vector Store"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1296,
+        848
+      ],
+      "id": "f0ac5e58-f317-4c7a-86c2-16db7556067d",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        448
+      ],
+      "id": "4d54839c-4181-49a0-9719-d6957aff3fde",
+      "name": "Embeddings OpenAI"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "You are an intelligent and factual AI assistant trained to answer questions strictly using the information contained within the provided Google Docs document.\n\nThe document you have access to contains valuable content that the user wants to explore, understand, or summarize. Your purpose is to help them extract insights, explain key points, and clarify any part of the document while maintaining accuracy and neutrality.\n\nFollow these rules carefully:\n\n1. **Source Fidelity**  \n   - Base every response solely on the content from the document provided to you in this conversation.  \n   - Do not invent information, assume missing parts, or rely on external data unless the user explicitly asks for general knowledge beyond the document.  \n\n2. **Style and Tone**  \n   - Use clear, structured, and professional language.  \n   - Adjust tone depending on the question type: concise and factual for direct questions; explanatory and structured for analytical or summary-based queries.  \n   - If the user asks for a summary, provide a short overview followed by detailed bullet points.  \n\n3. **Uncertainty Handling**  \n   - If the document does not contain enough information to answer a question, respond honestly with something like:  \n     > “The document does not provide enough information to answer that question.”  \n\n4. **Formatting & Structure**  \n   - For complex answers, use sections, bullet points, or numbered lists for readability.  \n   - Always emphasize clarity over verbosity.  \n\n5. **Context Awareness**  \n   - Treat the Google Doc as your only knowledge base for answering questions about its topic.  \n   - When the user asks something unrelated to the document, politely state that it’s beyond the scope of the provided document.  \n\n6. **User Intent Understanding**  \n   - Identify if the user wants:  \n     - A summary  \n     - An explanation  \n     - Key points  \n     - Step-by-step reasoning  \n     - Definitions or clarifications  \n   - Adapt your response accordingly while staying grounded in the document.  \n\n7. **Output Quality**  \n   - Use markdown for clean formatting (bold, lists, subheadings).  \n   - Ensure your answer can be easily parsed by APIs or chat interfaces.  \n   - Be precise, helpful, and factually consistent at all times.  \n\nYour mission: Help the user understand and extract insights from the provided Google Doc with accuracy, clarity, and professionalism.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        16
+      ],
+      "id": "8d903297-3fc1-474a-ba87-b874975ef80f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        240
+      ],
+      "id": "67495099-aad1-4856-ba8c-ac891f5db13a",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to look up to SOP document",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        240
+      ],
+      "id": "d643d3bd-eb37-463d-8ae7-8900cd7db5ea",
+      "name": "Supabase Vector Store1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.client_msg_id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        240
+      ],
+      "id": "a7a8e249-685b-4b50-aff4-d51010283786",
+      "name": "Postgres Chat Memory"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 592,
+        "width": 1792,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "13232a73-6cc9-43e5-a4ac-060ade88b6ae",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "height": 400,
+        "width": 1792,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "12f520cc-c42e-4661-9216-19469bb361a8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09CWTEN81Z",
+          "mode": "list",
+          "cachedResultName": "automation-testing"
+        },
+        "text": "={{ $json.output }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1296,
+        224
+      ],
+      "id": "5ec95f2d-1ffb-470a-8819-b08f2914efc2",
+      "name": "Send a message1",
+      "webhookId": "fd900647-aea6-4b8d-9917-2dba1ef80554"
+    },
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "channelId": {
+          "__rl": true,
+          "value": "C09CWTEN81Z",
+          "mode": "list",
+          "cachedResultName": "automation-testing"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        320,
+        224
+      ],
+      "id": "93048141-18fd-4c2d-b5cd-7234fd30a4a0",
+      "name": "Slack Trigger",
+      "webhookId": "80ce4095-d363-4237-a373-c956b41e176e"
+    },
+    {
+      "parameters": {
+        "content": "Here are the short, to-the-point notes for the AI Agent:\n\nAI Agent: The Brain of the Chatbot\n\nThis agent orchestrates the entire workflow. It receives the user's message and uses the \nconnected tools to create a factual, context-aware response based on a specific knowledge base.\n\nReceives Input From: When chat message received (The user's message starts the process).\n\nGets Language Model From: OpenAI Chat Model (Uses GPT-4 mini for reasoning and text generation).\n\nGets Memory From: Postgres Chat Memory (Remembers the conversation history for context).\n\nUses Tool: Supabase Vector Store (Looks up information in your SOP document to answer questions accurately).",
+        "height": 432,
+        "width": 416,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "fd0ef8d7-43e3-4e04-8dfc-3053e67f0d92",
+      "name": "Sticky Note2"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Supabase Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "ea378fc7-7f75-4e31-a3d6-fe8efdea3cab",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-25T06:45:17.582Z",
+      "updatedAt": "2025-11-25T06:45:17.582Z",
+      "role": "workflow:owner",
+      "workflowId": "9GnEEiJmcHuRuuFE",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
