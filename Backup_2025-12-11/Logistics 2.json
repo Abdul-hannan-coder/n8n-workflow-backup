@@ -1,0 +1,476 @@
+{
+  "createdAt": "2025-10-30T10:15:04.207Z",
+  "updatedAt": "2025-10-30T10:15:13.000Z",
+  "id": "rLPKvxLcSInXE8WG",
+  "name": "Logistics 2",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $('Checking User').item.json[\"Chat ID\"] }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=✅ Accept",
+                    "additionalFields": {
+                      "callback_data": "accept"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✖️ Decline",
+                    "additionalFields": {
+                      "callback_data": "decline"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "id": "5ef3c515-bde3-40bc-9abb-97321fe11bc3",
+      "name": "Send Initial Keyboard Options",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        304
+      ],
+      "webhookId": "ec305fd1-f554-43b2-b497-c62070f8438e",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblqsS1ZZe1qsfNRm",
+          "mode": "list",
+          "cachedResultName": "Drivers",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblqsS1ZZe1qsfNRm"
+        },
+        "filterByFormula": "=({Full Name} = \"{{ $json[\"Driver Full Name\"][0] }}\")",
+        "options": {
+          "fields": [
+            "Telegram Username",
+            "Full Name",
+            "Chat ID"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1616,
+        128
+      ],
+      "id": "4baef791-c85c-42d1-8abd-584b5f8f09e6",
+      "name": "Checking User",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message?.chat?.id || $('Telegram Trigger').item.json.callback_query?.message?.chat?.id }}",
+        "text": "=🔐 Sorry, you are not authorized, please contact your administrator",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        272
+      ],
+      "id": "c68cd01e-5815-4e17-b16e-4e2cd11d093b",
+      "name": "Wrong user",
+      "webhookId": "6d144f03-bd8a-40da-b3f8-70f8f8472b14"
+    },
+    {
+      "parameters": {
+        "content": "## User validation",
+        "height": 640,
+        "width": 700,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "9fc2ffac-fb01-4ad7-aa28-90a3accc8308",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5c19c186-339a-4679-b093-7b93ae05991e",
+              "leftValue": "={{ $json[\"Telegram Username\"] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1872,
+        128
+      ],
+      "id": "1f8beab9-75bf-4aca-a117-c4f5d3de6f68",
+      "name": "If User Exists"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\n\nreturn inputItems.map(item => {\n  const borderPlace = item.json[\"Border Place\"] || '';\n  const purchaseContract = item.json[\"Purchase Contract\"] || '';\n  const supplierName = item.json[\"Supplier Name\"] || '';\n  const warehouseName = item.json[\"Warehouse Name\"] || '';\n  const siloName = item.json[\"Silo Name\"] || '';\n  const cargo = item.json[\"Cargo\"] || '';\n  const loadingLocation = item.json[\"Loading Location\"] || '';\n  const dischargeLocation = item.json[\"Discharge Location\"] || '';\n\n  return {\n    json: {\n      text: `📦 *${purchaseContract}* from *${supplierName}*\\n` +\n            `🚛 Cargo: ${cargo}\\n` +\n            `🏠 Warehouse: ${warehouseName}, Silo: ${siloName}\\n` +\n            `📍 Loading: ${loadingLocation} → Discharge: ${dischargeLocation}\\n` +\n            `🛂 Border: ${borderPlace}`\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        32
+      ],
+      "id": "56e03639-482f-4e9d-85bc-73b707ae944e",
+      "name": "Markdown format"
+    },
+    {
+      "parameters": {
+        "content": "## Searching For The Route\n",
+        "height": 640,
+        "width": 620,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        416,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "492f29ff-a18a-4dc2-9a78-04563e9357b1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Respond to user with options",
+        "height": 640,
+        "width": 760,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2256,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "80de622c-ccfc-4acd-908a-0b35de0a7e1d",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2cd6e0ec-d0a1-44f2-9652-904a333a2cc6",
+              "name": "Border Place",
+              "value": "={{ $('Search Routes').item.json[\"Border Place\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "306891b4-62ff-4bbb-a89e-5e9b61065f4f",
+              "name": "Purchase Contract",
+              "value": "={{ $('Search Routes').item.json['Purchase Contract'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3fb223eb-d0cb-43fd-946f-f212bcef1aa4",
+              "name": "Supplier Name",
+              "value": "={{ $('Search Routes').item.json['Supplier Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "de359224-6d40-4864-b1e9-2a68b82cd0b1",
+              "name": "Warehouse Name",
+              "value": "={{ $('Search Routes').item.json['Warehouse Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6458683f-888a-4a69-887e-ce5ed409de09",
+              "name": "Silo Name",
+              "value": "={{ $('Search Routes').item.json['Silo Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c3368228-8556-4670-9a35-a4487d0ff68d",
+              "name": "Cargo",
+              "value": "={{ $('Search Routes').item.json.Cargo }}",
+              "type": "string"
+            },
+            {
+              "id": "91907fa8-9b11-4436-a7c4-7229a618da9b",
+              "name": "Loading Location",
+              "value": "={{ $('Search Routes').item.json['Loading Location'] }}",
+              "type": "string"
+            },
+            {
+              "id": "58d56f36-e6c8-45d8-881f-00f7f06054ba",
+              "name": "Discharge Location",
+              "value": "={{ $('Search Routes').item.json['Discharge Location'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2096,
+        32
+      ],
+      "id": "e8c6d94f-d043-423d-8a33-7373163ed75a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appkhz7HmZjwJBObN",
+          "mode": "list",
+          "cachedResultName": "Logistics Management",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblTsxzlzdbJuFRyj",
+          "mode": "list",
+          "cachedResultName": "Vehicle Routes",
+          "cachedResultUrl": "https://airtable.com/appkhz7HmZjwJBObN/tblTsxzlzdbJuFRyj"
+        },
+        "filterByFormula": "={Route Status} = \"Ready to depart\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        496,
+        176
+      ],
+      "id": "c126ac9c-5007-458d-b87c-8f35aefad9a9",
+      "name": "Search Routes",
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        208,
+        176
+      ],
+      "id": "bb46435c-d058-4f3e-a4c1-c613096d7f97",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1216,
+        112
+      ],
+      "id": "e41023ba-104c-48cc-8269-2b710393a507",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "content": "## Loop over drivers\n",
+        "height": 640,
+        "width": 460,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1056,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "996cf9fc-b0b5-4585-a153-9c86f47dab42",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        -96
+      ],
+      "id": "34e47015-1de4-468b-882d-d9497c65b68b",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "connections": {
+    "Checking User": {
+      "main": [
+        [
+          {
+            "node": "If User Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If User Exists": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wrong user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown format": {
+      "main": [
+        [
+          {
+            "node": "Send Initial Keyboard Options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Markdown format",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Routes": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search Routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Checking User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Initial Keyboard Options": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "50e680e3-6ae3-4f93-9c56-f463f78757f4",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-30T10:15:04.210Z",
+      "updatedAt": "2025-10-30T10:15:04.210Z",
+      "role": "workflow:owner",
+      "workflowId": "rLPKvxLcSInXE8WG",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
