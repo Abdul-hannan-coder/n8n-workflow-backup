@@ -1,0 +1,790 @@
+{
+  "createdAt": "2025-11-24T19:35:40.411Z",
+  "updatedAt": "2025-11-24T19:36:53.000Z",
+  "id": "kjIbZdsqD7bxmEla",
+  "name": "Updated module 1 and 2 logistics",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "id": "f4757a84-1de0-44ff-9e55-983ce17c9a97",
+      "name": "Gmail Trigger - Monitor Orders",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        -800,
+        112
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"shipment_number\": \"SH-2024-001\",\n  \"pickup_location\": \"Warehouse A\",\n  \"pickup_address\": \"123 Industrial Area, Doha\",\n  \"expected_pickup_time\": \"2024-11-25 09:00:00\",\n  \"temperature_control\": \"Ambient\",\n  \"quantity\": \"10 pallets\",\n  \"weight\": \"500\",\n  \"destination_store_name\": \"Store XYZ\",\n  \"destination_address\": \"456 Commercial St, Doha\",\n  \"expected_delivery_time\": \"2024-11-25 15:00:00\",\n  \"sender_name\": \"Ahmed Ali\",\n  \"sender_company\": \"ABC Trading\",\n  \"sender_email\": \"ahmed@example.com\"\n}"
+      },
+      "id": "d848f9b7-ec0c-4415-8e7d-e7eec08e3cc5",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        -400,
+        272
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract shipment details from this email:\n\nSubject: {{ $json.subject }}\nBody: {{ $json.text }}\n\nExtract all logistics data in JSON format.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a logistics AI assistant. Extract structured data from shipping emails.\n\nReturn JSON with these fields:\n- shipment_number\n- pickup_location\n- pickup_address\n- expected_pickup_time\n- temperature_control\n- quantity\n- weight (in kg)\n- destination_store_name\n- destination_address\n- expected_delivery_time\n- sender_name\n- sender_company\n- sender_email\n\nIf any field is missing, set it to null. Extract weight as numeric value only."
+        }
+      },
+      "id": "e7b9f698-e020-40c3-985e-9556ac508142",
+      "name": "AI Email Parser",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -608,
+        112
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "6d64ff4e-f261-498a-936c-ec1bd58b994a",
+      "name": "OpenAI GPT-4 Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -608,
+        272
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "shipment_number": "={{ $json.output.shipment_number }}",
+            "pickup_location": "={{ $json.output.pickup_location }}",
+            "pickup_address": "={{ $json.output.pickup_address }}",
+            "expected_pickup_time": "={{ $json.output.expected_pickup_time }}",
+            "temperature_control": "={{ $json.output.temperature_control }}",
+            "quantity": "={{ $json.output.quantity }}",
+            "weight": "={{ $json.output.weight }}",
+            "destination_store_name": "={{ $json.output.destination_store_name }}",
+            "destination_address": "={{ $json.output.destination_address }}",
+            "expected_delivery_time": "={{ $json.output.expected_delivery_time }}",
+            "sender_name": "={{ $json.output.sender_name }}",
+            "sender_company": "={{ $json.output.sender_company }}",
+            "sender_email": "={{ $json.output.sender_email }}",
+            "status": "Pending Assignment"
+          },
+          "matchingColumns": [
+            "shipment_number"
+          ]
+        },
+        "options": {}
+      },
+      "id": "21398778-95f8-474a-8fc3-6935c7790cf3",
+      "name": "Save Order to Database",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -208,
+        112
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "url": "https://api.openrouteservice.org/geocode/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "YOUR_OPENROUTE_API_KEY"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output.pickup_address }}"
+            },
+            {
+              "name": "boundary.country",
+              "value": "QA"
+            },
+            {
+              "name": "size",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "40eaf67e-36a7-4043-8bcc-e43cc422e63c",
+      "name": "Get Pickup GPS Coordinates",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://api.openrouteservice.org/geocode/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "YOUR_OPENROUTE_API_KEY"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output.destination_address }}"
+            },
+            {
+              "name": "boundary.country",
+              "value": "QA"
+            },
+            {
+              "name": "size",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ce06830-286f-49e6-82a0-ab24e8928314",
+      "name": "Get Delivery GPS Coordinates",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        0,
+        208
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pickup-lng",
+              "name": "pickup_longitude",
+              "value": "={{ $json.features[0].geometry.coordinates[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "pickup-lat",
+              "name": "pickup_latitude",
+              "value": "={{ $json.features[0].geometry.coordinates[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0a403ce3-4054-46f6-9471-9fd55c314fe3",
+      "name": "Set Pickup GPS",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        208,
+        0
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "delivery-lng",
+              "name": "delivery_longitude",
+              "value": "={{ $json.features[0].geometry.coordinates[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "delivery-lat",
+              "name": "delivery_latitude",
+              "value": "={{ $json.features[0].geometry.coordinates[1] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0f63ba7a-bd71-4dc5-be54-6bca493dc921",
+      "name": "Set Delivery GPS",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        208,
+        208
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "url": "https://api.openrouteservice.org/v2/directions/driving-hgv",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "YOUR_OPENROUTE_API_KEY"
+            },
+            {
+              "name": "start",
+              "value": "={{ $('Set Pickup GPS').item.json.pickup_longitude }},{{ $('Set Pickup GPS').item.json.pickup_latitude }}"
+            },
+            {
+              "name": "end",
+              "value": "={{ $('Set Delivery GPS').item.json.delivery_longitude }},{{ $('Set Delivery GPS').item.json.delivery_latitude }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bd17f323-4114-410f-8311-6d37291ee768",
+      "name": "Calculate Route & Distance",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        400,
+        112
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "route-distance",
+              "name": "distance_km",
+              "value": "={{ ($json.features[0].properties.segments[0].distance / 1000).toFixed(2) }}",
+              "type": "string"
+            },
+            {
+              "id": "route-duration",
+              "name": "duration_minutes",
+              "value": "={{ ($json.features[0].properties.segments[0].duration / 60).toFixed(0) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "465e263a-d9b3-44f0-b4ca-a830c7c0ed07",
+      "name": "Set Route Information",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        608,
+        112
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "shipment_number": "={{ $('AI Email Parser').item.json.output.shipment_number }}",
+            "pickup_longitude": "={{ $('Set Pickup GPS').item.json.pickup_longitude }}",
+            "pickup_latitude": "={{ $('Set Pickup GPS').item.json.pickup_latitude }}",
+            "delivery_longitude": "={{ $('Set Delivery GPS').item.json.delivery_longitude }}",
+            "delivery_latitude": "={{ $('Set Delivery GPS').item.json.delivery_latitude }}",
+            "distance_km": "={{ $json.distance_km }}",
+            "duration_minutes": "={{ $json.duration_minutes }}"
+          },
+          "matchingColumns": [
+            "shipment_number"
+          ]
+        },
+        "options": {}
+      },
+      "id": "9382e393-be5a-4560-b795-93220e25de64",
+      "name": "Update Route Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        800,
+        112
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=1"
+        },
+        "options": {}
+      },
+      "id": "7c1016c8-7baa-4f99-a6da-acc9f9ad060a",
+      "name": "Get Available Drivers",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1008,
+        112
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "jsCode": "// GPS Proximity Based Driver Matching\nconst pickupLat = parseFloat($('Set Pickup GPS').item.json.pickup_latitude);\nconst pickupLng = parseFloat($('Set Pickup GPS').item.json.pickup_longitude);\nconst shipmentWeight = parseFloat($('AI Email Parser').item.json.output.weight);\n\n// Haversine formula for distance calculation\nfunction calculateDistance(lat1, lon1, lat2, lon2) {\n  const R = 6371; // Earth radius in km\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLon = (lon2 - lon1) * Math.PI / 180;\n  const a = \n    Math.sin(dLat/2) * Math.sin(dLat/2) +\n    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\n    Math.sin(dLon/2) * Math.sin(dLon/2);\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\n  return R * c;\n}\n\n// Get all drivers from input\nconst drivers = $input.all();\n\n// Filter and sort drivers\nconst availableDrivers = drivers\n  .filter(driver => {\n    const d = driver.json;\n    return d.status === 'Available' && \n           parseFloat(d.vehicle_capacity) >= shipmentWeight;\n  })\n  .map(driver => {\n    const d = driver.json;\n    const distance = calculateDistance(\n      pickupLat, \n      pickupLng, \n      parseFloat(d.current_latitude), \n      parseFloat(d.current_longitude)\n    );\n    return {\n      json: {\n        driver_id: d.driver_id,\n        driver_name: d.driver_name,\n        driver_phone: d.driver_phone,\n        telegram_chat_id: d.telegram_chat_id,\n        vehicle_type: d.vehicle_type,\n        vehicle_capacity: d.vehicle_capacity,\n        distance_from_pickup: distance.toFixed(2),\n        priority_score: distance\n      }\n    };\n  })\n  .sort((a, b) => a.json.priority_score - b.json.priority_score);\n\nif (availableDrivers.length === 0) {\n  return [{\n    json: {\n      error: 'No available drivers found',\n      shipment_number: $('AI Email Parser').item.json.output.shipment_number\n    }\n  }];\n}\n\n// Return top 3 closest drivers\nreturn availableDrivers.slice(0, 3);"
+      },
+      "id": "c3649e38-d395-4eef-a415-d118e66cd955",
+      "name": "GPS-Based Driver Matching",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_chat_id }}",
+        "text": "=🚚 **NEW SHIPMENT OFFER**\n\n📦 Shipment: {{ $('AI Email Parser').item.json.output.shipment_number }}\n📍 Pickup: {{ $('AI Email Parser').item.json.output.pickup_location }}\n🎯 Delivery: {{ $('AI Email Parser').item.json.output.destination_store_name }}\n⚖️ Weight: {{ $('AI Email Parser').item.json.output.weight }} kg\n📏 Distance: {{ $('Set Route Information').item.json.distance_km }} km\n⏱️ Est. Time: {{ $('Set Route Information').item.json.duration_minutes }} min\n📅 Pickup Time: {{ $('AI Email Parser').item.json.output.expected_pickup_time }}\n\n📍 You are {{ $json.distance_from_pickup }} km from pickup location\n\nDo you accept this job?",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "dab49fe8-5ed4-4c8f-9153-04239fce5ec7",
+      "name": "Send Job Offer to Driver",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1408,
+        112
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "1c4e73fc-fe75-4f98-b17b-52e0de854b8e",
+      "credentials": {
+        "telegramApi": {
+          "id": "9isgnrp94XdbjIk7",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "b5d41072-92e0-43ec-8ea1-481a753a245f",
+      "name": "Wait for Driver Response",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        1600,
+        112
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "a29122ed-14d5-44e8-9a4f-5de8d962fe96"
+    },
+    {
+      "parameters": {
+        "jsCode": "const callbackData = $input.item.json.callback_query.data;\nconst driverName = $input.item.json.callback_query.from.first_name;\nconst driverId = $input.item.json.callback_query.from.id;\n\n// Parse callback data: accept_SHIPMENT_DRIVER or decline_SHIPMENT_DRIVER\nconst parts = callbackData.split('_');\nconst action = parts[0];\nconst shipmentNumber = parts[1];\nconst assignedDriverId = parts[2];\n\nreturn [{\n  json: {\n    action: action,\n    shipment_number: shipmentNumber,\n    driver_id: assignedDriverId,\n    driver_name: driverName,\n    driver_telegram_id: driverId,\n    response_time: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "bd83398d-4bce-47d2-9cf9-a781b158a571",
+      "name": "Process Driver Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.action }}",
+              "operation": "equals",
+              "value2": "accept"
+            }
+          ]
+        }
+      },
+      "id": "c7d3fa11-00a4-47b9-a0d0-48b702c1a4b7",
+      "name": "IF Driver Accepted",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2000,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "shipment_number": "={{ $json.shipment_number }}",
+            "assigned_driver_id": "={{ $json.driver_id }}",
+            "assigned_driver_name": "={{ $json.driver_name }}",
+            "status": "Assigned",
+            "assignment_time": "={{ $json.response_time }}"
+          },
+          "matchingColumns": [
+            "shipment_number"
+          ]
+        },
+        "options": {}
+      },
+      "id": "07663009-60e6-4d01-8905-d72d39e0b6ac",
+      "name": "Update Assignment in Database",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2208,
+        0
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "chatId": "MANAGER_TELEGRAM_CHAT_ID",
+        "text": "=✅ **SHIPMENT ASSIGNED**\n\n📦 Shipment: {{ $json.shipment_number }}\n👤 Driver: {{ $json.driver_name }}\n📞 Driver ID: {{ $json.driver_id }}\n⏰ Accepted at: {{ $json.response_time }}\n\nDriver will pickup from {{ $('AI Email Parser').item.json.output.pickup_location }} soon.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "14ed7fb8-1d10-4042-aa43-397f0566d014",
+      "name": "Notify Manager - Accepted",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2400,
+        0
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "f5bdf766-2943-442b-9f40-56ef9cb54e4e"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "message": "=Dear {{ $('AI Email Parser').item.json.output.sender_name }},\n\nYour shipment request has been confirmed!\n\n📦 Shipment Number: {{ $('AI Email Parser').item.json.output.shipment_number }}\n📍 Pickup: {{ $('AI Email Parser').item.json.output.pickup_address }}\n🎯 Delivery: {{ $('AI Email Parser').item.json.output.destination_address }}\n📏 Distance: {{ $('Set Route Information').item.json.distance_km }} km\n⏱️ Estimated Transit: {{ $('Set Route Information').item.json.duration_minutes }} minutes\n👤 Assigned Driver: {{ $json.driver_name }}\n\nPickup scheduled for: {{ $('AI Email Parser').item.json.output.expected_pickup_time }}\n\nBest regards,\nLogistics Team",
+        "options": {}
+      },
+      "id": "f6c70531-bd01-4799-a36d-9382961b4137",
+      "name": "Send Customer Confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        2608,
+        0
+      ],
+      "typeVersion": 2.1,
+      "webhookId": "2b9155ea-b7db-4f00-bc6f-79d4e2c65f9b"
+    },
+    {
+      "parameters": {
+        "chatId": "MANAGER_TELEGRAM_CHAT_ID",
+        "text": "=❌ **DRIVER DECLINED**\n\n📦 Shipment: {{ $json.shipment_number }}\n👤 Driver: {{ $json.driver_name }}\n⏰ Declined at: {{ $json.response_time }}\n\n⚠️ Reassigning to next available driver...",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "8d37e2be-db51-4128-bed8-e01b5cee7884",
+      "name": "Notify Manager - Declined",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2208,
+        208
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "fdc88373-1f91-4488-b39a-9efc5c8386d5"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger - Monitor Orders": {
+      "main": [
+        [
+          {
+            "node": "AI Email Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Email Parser": {
+      "main": [
+        [
+          {
+            "node": "Save Order to Database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Pickup GPS Coordinates",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Delivery GPS Coordinates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-4 Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Email Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Email Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pickup GPS Coordinates": {
+      "main": [
+        [
+          {
+            "node": "Set Pickup GPS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Delivery GPS Coordinates": {
+      "main": [
+        [
+          {
+            "node": "Set Delivery GPS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Pickup GPS": {
+      "main": [
+        [
+          {
+            "node": "Calculate Route & Distance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Delivery GPS": {
+      "main": [
+        [
+          {
+            "node": "Calculate Route & Distance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Route & Distance": {
+      "main": [
+        [
+          {
+            "node": "Set Route Information",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Route Information": {
+      "main": [
+        [
+          {
+            "node": "Update Route Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Route Data": {
+      "main": [
+        [
+          {
+            "node": "Get Available Drivers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Available Drivers": {
+      "main": [
+        [
+          {
+            "node": "GPS-Based Driver Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPS-Based Driver Matching": {
+      "main": [
+        [
+          {
+            "node": "Send Job Offer to Driver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Driver Response": {
+      "main": [
+        [
+          {
+            "node": "Process Driver Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Driver Response": {
+      "main": [
+        [
+          {
+            "node": "IF Driver Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Driver Accepted": {
+      "main": [
+        [
+          {
+            "node": "Update Assignment in Database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify Manager - Declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Assignment in Database": {
+      "main": [
+        [
+          {
+            "node": "Notify Manager - Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Manager - Accepted": {
+      "main": [
+        [
+          {
+            "node": "Send Customer Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "cdea4f52-46ee-4117-96dc-1fe607cb538a",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-24T19:35:40.415Z",
+      "updatedAt": "2025-11-24T19:35:40.415Z",
+      "role": "workflow:owner",
+      "workflowId": "kjIbZdsqD7bxmEla",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
