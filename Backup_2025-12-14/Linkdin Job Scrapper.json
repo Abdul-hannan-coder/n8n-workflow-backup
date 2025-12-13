@@ -1,0 +1,1075 @@
+{
+  "createdAt": "2025-11-06T09:30:55.625Z",
+  "updatedAt": "2025-11-06T09:32:19.000Z",
+  "id": "1l2zWt7HO7hWP7JU",
+  "name": "Linkdin Job Scrapper",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": " Job Finder",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "City",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Country",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job_type (Optional)",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Full-Time"
+                  },
+                  {
+                    "option": "Part-Time"
+                  },
+                  {
+                    "option": "Remote"
+                  },
+                  {
+                    "option": "WFH"
+                  },
+                  {
+                    "option": "Contract"
+                  },
+                  {
+                    "option": "Internship"
+                  },
+                  {
+                    "option": "Freelance"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5cbf4473-3a55-42c2-b141-96d52f03d829",
+      "name": "Triggers workflow from job search form",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        64,
+        592
+      ],
+      "webhookId": "37d0e84c-0cda-47f8-826d-9ae5b22ba1d5",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "Make A Copy Of This Sheet\n(https://docs.google.com/spreadsheets/d/1FmjpyNjus0tdN9hU9e-EsFcKl-W4EdWq1PYfIvGu8Ws/edit?gid=0#gid=0)",
+        "height": 140,
+        "width": 520,
+        "color": 7
+      },
+      "id": "c7af7cb0-bbde-429c-89cb-a04ac3fd449c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "📝 Trigger – User fills job title, city, country, job type",
+        "height": 260,
+        "width": 260
+      },
+      "id": "782df984-eda9-43a2-bb65-3dc7333ec451",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "🧠 Format Input – Prepares input for Indeed scraping\n",
+        "height": 300,
+        "color": 3
+      },
+      "id": "7ffe4b1a-c03e-40ad-9ce6-481d4c30f5b1",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const city = $json[\"City\"] || \"\";\nconst jobTitle = $json[\"Job Title\"] || \"\";\nconst country = $json[\"Country\"] || \"\";\nconst jobType = $json[\"Job_type (Optional)\"] || \"\";\n\nreturn [\n  {\n    json: {\n      input: [\n        {\n          country: country,\n          domain: country === \"FR\" ? \"fr.indeed.com\" : \"indeed.com\",\n          keyword_search: jobTitle,\n          location: city,\n          date_posted: \"Last 7 days\"\n        }\n      ],\n      custom_output_fields: [\n        \"jobid\",\n        \"company_name\",\n        \"date_posted_parsed\",\n        \"job_title\",\n        \"description_text\",\n        \"benefits\",\n        \"qualifications\",\n        \"location\",\n        \"salary_formatted\",\n        \"company_rating\",\n        \"company_reviews_count\",\n        \"country\",\n        \"date_posted\",\n        \"description\",\n        \"region\",\n        \"company_link\",\n        \"company_website\",\n        \"domain\",\n        \"apply_link\",\n        \"srcname\",\n        \"url\",\n        \"is_expired\",\n        \"discovery_input\",\n        \"job_location\",\n        \"job_description_formatted\",\n        \"logo_url\",\n        \"timestamp\",\n        \"warning\",\n        \"error\",\n        \"error_code\",\n        \"warning_code\"\n      ]\n    }\n  }\n];\n"
+      },
+      "id": "1eb0ac79-7156-44b0-94bd-0b8895f8b8c2",
+      "name": "Formats form input for Bright Data Indeed API1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        512,
+        848
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "📤 Indeed API Call – Start job search on Indeed\n",
+        "height": 280,
+        "width": 260,
+        "color": 2
+      },
+      "id": "e2f74695-dc58-492e-a15b-3a35416eb1e6",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        176
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brightdata.com/datasets/v3/trigger",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "dataset_id",
+              "value": "gd_lpfll7v5hcqtkxl6l"
+            },
+            {
+              "name": "include_errors",
+              "value": "true"
+            },
+            {
+              "name": "type",
+              "value": "discover_new"
+            },
+            {
+              "name": "discover_by",
+              "value": "keyword"
+            },
+            {
+              "name": "limit_per_input",
+              "value": "2"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"input\": [\n    {\n      \"location\": \"{{$node[\"Triggers workflow from job search form\"].json[\"City\"] ? $node[\"Triggers workflow from job search form\"].json[\"City\"].trim() : \"\"}}\",\n      \"keyword\": \"{{$node[\"Triggers workflow from job search form\"].json[\"Job Title\"] ? $node[\"Triggers workflow from job search form\"].json[\"Job Title\"].trim() : \"\"}}\",\n      \"country\": \"{{$node[\"Triggers workflow from job search form\"].json[\"Country\"] ? $node[\"Triggers workflow from job search form\"].json[\"Country\"].slice(0, 2).toUpperCase() : \"\"}}\",\n      \"time_range\": \"Past week\",\n      \"job_type\": \"{{ [\"full-time\", \"part-time\", \"internship\", \"contract\", \"temporary\"].includes($node[\"Triggers workflow from job search form\"].json[\"Job_type\"]?.toLowerCase()) ? $node[\"Triggers workflow from job search form\"].json[\"Job_type\"] : \"\" }}\"\n    }\n  ],\n  \"custom_output_fields\": [\n    \"url\",\n    \"job_posting_id\",\n    \"job_title\",\n    \"company_name\",\n    \"company_id\",\n    \"job_location\",\n    \"job_summary\",\n    \"job_seniority_level\",\n    \"job_function\",\n    \"job_employment_type\",\n    \"job_industries\",\n    \"job_base_pay_range\",\n    \"company_url\",\n    \"job_posted_time\",\n    \"job_num_applicants\",\n    \"discovery_input\",\n    \"apply_link\",\n    \"country_code\",\n    \"title_id\",\n    \"company_logo\",\n    \"job_posted_date\",\n    \"job_poster\",\n    \"application_availability\",\n    \"job_description_formatted\",\n    \"base_salary\",\n    \"timestamp\",\n    \"error\",\n    \"error_code\",\n    \"warning\",\n    \"warning_code\"\n  ]\n}\n",
+        "options": {}
+      },
+      "id": "be5520f4-7e7f-498d-9d5e-1aaee70e98f5",
+      "name": "Triggers job scraping on Indeed via Bright Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        560,
+        256
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "⏳ Check Indeed Status – Is Indeed data ready?\n",
+        "height": 260,
+        "color": 4
+      },
+      "id": "5603d5a5-b9bc-4f2d-a486-a516306d6da6",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        192
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "=https://api.brightdata.com/datasets/v3/progress/{{ $json.snapshot_id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "779c3586-0668-4d07-a87d-aa72cf7d828c",
+      "name": "Checks if Bright Data has completed Indeed scraping",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        864,
+        256
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "✅ Is Indeed Ready? – Proceed or wait\n",
+        "height": 280,
+        "color": 6
+      },
+      "id": "edc08291-b2ec-48d2-a362-d82bcd41d794",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        176
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "35ed620d-b5d5-4e97-bcc5-52b283d85616",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ready"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "14eb9050-fbdc-41bc-ad7a-56a253b8134a",
+      "name": "IF node: Is Indeed data ready?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1184,
+        256
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "⏱️ Wait – Retry check after 1 minute\n",
+        "height": 240,
+        "width": 260,
+        "color": 7
+      },
+      "id": "0508ac07-2512-42ff-990d-be072595dd08",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1392,
+        416
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "9935af93-39d0-4b4d-a6c3-460b3ef63110",
+      "name": "Pauses for 1 minute if data is not yet ready",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1424,
+        464
+      ],
+      "webhookId": "7047efad-de41-4608-b95c-d3e0203ef620",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "📊 Data Found? – Continue only if jobs found on Indeed\n",
+        "height": 280,
+        "width": 260,
+        "color": 4
+      },
+      "id": "9b6bcae2-7cea-4aa1-ad2a-5d0b49939c91",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1392,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "f01bd215-c406-493c-a6e4-2b8ec5686b44",
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.records }}",
+              "rightValue": "={{ 0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "84fdf4d1-5259-4f52-a1f5-c53f34dc6326",
+      "name": "Checks if any Indeed job records exist",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1472,
+        240
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "📥 Get Indeed Jobs – Fetch results from Bright Data\n\n",
+        "height": 260,
+        "width": 260
+      },
+      "id": "fae00051-2444-4f3e-b224-279ba19429b4",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        128
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "=https://api.brightdata.com/datasets/v3/snapshot/{{ $json.snapshot_id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "48f45a79-b24b-4f4f-8fdc-0cb07b745258",
+      "name": "Fetches scraped Indeed data using snapshot ID",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1760,
+        224
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brightdata.com/datasets/v3/trigger",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "dataset_id",
+              "value": "gd_l4dx9j9sscpvs7no2"
+            },
+            {
+              "name": "include_errors",
+              "value": "true"
+            },
+            {
+              "name": "type",
+              "value": "discover_new"
+            },
+            {
+              "name": "discover_by",
+              "value": "keyword"
+            },
+            {
+              "name": "limit_per_input",
+              "value": "=2"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"input\": {{ $json[\"input\"] ? JSON.stringify($json[\"input\"]) : \"[]\" }},\n  \"custom_output_fields\": {{ $json[\"custom_output_fields\"] ? JSON.stringify($json[\"custom_output_fields\"]) : \"{}\" }}\n}\n",
+        "options": {}
+      },
+      "id": "d8d1930e-5f4b-434f-9b7d-a9b752f2104d",
+      "name": "Triggers job scraping on LinkedIn via Bright Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        784,
+        848
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "📤 LinkedIn API Call – Start job search on LinkedIn\n",
+        "height": 300,
+        "color": 5
+      },
+      "id": "d11f3ea0-3c23-4b42-85f5-6c263f8c2c89",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "⏳ Check LinkedIn Status – Is LinkedIn data ready?\n",
+        "height": 280,
+        "width": 260,
+        "color": 3
+      },
+      "id": "1e9d8a34-206b-46c2-8923-c6c021d75b3f",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        992,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "=https://api.brightdata.com/datasets/v3/progress/{{ $json.snapshot_id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "657b8132-7150-4f2c-a4ec-4d6254fd47fa",
+      "name": "Checks if LinkedIn scraping is completed",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1072,
+        848
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "✅ Is LinkedIn Ready? – Proceed or wait\n",
+        "height": 280,
+        "width": 220,
+        "color": 6
+      },
+      "id": "aa4fa33a-d89c-4641-95d6-883290c81fe7",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1264,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "35ed620d-b5d5-4e97-bcc5-52b283d85616",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ready"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3fee963-814e-4000-8bfd-fe06bccc068b",
+      "name": "IF node: Is LinkedIn data ready?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1312,
+        848
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "⏱️ Wait – Retry LinkedIn status after 1 min\n",
+        "height": 240,
+        "color": 7
+      },
+      "id": "1a69cf17-1da7-442b-96a5-7e4ca8311d4b",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1552,
+        1120
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "6f6fd62b-ab40-4afe-a25f-062e94c9e412",
+      "name": "Waits before rechecking LinkedIn scraping",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1616,
+        1104
+      ],
+      "webhookId": "7047efad-de41-4608-b95c-d3e0203ef620",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "📊 LinkedIn Data Found? – If yes, continue\n",
+        "height": 260,
+        "width": 280,
+        "color": 2
+      },
+      "id": "b101c911-7bf3-403f-929b-c43d61040c08",
+      "name": "Sticky Note13",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1520,
+        768
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "f01bd215-c406-493c-a6e4-2b8ec5686b44",
+              "operator": {
+                "type": "number",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.records }}",
+              "rightValue": "={{ 0 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8113ac1d-2d53-4083-95e3-bf29b0cfeaee",
+      "name": "Checks if any LinkedIn job records exist",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1632,
+        832
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "=https://api.brightdata.com/datasets/v3/snapshot/{{ $json.snapshot_id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fb5e18c3-c47f-453b-bd3e-6ed6e1a23098",
+      "name": "Fetches scraped LinkedIn data using snapshot ID",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1920,
+        816
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "📥 Get LinkedIn Jobs – Fetch LinkedIn job listings\n\n",
+        "height": 260,
+        "width": 260,
+        "color": 6
+      },
+      "id": "bbbf386e-05d7-4d41-94cd-311b55867363",
+      "name": "Sticky Note14",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1840,
+        752
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "🔗 Merge – Combine both job sources\n",
+        "height": 260,
+        "width": 280,
+        "color": 3
+      },
+      "id": "fe3e657f-26a3-40da-8f44-9a506b37683f",
+      "name": "Sticky Note15",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2368,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "55177a00-6304-4d59-bd4e-0909a6f94503",
+      "name": "Combines Indeed + LinkedIn job results",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        2448,
+        448
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "content": "📄 Save to Sheet – Add job data to “Compare” sheet\n\n",
+        "height": 260,
+        "color": 4
+      },
+      "id": "86185115-58d6-4a8a-80f6-ee9abfc97cfd",
+      "name": "Sticky Note16",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2672,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1xkNBckPDGf4YR74bJQN07tAr3qlEoA-70pQc63nBqZ8",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xkNBckPDGf4YR74bJQN07tAr3qlEoA-70pQc63nBqZ8/edit?usp=drivesdk",
+          "cachedResultName": "Job Finder sheet"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": 74196869,
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xkNBckPDGf4YR74bJQN07tAr3qlEoA-70pQc63nBqZ8/edit#gid=74196869",
+          "cachedResultName": "Compare"
+        },
+        "columns": {
+          "value": {
+            "Salary ": "={{ $json.salary_formatted }}",
+            "Location": "={{ $json.discovery_input.location }}",
+            "Job Title": "={{ $json.job_title }}",
+            "Job-Type ": "={{ $json.job_location }}",
+            "Apply Link": "={{ $json.url }}",
+            "Job Detail": "={{ $json.description_text }}",
+            "Company Name ": "={{ $json.company_name }}"
+          },
+          "schema": [
+            {
+              "id": "Company Name ",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Company Name ",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Title",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Job Title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Location",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job Detail",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Job Detail",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Apply Link",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Apply Link",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job No. Application",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Job No. Application",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Salary ",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Salary ",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Job-Type ",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Job-Type ",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ab18ef30-dfd7-49e1-bb00-10fba13c31fb",
+      "name": "Saves final job list to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2704,
+        448
+      ],
+      "typeVersion": 4.6
+    }
+  ],
+  "connections": {
+    "IF node: Is Indeed data ready?": {
+      "main": [
+        [
+          {
+            "node": "Checks if any Indeed job records exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pauses for 1 minute if data is not yet ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF node: Is LinkedIn data ready?": {
+      "main": [
+        [
+          {
+            "node": "Checks if any LinkedIn job records exist",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Waits before rechecking LinkedIn scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks if any Indeed job records exist": {
+      "main": [
+        [
+          {
+            "node": "Fetches scraped Indeed data using snapshot ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combines Indeed + LinkedIn job results": {
+      "main": [
+        [
+          {
+            "node": "Saves final job list to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triggers workflow from job search form": {
+      "main": [
+        [
+          {
+            "node": "Formats form input for Bright Data Indeed API1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Triggers job scraping on Indeed via Bright Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks if LinkedIn scraping is completed": {
+      "main": [
+        [
+          {
+            "node": "IF node: Is LinkedIn data ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks if any LinkedIn job records exist": {
+      "main": [
+        [
+          {
+            "node": "Fetches scraped LinkedIn data using snapshot ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Waits before rechecking LinkedIn scraping": {
+      "main": [
+        [
+          {
+            "node": "Checks if LinkedIn scraping is completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pauses for 1 minute if data is not yet ready": {
+      "main": [
+        [
+          {
+            "node": "Checks if Bright Data has completed Indeed scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetches scraped Indeed data using snapshot ID": {
+      "main": [
+        [
+          {
+            "node": "Combines Indeed + LinkedIn job results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formats form input for Bright Data Indeed API1": {
+      "main": [
+        [
+          {
+            "node": "Triggers job scraping on LinkedIn via Bright Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetches scraped LinkedIn data using snapshot ID": {
+      "main": [
+        [
+          {
+            "node": "Combines Indeed + LinkedIn job results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Triggers job scraping on Indeed via Bright Data": {
+      "main": [
+        [
+          {
+            "node": "Checks if Bright Data has completed Indeed scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Triggers job scraping on LinkedIn via Bright Data": {
+      "main": [
+        [
+          {
+            "node": "Checks if LinkedIn scraping is completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks if Bright Data has completed Indeed scraping": {
+      "main": [
+        [
+          {
+            "node": "IF node: Is Indeed data ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "e976f25c-85ff-4844-9dab-8342cbff8f4d",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-06T09:30:55.627Z",
+      "updatedAt": "2025-11-06T09:30:55.627Z",
+      "role": "workflow:owner",
+      "workflowId": "1l2zWt7HO7hWP7JU",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
