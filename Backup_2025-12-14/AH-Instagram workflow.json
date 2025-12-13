@@ -1,0 +1,468 @@
+{
+  "createdAt": "2025-09-23T10:27:17.480Z",
+  "updatedAt": "2025-09-23T10:27:31.000Z",
+  "id": "xSwJ1OSDyyAXDNhd",
+  "name": "AH-Instagram workflow",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        48
+      ],
+      "id": "ade7386f-269c-4155-b69c-aa6efb4e8af1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1grzEpNSMuRYBLUK3oPZea1KXuzMA0e-qAc6E4BRqsfI",
+          "mode": "list",
+          "cachedResultName": "IG MMessage Automation - Asma ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1grzEpNSMuRYBLUK3oPZea1KXuzMA0e-qAc6E4BRqsfI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1grzEpNSMuRYBLUK3oPZea1KXuzMA0e-qAc6E4BRqsfI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -400,
+        48
+      ],
+      "id": "054ddcb5-96e8-490b-b369-083e8fca577c",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "EmVhoWvbhglq5bF4",
+          "name": "AH-Google-Sheets-Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Only get rows that are NOT marked as \"yes\"\nconst unprocessed = [];\nfor (const item of items) {\n  const row = item.json;\n  if (row['MSG - VN is Generated?'] !== 'yes') {\n    unprocessed.push({json: row});\n  }\n}\nreturn unprocessed;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        48
+      ],
+      "id": "ae9ef917-c94f-44b3-8ef1-09f96b700c29",
+      "name": "Filter Rows"
+    },
+    {
+      "parameters": {
+        "batchSize": 2,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        48,
+        48
+      ],
+      "id": "d2010982-b751-4a1c-9746-875323bcbd21",
+      "name": "Process in Batches"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://instagram-media-api.p.rapidapi.com/user/clips",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-key",
+              "value": "e5d0552f1emsh00b6412b1d34d01p13e4c6jsn4a62950f0030"
+            },
+            {
+              "name": "x-rapidapi-host",
+              "value": "instagram-media-api.p.rapidapi.com"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"username\": \"{{ $json.USERNAME }}\",\n  \"count\": 1\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        272,
+        48
+      ],
+      "id": "57165f3a-441e-4807-8c40-6f725429a20a",
+      "name": "Instagram API"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create a friendly Instagram message for {{ $json.Name }}\n\nInstagram data: {{ $json['Instagram API'].body }}\n\nRules:\n- Start with \"Hi [Name]\"\n- Make it personal and human\n- 2-3 sentences max\n- End with a question\n- Sound natural, not robotic",
+        "messages": {
+          "messageValues": [
+            {}
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        496,
+        48
+      ],
+      "id": "6805e9f0-7f1d-4c44-bbaa-1a9d07518b1f",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        568,
+        272
+      ],
+      "id": "9d917258-fce8-45e8-a8eb-dc7b1b09bc0f",
+      "name": "Create Personal Message",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NzvUp8uEBfs9MYqI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1grzEpNSMuRYBLUK3oPZea1KXuzMA0e-qAc6E4BRqsfI",
+          "mode": "list",
+          "cachedResultName": "IG MMessage Automation - Asma ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1grzEpNSMuRYBLUK3oPZea1KXuzMA0e-qAc6E4BRqsfI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1grzEpNSMuRYBLUK3oPZea1KXuzMA0e-qAc6E4BRqsfI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "MSG TXT": "={{ $('Basic LLM Chain').item.json.text }}",
+            "IG LINK ": "={{ $('Process in Batches').item.json['IG LINK '] }}",
+            "MSG - VN is Generated?": " yes",
+            "Name": "={{ $('Process in Batches').item.json.Name }}",
+            "Tag - MSG - VN": "MSG"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IG Profile",
+              "displayName": "IG Profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tag - MSG - VN",
+              "displayName": "Tag - MSG - VN",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MSG TXT",
+              "displayName": "MSG TXT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Voice Note",
+              "displayName": "Voice Note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MSG - VN is Generated?",
+              "displayName": "MSG - VN is Generated?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "IG LINK ",
+              "displayName": "IG LINK ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "output",
+              "displayName": "output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "all_data",
+              "displayName": "all_data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1072,
+        48
+      ],
+      "id": "d99a20fa-0313-4019-93f1-716f483cae4c",
+      "name": "Update Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// See what data we actually have\nreturn items.map(item => {\n  return {\n    json: {\n      name: item.json.Name,\n      all_data: JSON.stringify(item.json, null, 2)\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        48
+      ],
+      "id": "c44a1e3a-3201-4f0c-acea-5afcbd6695c1",
+      "name": "Debug - Check Data"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Rows": {
+      "main": [
+        [
+          {
+            "node": "Process in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process in Batches": {
+      "main": [
+        [
+          {
+            "node": "Instagram API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process in Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Personal Message": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Instagram API": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Debug - Check Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug - Check Data": {
+      "main": [
+        [
+          {
+            "node": "Update Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "932a92f8-bf9d-450c-8e4a-0b5ef1261c76",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-23T10:27:17.486Z",
+      "updatedAt": "2025-09-23T10:27:17.486Z",
+      "role": "workflow:owner",
+      "workflowId": "xSwJ1OSDyyAXDNhd",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
