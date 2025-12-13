@@ -1,0 +1,470 @@
+{
+  "createdAt": "2025-11-22T19:44:35.404Z",
+  "updatedAt": "2025-11-22T19:46:28.000Z",
+  "id": "0R5pNia12WRUxv8M",
+  "name": "Social Media Lead Collector",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "2331b9e9-cda6-44b8-89c7-ca670bc1fc96",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -624,
+        144
+      ],
+      "id": "5401b660-8592-47df-9143-d420f3ab62a1",
+      "name": "Webhook",
+      "webhookId": "2331b9e9-cda6-44b8-89c7-ca670bc1fc56"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc",
+          "mode": "list",
+          "cachedResultName": "fahad",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1770693466,
+          "mode": "list",
+          "cachedResultName": "Sheet10",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc/edit#gid=1770693466"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -416,
+        144
+      ],
+      "id": "7bbaf8d2-47bf-4470-b131-4282589f8fd1",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "EmVhoWvbhglq5bF4",
+          "name": "AH-Google-Sheets-Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -208,
+        144
+      ],
+      "id": "d38902eb-cd55-45c3-b2a9-7c23e9f129ae",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7d468735-26be-41a4-abd4-1c8ebb5d8e78",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        64
+      ],
+      "id": "c787def2-a187-4494-b3d9-4157943676a5",
+      "name": "Webhook1",
+      "webhookId": "7d468735-26be-41a4-abd4-1c8ebb5d8e58"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        256,
+        256
+      ],
+      "id": "397686a6-b712-431e-ac67-6a96141a6181",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NzvUp8uEBfs9MYqI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "23",
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        352
+      ],
+      "id": "6291b32f-f516-4bbf-bd97-506bcfda89fe",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc",
+          "mode": "list",
+          "cachedResultName": "fahad",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1770693466,
+          "mode": "list",
+          "cachedResultName": "Sheet10",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc/edit#gid=1770693466"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        848,
+        240
+      ],
+      "id": "38656fa5-da15-4a8d-b29f-7e00dd0b1521",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mzFVjTFtA1KzYL1l",
+          "name": "Google Sheets account Abdulrehman"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc",
+          "mode": "list",
+          "cachedResultName": "fahad",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1770693466,
+          "mode": "list",
+          "cachedResultName": "Sheet10",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyyvmAZmflAGwHj7uJNvM0jZmw-o9HrFyXRmOYaKlzc/edit#gid=1770693466"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+            "Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+            "Phone Number": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Phone_Number', ``, 'string') }}",
+            "Product Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product_Name', ``, 'string') }}",
+            "Active": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Active', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Active",
+              "displayName": "Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        352
+      ],
+      "id": "450979f3-f0eb-4ca5-9824-50923d59fcd0",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "mzFVjTFtA1KzYL1l",
+          "name": "Google Sheets account Abdulrehman"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        352
+      ],
+      "id": "7911ba45-45d9-4d92-9dda-8777739772d4",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        992,
+        64
+      ],
+      "id": "9e90ba52-2aa6-45d3-a130-0b00b5a5726c",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}\n\nYou are a smart AI assistant for a workflow called “Social Media Lead Collector”.\n\nYour purpose:\n- Understand and respond to any questions related to lead data (Title, Name, Email, Phone Number, Description, Product Name, and Active Status).\n- Provide clear, professional, and helpful answers about the Social Media Lead Collector workflow and how it works.\n- If the user asks about any specific lead (by name, title, or product), fetch and display the relevant lead details from the connected Google Sheet.\n- If the user provides new lead information (like name, email, phone, description, or product name), automatically send this data to the connected Google Sheet node to add a new row.\n- If the user asks general questions (like how the workflow works or what it does), reply clearly and simply.\n- Always respond in the same language the user used (if in Roman Urdu, reply in Roman Urdu; if in English, reply in English).\n- Keep responses natural, friendly, and human-like.\n\nBehavior Instructions:\n- When a user provides new lead data (example: “Add a new lead: Ali Khan, ali.khan@example.com, interested in YouTube automation”), send this data to the Google Sheet node and confirm with:  \n  **“Got it! The new lead has been added to the Google Sheet successfully.”**\n- When a user asks to see a specific lead (example: “Show me YouTube Content Lead”), look it up in the Google Sheet and display the details clearly.\n- If no matching record is found, reply with:  \n  **“Sorry, I couldn’t find that lead in the records.”**\n- If the user asks what this workflow does, explain that it automatically collects and organizes leads from social media and form submissions into a Google Sheet for automation and follow-up.\n\nExamples:\n\n1. **User:** \"Show me details of YouTube Content Lead\"  \n   **Agent:** \"Sure! Here are the details: Name: Sara Ahmed, Email: sara.ahmed@example.com, Product: YouTube Automation Pro, Status: Active.\"\n\n2. **User:** \"Add new lead: Hammad Ali, hammad.ali@example.com, wants branding help for his clothing store\"  \n   **Agent:** \"Got it! The new lead has been added to the Google Sheet successfully.\"\n\n3. **User:** \"Social Media Lead Collector workflow kya karta hai?\"  \n   **Agent (in Roman Urdu):** \"Ye workflow automatically LinkedIn, YouTube, aur social media forms se leads collect karta hai, Google Sheet me save karta hai, aur automation ke liye ready rakhta hai.\"\n\nYour tone:\n- Friendly and confident  \n- Clear and engaging  \n- Always focused on the Social Media Lead Collector and lead data management  \n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        64
+      ],
+      "id": "edacfbad-e280-45ae-842c-44eaf79258e1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "content": "## Social Media Lead Collector ( Analytic API Webhook )   ",
+        "height": 256,
+        "width": 656,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -672,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "98f533d2-d942-4678-92a7-210f8dd5c370",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Social Media Lead Collector ( ChatBot API Webhook )",
+        "height": 528,
+        "width": 1200,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "7d26ed01-daa0-4f02-bb5c-be0c659a67a0",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3e5fe80b-7d4a-4d25-8f4b-5f17b8c33ef8",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-22T19:44:35.409Z",
+      "updatedAt": "2025-11-22T19:44:35.409Z",
+      "role": "workflow:owner",
+      "workflowId": "0R5pNia12WRUxv8M",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
