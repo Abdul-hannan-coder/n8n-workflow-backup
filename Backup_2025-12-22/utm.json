@@ -1,0 +1,179 @@
+{
+  "createdAt": "2025-10-28T17:41:47.029Z",
+  "updatedAt": "2025-10-28T17:47:29.000Z",
+  "id": "9TrXUPxFWsOMktGi",
+  "name": "utm",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b7ff14eb-b29a-4e6e-a7f8-2763cfd599c0",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        80
+      ],
+      "webhookId": "lead-capture-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// UTM Parameters Extract karna\nconst bodyData = $input.item.json.body || $input.item.json;\n\n// Lead data extract karna\nconst leadData = {\n  name: bodyData.name || '',\n  email: bodyData.email || '',\n  phone: bodyData.phone || '',\n  message: bodyData.message || '',\n  \n  // UTM Parameters\n  utm_source: bodyData.utm_source || 'direct',\n  utm_medium: bodyData.utm_medium || 'none',\n  utm_campaign: bodyData.utm_campaign || 'none',\n  utm_term: bodyData.utm_term || 'none',\n  utm_content: bodyData.utm_content || 'none',\n  \n  // Lead Source Identify karna\n  lead_source: '',\n  lead_type: '',\n  \n  // Timestamp\n  timestamp: new Date().toISOString(),\n  date: new Date().toLocaleDateString('en-GB'),\n  time: new Date().toLocaleTimeString('en-GB')\n};\n\n// Lead Source Logic\nif (leadData.utm_source === 'direct' && leadData.utm_medium === 'none') {\n  leadData.lead_source = 'Organic/Direct';\n  leadData.lead_type = 'Organic';\n} else if (leadData.utm_medium === 'cpc' || leadData.utm_medium === 'ppc') {\n  leadData.lead_source = 'Paid Ads';\n  leadData.lead_type = 'Paid';\n} else if (leadData.utm_source === 'google' || leadData.utm_source === 'facebook' || leadData.utm_source === 'instagram') {\n  leadData.lead_source = `${leadData.utm_source.charAt(0).toUpperCase() + leadData.utm_source.slice(1)} Ads`;\n  leadData.lead_type = 'Paid';\n} else if (leadData.utm_medium === 'organic') {\n  leadData.lead_source = 'Organic Search';\n  leadData.lead_type = 'Organic';\n} else if (leadData.utm_medium === 'social') {\n  leadData.lead_source = 'Social Media';\n  leadData.lead_type = 'Organic';\n} else if (leadData.utm_medium === 'email') {\n  leadData.lead_source = 'Email Campaign';\n  leadData.lead_type = 'Marketing';\n} else {\n  leadData.lead_source = `${leadData.utm_source} - ${leadData.utm_medium}`;\n  leadData.lead_type = 'Other';\n}\n\nreturn { json: leadData };"
+      },
+      "id": "cd511208-e4ea-4f29-b3e2-54fc2de304a4",
+      "name": "Process UTM Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Lead Tracker Sheet"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.date }}",
+            "Time": "={{ $json.time }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Phone": "={{ $json.phone }}",
+            "Message": "={{ $json.message }}",
+            "Lead Source": "={{ $json.lead_source }}",
+            "Lead Type": "={{ $json.lead_type }}",
+            "UTM Source": "={{ $json.utm_source }}",
+            "UTM Medium": "={{ $json.utm_medium }}",
+            "UTM Campaign": "={{ $json.utm_campaign }}",
+            "UTM Term": "={{ $json.utm_term }}",
+            "UTM Content": "={{ $json.utm_content }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ]
+        },
+        "options": {}
+      },
+      "id": "8021d2cc-543f-4f3e-ac72-0183e23e8a5c",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        400,
+        0
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Lead captured successfully\", \"lead_source\": $json.lead_source, \"lead_type\": $json.lead_type } }}",
+        "options": {}
+      },
+      "id": "e65abed1-2d75-462f-bb70-46b0f2d5a70f",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        608,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "ab",
+        "options": {
+          "customCss": "<form id=\"leadForm\">\n  <input type=\"text\" name=\"name\" placeholder=\"Name\" required>\n  <input type=\"email\" name=\"email\" placeholder=\"Email\" required>\n  <input type=\"tel\" name=\"phone\" placeholder=\"Phone\" required>\n  <textarea name=\"message\" placeholder=\"Message\"></textarea>\n  <button type=\"submit\">Submit</button>\n</form>\n\n<script>\ndocument.getElementById('leadForm').addEventListener('submit', async function(e) {\n  e.preventDefault();\n  \n  // Form data collect karna\n  const formData = new FormData(this);\n  const data = Object.fromEntries(formData);\n  \n  // URL se UTM parameters extract karna\n  const urlParams = new URLSearchParams(window.location.search);\n  data.utm_source = urlParams.get('utm_source') || 'direct';\n  data.utm_medium = urlParams.get('utm_medium') || 'none';\n  data.utm_campaign = urlParams.get('utm_campaign') || 'none';\n  data.utm_term = urlParams.get('utm_term') || 'none';\n  data.utm_content = urlParams.get('utm_content') || 'none';\n  \n  // N8N webhook ko data bhejana\n  try {\n    const response = await fetch('YOUR_N8N_WEBHOOK_URL', {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n      },\n      body: JSON.stringify(data)\n    });\n    \n    const result = await response.json();\n    alert('Form submitted! Lead Source: ' + result.lead_source);\n    this.reset();\n  } catch (error) {\n    alert('Error submitting form');\n  }\n});\n</script>"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -32,
+        -128
+      ],
+      "id": "8a9327bb-5242-49af-a141-d64ba13c8225",
+      "name": "On form submission",
+      "webhookId": "81a269e9-6153-4206-9e19-3a035636762d"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Process UTM Data": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        []
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Process UTM Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "320cad1a-5eb2-4f6d-a5b1-0790463c32e1",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-28T17:41:47.031Z",
+      "updatedAt": "2025-10-28T17:41:47.031Z",
+      "role": "workflow:owner",
+      "workflowId": "9TrXUPxFWsOMktGi",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
