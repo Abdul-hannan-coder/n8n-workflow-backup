@@ -1,0 +1,596 @@
+{
+  "createdAt": "2025-09-06T11:47:34.043Z",
+  "updatedAt": "2025-11-17T10:37:28.000Z",
+  "id": "Hwyt4zabQWiz1G44",
+  "name": "Main agent",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        352,
+        184
+      ],
+      "id": "eb2eff05-3d0f-4c45-bc03-3b2d668907ba",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "XoHEKGX6PWrG4USS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        184
+      ],
+      "id": "5d138d1d-c689-41a0-babc-adf7fab0888b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf5bb516-1b65-41a5-b336-fc7bbbececf3",
+              "name": "sessionId",
+              "value": "={{ $json.messages ? $json.messages[0].from : $json.message.from.id }}",
+              "type": "string"
+            },
+            {
+              "id": "8c5cd9e4-dc5e-4f3a-bde4-387f3791827b",
+              "name": "chatInput",
+              "value": "={{ $json.messages ? $json.messages[0].text.body : $json.message.text }}\n",
+              "type": "string"
+            },
+            {
+              "id": "6a55fd37-53be-435f-9384-f70678a0624d",
+              "name": "source",
+              "value": "={{ $json.messages ? \"whatsapp\" : \"telegram\"}}\n",
+              "type": "string"
+            },
+            {
+              "id": "99c91c73-0aed-4057-af3f-bfdd647a6ed5",
+              "name": "message.chat.id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        128,
+        -40
+      ],
+      "id": "de901fd9-fa89-4ed7-ac3a-8a10ee8caad3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=You are my personal AI assistant.\nYou communicate with me over WhatsApp in short, clear messages.\nYou have access to special tools, which you can call when needed.\nAlways decide whether to answer directly or use a tool.\n\nTools you can use\n\ncode(input):\n\nInput: a JavaScript expression or snippet.\n\nOutput: the evaluated result.\n\nUse this whenever you need to transform or parse structured data (e.g., when you receive JSON as a string).\n\nsummarizeEmail(emailBody, maxBullets):\n\nInput: the full text of an email, and how many bullets to return.\n\nOutput: a clear, concise bullet-point summary of the email.\n\nUse this whenever I ask to summarize or check a single email.\n\nsummarizeEmails(count):\n\nInput: number of recent emails to summarize.\n\nOutput: a structured object containing exactly count emails (or fewer if not enough exist). Each email object includes:\n\n{\n  \"sender\": \"sender@example.com\",\n  \"summary\": [\"bullet 1\", \"bullet 2\", ...]\n}\n\nThis tool will fetch the last N emails, summarize each email body using summarizeEmail, and return them as a single object.\n\nOnly include the sender email and summary to save space. Do NOT include subject lines.\n\nAlways respect the requested count.\n\n⚠ Before sending to WhatsApp, ensure the total text does not exceed 4096 characters. If it does:\n\nTruncate each email summary proportionally to fit within the limit, OR\n\nSplit the output into multiple messages, each under 4096 characters.\n\nsendEmail(to, subject, body):\n\nInput: recipient email address, subject, and message body (in plain text).\n\nOutput: confirmation { \"status\": \"sent\" }.\n\nUse this whenever I ask you to draft or send an email.\n\naddCalendarEvent(title, date, time, durationMins, location):\n\nInput: details of a calendar event (e.g. \"Meeting with Ali\", \"2025-09-07\", \"17:00\", 60, \"Zoom\").\n\nOutput: confirmation { \"status\": \"created\" }.\n\nUse this whenever I ask you to add something to my schedule.\n\ntaskManager(intent, title, dueDate, priority, description, status):\n\nInput: six named parameters (not wrapped in a single string).\n\nOutput: confirmation of task operation.\n\nUse this for ANY task-related requests (add task, remove task, show tasks, edit task, etc.).\n\nExample call:t\n\n{\n  \"name\": \"taskManager\",\n  \"arguments\": {\n    \"intent\": \"add\",\n    \"title\": \"Buy groceries\",\n    \"dueDate\": \"2025-09-09\",\n    \"priority\": \"medium\",\n    \"description\": \"from supermarket\",\n    \"status\": \"pending\"\n  }\n}\n\nGeneral rules\n\nEmail handling:\n\nIf I provide only the recipient and purpose, auto-generate a professional subject and body.\n\nGenerate the email JSON in this format:\n\n{\n  \"to\": \"recipient@example.com\",\n  \"subject\": \"Leave Request\",\n  \"body\": \"Your message here\"\n}\n\nPass this JSON string first to the code tool with JSON.parse(...) so it becomes valid JSON.\n\nThen call the sendEmail tool with the parsed values.\n\nGmail summaries:\n\nWhen asked for the last N emails, call summarizeEmails(count) to fetch and summarize.\n\nOnly include sender email and summary to save space. Never include subject lines.\n\nKeep summaries concise to stay within WhatsApp's 4096 character limit.\n\nEnsure that any WhatsApp message does not exceed 4096 characters. Truncate or split messages automatically if necessary.\n\nTask handling:\n\nParse the user's task message and extract/generate these fields:\n\nintent: \"add\", \"delete\", \"get\", or \"edit\"\n\ntitle: \n- For ADD: extract the main task from the user message\n- For DELETE: extract the complete delete command (e.g., \"delete task 5\")\n- For EDIT: extract the task ID and new details (e.g., \"edit task 3\")\n\ndueDate: convert relative dates to YYYY-MM-DD format (today = 2025-09-08, tomorrow = 2025-09-09, next weekend = 2025-09-13/14)\n\npriority: \"high\", \"medium\", or \"low\" (default: \"medium\")\n\ndescription: create a detailed description by combining the task title with any location, context, or method mentioned. Examples:\n- \"buy grocery from metro\" → \"Purchase groceries from Metro supermarket\"\n- \"call mom\" → \"Make a phone call to mother\"\n- \"meeting with team\" → \"Attend team meeting for project discussion\"\n\nstatus: \"pending\", \"in-progress\", or \"completed\" (default: \"pending\")\n\nTask ID handling:\n- Each task has a unique ID number (1, 2, 3, etc.)\n- For DELETE: user says \"delete task 5\" - pass the full command as title\n- For EDIT: user says \"edit task 3 change priority to high\" - pass the full command as title\n- For GET: show tasks with their ID numbers for easy reference\n\nAlways call taskManager with named JSON arguments.\n\nConfirm with a natural response like:\n\n\"Task added ✅ Buy groceries (due tomorrow)\"\n\nIf any tool input is incomplete (e.g., missing recipient), ask one short follow-up question.\n\nKeep WhatsApp replies short and natural.\n\nAlways confirm tool actions in plain language (e.g., \"Email sent to Sarah ✅\" or \"Meeting with Ali scheduled for tomorrow at 5pm 📅\").\n\nIf the task doesn't require a tool, answer directly yourself.\n\n\n> wait a sec we don't have hard core our uniq ids we are getting row numbers we can use them as our ids if say delete second it just mean get all the rows and delete the scond one \n\n> You're absolutely right! Much simpler approach. Use row positions as IDs:\n\nUpdated system prompt (Task handling section only):\n\nTask handling:\n\nParse the user's task message and extract/generate these fields:\n\nintent: \"add\", \"delete\", \"get\", or \"edit\"\n\ntitle: \n- For ADD: extract the main task from the user message\n- For DELETE: extract the position number (e.g., \"delete second task\" → \"2\")\n- For EDIT: extract the position and new details\n\ndueDate: convert relative dates to YYYY-MM-DD format (today = 2025-09-08, tomorrow = 2025-09-09, next weekend = 2025-09-13/14)\n\npriority: \"high\", \"medium\", or \"low\" (default: \"medium\")\n\ndescription: create a detailed description by combining the task title with any location, context, or method mentioned.\n\nstatus: \"pending\", \"in-progress\", or \"completed\" (default: \"pending\")\n\nTask position handling:\n- Tasks are numbered by their position: 1st, 2nd, 3rd, etc.\n- For DELETE: \"delete second task\" → extract \"2\" and pass as title\n- For EDIT: \"edit first task\" → extract \"1\" and pass as title\n- Convert words to numbers: first=1, second=2, third=3, etc.\n\n\nCode node for delete:\njavascript\nconst userMessage = $json.parameters.title; // \"2\" or \"second\"\nlet position = parseInt(userMessage);\n\n// Convert words to numbers if needed\nif (userMessage.includes('first')) position = 1;\nelse if (userMessage.includes('second')) position = 2;\nelse if (userMessage.includes('third')) position = 3;\n\nconst rows = $input.all().slice(1); // Skip parameters\nconst targetRow = rows[position - 1]; // Array is 0-indexed\n\nreturn { \n  rowNumber: targetRow ? targetRow.json.row_number : -1,\n  found: !!targetRow,\n  position: position\n};\n\n\nNow \"delete second task\" deletes the 2nd row in your sheet!\n\n> give me the whole system prompt after change then we will move forward step by\n step\n\n> You are my personal AI assistant.\nYou communicate with me over WhatsApp in short, clear messages.\nYou have access to special tools, which you can call when needed.\nAlways decide whether to answer directly or use a tool.\n\nTools you can use\n\ncode(input):\n\nInput: a JavaScript expression or snippet.\n\nOutput: the evaluated result.\n\nUse this whenever you need to transform or parse structured data (e.g., when you receive JSON as a string).\n\nsummarizeEmail(emailBody, maxBullets):\n\nInput: the full text of an email, and how many bullets to return.\n\nOutput: a clear, concise bullet-point summary of the email.\n\nUse this whenever I ask to summarize or check a single email.\n\nsummarizeEmails(count):\n\nInput: number of recent emails to summarize.\n\nOutput: a structured object containing exactly count emails (or fewer if not enough exist). Each email object includes:\n\n{\n  \"sender\": \"sender@example.com\",\n  \"summary\": [\"bullet 1\", \"bullet 2\", ...]\n}\n\nThis tool will fetch the last N emails, summarize each email body using summarizeEmail, and return them as a single object.\n\nOnly include the sender email and summary to save space. Do NOT include subject lines.\n\nAlways respect the requested count.\n\n⚠ Before sending to WhatsApp, ensure the total text does not exceed 4096 characters. If it does:\n\nTruncate each email summary proportionally to fit within the limit, OR\n\nSplit the output into multiple messages, each under 4096 characters.\n\nsendEmail(to, subject, body):\n\nInput: recipient email address, subject, and message body (in plain text).\n\nOutput: confirmation { \"status\": \"sent\" }.\n\nUse this whenever I ask you to draft or send an email.\n\naddCalendarEvent(title, date, time, durationMins, location):\n\nInput: details of a calendar event (e.g. \"Meeting with Ali\", \"2025-09-07\", \"17:00\", 60, \"Zoom\").\n\nOutput: confirmation { \"status\": \"created\" }.\n\nUse this whenever I ask you to add something to my schedule.\n\ntaskManager(intent, title, dueDate, priority, description, status):\n\nInput: six named parameters (not wrapped in a single string).\n\nOutput: confirmation of task operation.\n\nUse this for ANY task-related requests (add task, remove task, show tasks, edit task, etc.).\n\nExample call:\n\n{\n  \"name\": \"taskManager\",\n  \"arguments\": {\n    \"intent\": \"add\",\n    \"title\": \"Buy groceries\",\n    \"dueDate\": \"2025-09-09\",\n    \"priority\": \"medium\",\n    \"description\": \"from supermarket\",\n    \"status\": \"pending\"\n  }\n}\n\nGeneral rules\n\nEmail handling:\n\nIf I provide only the recipient and purpose, auto-generate a professional subject and body.\n\nGenerate the email JSON in this format:\n\n{\n  \"to\": \"recipient@example.com\",\n  \"subject\": \"Leave Request\",\n  \"body\": \"Your message here\"\n}\n\nPass this JSON string first to the code tool with JSON.parse(...) so it becomes valid JSON.\n\nThen call the sendEmail tool with the parsed values.\n\nGmail summaries:\n\nWhen asked for the last N emails, call summarizeEmails(count) to fetch and summarize.\n\nOnly include sender email and summary to save space. Never include subject lines.\n\nKeep summaries concise to stay within WhatsApp's 4096 character limit.\n\nEnsure that any WhatsApp message does not exceed 4096 characters. Truncate or split messages automatically if necessary.\n\nTask handling:\n\nParse the user's task message and extract/generate these fields:\n\nintent: \"add\", \"delete\", \"get\", or \"edit\"\n\ntitle: \n- For ADD: extract the main task from the user message\n- For DELETE: extract the position number from phrases like \"delete second task\", \"remove first task\" (convert to numbers: first=1, second=2, third=3, etc.)\n- For EDIT: extract the position number from phrases like \"edit first task\", \"update second task\"\n\ndueDate: convert relative dates to YYYY-MM-DD format (today = 2025-09-08, tomorrow = 2025-09-09, next weekend = 2025-09-13/14)\n\npriority: \"high\", \"medium\", or \"low\" (default: \"medium\")\n\ndescription: create a detailed description by combining the task title with any location, context, or method mentioned. Examples:\n- \"buy grocery from metro\" → \"Purchase groceries from Metro supermarket\"\n- \"call mom\" → \"Make a phone call to mother\"\n- \"meeting with team\" → \"Attend team meeting for project discussion\"\n\nstatus: \"pending\", \"in-progress\", or \"completed\" (default: \"pending\")\n\nTask position handling:\n- Tasks are numbered by their position in the list: 1st, 2nd, 3rd, etc.\n- For DELETE: \"delete second task\" → extract \"2\" and pass as title\n- For EDIT: \"edit first task\" → extract \"1\" and pass as title\n- Convert position words to numbers: first=1, second=2, third=3, fourth=4, fifth=5\n\nAlways call taskManager with named JSON arguments.\n\nConfirm with a natural response like:\n\n\"Task added ✅ Buy groceries (due tomorrow)\"\n\nIf any tool input is incomplete (e.g., missing recipient), ask one short follow-up question.\n\nKeep WhatsApp replies short and natural.\nYou can also use Gmail mcp tool\n\nAlways confirm tool actions in plain language (e.g., \"Email sent to Sarah ✅\" or \"Meeting with Ali scheduled for tomorrow at 5pm 📅\").\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        -40
+      ],
+      "id": "fc40ac28-8ff1-43f1-9c44-66b5bb2cf5c8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to send an email.  \nInputs: \n- to (recipient email address) \n- subject (email subject) \n- body (plain text message).  \nOutput: { \"status\": \"sent\" }.  \nIf any input is missing, ask the user for it before calling.  \n",
+        "workflowId": {
+          "__rl": true,
+          "value": "sXtaMTN9pmhe7lNe",
+          "mode": "list",
+          "cachedResultName": "Email Send"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        184
+      ],
+      "id": "b3ad456d-4908-47f9-a1ed-dc6d62c1a53e",
+      "name": "sendEmail"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "761986703669299",
+        "recipientPhoneNumber": "={{ $('WhatsappTrigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        -40
+      ],
+      "id": "092a3b31-2642-4662-b0e0-ad89c93211ce",
+      "name": "Send message",
+      "webhookId": "dc20da20-edc7-4f2c-adcb-e7708e783fc3",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "NqmkGLoL154ML1gL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "This tool fetches and summarizes recent emails. When given a number count, it retrieves exactly that many emails from the inbox, summarizes each email into bullet points, and returns a structured object with sender, subject, date, and summary. Use this whenever the user requests details of their recent emails. The output is formatted as a single object containing an array of summarized emails, ready for further use or messaging.",
+        "workflowId": {
+          "__rl": true,
+          "value": "2Cxg15Uz8seTPUWd",
+          "mode": "list",
+          "cachedResultName": "Email Sumerizer"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        184
+      ],
+      "id": "5c06d0f2-1958-4011-9c9b-926f7e7e24d9",
+      "name": "EmailSmmerizer"
+    },
+    {
+      "parameters": {
+        "content": "\n🤖 Multi-Platform AI Assistant Workflow\n\n\nDescription:\nPersonal AI assistant that handles WhatsApp and Slack messages with intelligent tool routing. \n\nFeatures:\n• Email management (send, summarize recent emails)\n• Calendar event creation\n• Code execution for data processing\n• Memory-enabled conversations per user\n• Platform-aware responses (WhatsApp/Slack)\n• 4096 character limit handling for messaging platforms\n\nTools: Email, Calendar, Code Executor, Memory Buffer\nModels: Google Gemini with 0.4 temperature\nTriggers: WhatsApp webhook, Slack app mentions\n\n\n",
+        "height": 1392,
+        "width": 2192
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        -944
+      ],
+      "typeVersion": 1,
+      "id": "7b85efc0-f2e4-4617-9c32-58c877f1b8dc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -40
+      ],
+      "id": "00feb369-801c-46b5-89cd-547cf2c194e5",
+      "name": "WhatsappTrigger",
+      "webhookId": "23a36a2e-a8aa-4fcc-a6a6-b3106ef11227",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "5T1Ugxg1YTEeKP1w",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        -592
+      ],
+      "id": "a9dea9e6-6ff6-4b81-9a42-d3276a0d3502",
+      "name": "TelegramTrigger",
+      "webhookId": "5a25f9e4-7b60-46d4-93b3-c47efd8704eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "9isgnrp94XdbjIk7",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Edit Fields').item.json.source }}",
+                    "rightValue": "telegram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "afe225cf-c832-4e33-aab5-0639ab8b7a83"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1044022a-5b79-4baf-a43f-c1f9779eae35",
+                    "leftValue": "={{ $('Edit Fields').item.json.source }}",
+                    "rightValue": "whatsapp",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        -40
+      ],
+      "id": "9e448fa8-829e-4faa-af66-641c96fff06f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Edit Fields').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        -368
+      ],
+      "id": "fe6e64fa-36e4-4ce1-9780-38085b9b201d",
+      "name": "Send a text message",
+      "webhookId": "5ae827b0-3472-40cd-be04-1f118ed10c39",
+      "credentials": {
+        "telegramApi": {
+          "id": "9isgnrp94XdbjIk7",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $input.first().json.output;\nconst cleanMessage = message\n  .replace(/\\*\\*/g, '')              // Remove all bold markers\n  .replace(/\\*/g, '')                // Remove asterisks\n  .replace(/</g, '(')\n  .replace(/>/g, ')')\n  .replace(/•   •/g, '📧 ')          // Email icon for From\n  .replace(/•   /g, '   ');          // Clean spacing\n\nreturn [{ output: cleanMessage }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        -368
+      ],
+      "id": "ae48baa7-b539-4fc1-aff5-2997e0c25cd3",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "description": "Manages tasks in Google Sheets. Analyzes user's task-related message and returns structured JSON with intent (add/delete/get/edit), natural response, and task data. Input: user's complete message about tasks. Output: JSON object with intent, response text, and task details for further processing.\n\n",
+        "workflowId": {
+          "__rl": true,
+          "value": "lZ16yP2GnsA1pmLa",
+          "mode": "list",
+          "cachedResultName": "Task Managment"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "parameters": "={{ $fromAI('parameters', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "parameters"
+          ],
+          "schema": [
+            {
+              "id": "parameters",
+              "displayName": "parameters",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        184
+      ],
+      "id": "6f7cf075-1394-4fb2-a5c5-91a1abc71e42",
+      "name": "taskManager"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ae00d537-075a-460a-92df-8f1265f960e3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        288
+      ],
+      "id": "e7b16fca-9ed7-4b7d-9cad-e2f5c0b9edbb",
+      "name": "Webhook",
+      "webhookId": "ae00d537-075a-460a-92df-8f1265f960e3"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://n8n.srv990213.hstgr.cloud/mcp/gmail-enhanced/sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.1,
+      "position": [
+        1088,
+        192
+      ],
+      "id": "4d15989d-6386-4cae-85ba-57d908ac82c9",
+      "name": "MCP Client"
+    }
+  ],
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sendEmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EmailSmmerizer": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsappTrigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TelegramTrigger": {
+      "main": [
+        []
+      ]
+    },
+    "Send message": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "taskManager": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "WhatsappTrigger": [
+      {
+        "json": {
+          "messaging_product": "whatsapp",
+          "metadata": {
+            "display_phone_number": "15551675663",
+            "phone_number_id": "761986703669299"
+          },
+          "statuses": [
+            {
+              "id": "wamid.HBgMOTIzMzM0Njg4MzYzFQIAERgSRjJDNUY3NkZBOTY0RjM0N0M1AA==",
+              "status": "read",
+              "timestamp": "1762631471",
+              "recipient_id": "923334688363",
+              "conversation": {
+                "id": "c46dd8fffab63bb27ddb73f6fb4b1ad1",
+                "origin": {
+                  "type": "service"
+                }
+              },
+              "pricing": {
+                "billable": false,
+                "pricing_model": "PMP",
+                "category": "service",
+                "type": "free_customer_service"
+              }
+            }
+          ],
+          "field": "messages"
+        }
+      }
+    ]
+  },
+  "versionId": "6953a850-6780-4d17-a6fc-f6e6cdf13d17",
+  "triggerCount": 3,
+  "shared": [
+    {
+      "createdAt": "2025-09-06T11:47:34.048Z",
+      "updatedAt": "2025-09-06T11:47:34.048Z",
+      "role": "workflow:owner",
+      "workflowId": "Hwyt4zabQWiz1G44",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
