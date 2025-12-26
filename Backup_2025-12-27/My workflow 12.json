@@ -1,0 +1,54 @@
+{
+  "createdAt": "2025-10-31T11:15:38.795Z",
+  "updatedAt": "2025-10-31T11:15:38.000Z",
+  "id": "PMX9QSFc1vpXdCHW",
+  "name": "My workflow 12",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Conversion Rate Optimizer",
+        "formDescription": "Your Landing Page is Leaking Sales—Fix It Now",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Landing Page Url",
+              "placeholder": "https://yuzuu.co",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "28288880-66d8-49a6-872b-f5d750306eb0",
+      "name": "On form submission",
+      "webhookId": "95fd842f-f638-484f-97a0-4063934d56d8"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "8b06aff7-3a2d-4472-8c0e-f22ad89be565",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-10-31T11:15:38.798Z",
+      "updatedAt": "2025-10-31T11:15:38.798Z",
+      "role": "workflow:owner",
+      "workflowId": "PMX9QSFc1vpXdCHW",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
