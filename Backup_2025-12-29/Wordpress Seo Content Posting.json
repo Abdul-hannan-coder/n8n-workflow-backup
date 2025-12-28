@@ -1,0 +1,2759 @@
+{
+  "createdAt": "2025-11-25T06:43:38.703Z",
+  "updatedAt": "2025-11-25T06:43:38.000Z",
+  "id": "oROoeAEdFJkiFVUL",
+  "name": "Wordpress Seo Content Posting",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "d24ead98-8047-4f0f-aeb7-47d4c1f48e4c",
+      "name": "gpt-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2048,
+        1168
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 2112,
+        "width": 4224,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "458c026b-5760-445c-b368-3cfd1deabe47",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.rowValues[0][\"6\"] }}",
+                    "rightValue": "Client",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9b402f08-6cf8-4208-85eb-40cc7a2ce568"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "505c954c-4d2c-4820-bbcd-0774785b96b1",
+                    "leftValue": "={{ $json.body.rowValues[0][\"6\"] }}",
+                    "rightValue": "Team",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "2394e0af-9ba1-41c9-afd1-cccf0e6cef68",
+                    "leftValue": "={{ $json.body.rowValues[0][\"6\"] }}",
+                    "rightValue": "Done",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1328,
+        2640
+      ],
+      "id": "d100297e-856d-4388-bf19-f5aed2cc11ea",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sendTo": "automation@newwavedm.com",
+        "subject": "Please review the content created by SEO Automation",
+        "emailType": "text",
+        "message": "=Hi ,\n\nWe’ve generated new content drafts through our WordPress SEO automation workflow, designed to improve organic visibility and engagement for your website. You can review the drafts using the link below: 👉  {{ $json.body.rowValues[0]['5'] }}\n\nPlease take a few minutes to review and share any edits, feedback, or approvals directly in the document comments. Once approved, we’ll schedule the content for publishing. Thank you for your time and collaboration — your insights ensure the content stays aligned with your brand voice and goals. \n\nBest regards, \nRehan Azeem \nFourth Wave Digital Marketing",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        2656
+      ],
+      "id": "b9ce7a0f-b7fb-4649-a704-ef5e15775c87",
+      "name": "Send a message",
+      "webhookId": "7c5658a8-3177-4c9d-83a6-c262cddbc46f"
+    },
+    {
+      "parameters": {
+        "title": " ",
+        "additionalFields": {
+          "content": "={{ $json.output }}"
+        }
+      },
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        2672
+      ],
+      "id": "3a76e8f1-398f-48ae-bdde-0a49a263be78",
+      "name": "Create a post"
+    },
+    {
+      "parameters": {
+        "sendTo": "ney@newwavedm.com",
+        "subject": "Please review the content created by SEO Automation",
+        "emailType": "text",
+        "message": "=Hi ,\n\nWe’ve generated new content drafts through our WordPress SEO automation workflow, designed to improve organic visibility and engagement for your website. You can review the drafts using the link below: 👉  {{ $json.body.rowValues[0]['5'] }}\n\nPlease take a few minutes to review and share any edits, feedback, or approvals directly in the document comments. Once approved, we’ll schedule the content for publishing. Thank you for your time and collaboration — your insights ensure the content stays aligned with your brand voice and goals. \n\nBest regards, \nRehan Azeem \nFourth Wave Digital Marketing",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        2464
+      ],
+      "id": "fb9fc27a-5bc2-4bab-83bc-316e4f0a5597",
+      "name": "Send a message2",
+      "webhookId": "7c5658a8-3177-4c9d-83a6-c262cddbc46f"
+    },
+    {
+      "parameters": {
+        "content": "## Review & Publishing",
+        "height": 1872,
+        "width": 4272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        2080
+      ],
+      "typeVersion": 1,
+      "id": "56d28f59-2f83-4581-a7c3-ab59dc2349e1",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Y SEO RESEARCH & WORDPRESS PAGE GENERATION AGENT\n\nMISSION: Analyze the provided website link and create comprehensive, SEO-optimized WordPress pages based on thorough competitive research and industry best practices.\n\nWEBSITE TO ANALYZE:  {{ $json.body.rowValues[0][\"2\"] }}\nRESEARCH PHASE INSTRUCTIONS:\n1. COMPETITOR ANALYSIS\n   - Identify top 10 competitors in the same industry/niche\n   - Analyze their page structures, content strategies, and SEO approaches\n   - Extract high-performing keywords they're ranking for\n   - Study their content depth, formatting, and user engagement elements\n\n2. KEYWORD RESEARCH\n   - Primary keywords (high volume, medium competition)\n   - Long-tail keywords (specific, conversion-focused)\n   - Local SEO keywords (if applicable)\n   - Semantic keywords and LSI terms\n   - Question-based keywords for FAQ sections\n\n3. INDUSTRY ANALYSIS\n   - Current market trends and pain points\n   - Target audience demographics and behavior\n   - Common objections and concerns\n   - Seasonal trends and opportunities\n   - Regulatory or compliance considerations\n\nPAGE GENERATION REQUIREMENTS:\n\n**LANDING PAGE STRUCTURE:**\n- Compelling headline with primary keyword\n- Subheadline addressing main value proposition\n- Hero section with clear CTA\n- Benefits/features section (3-5 key points)\n- Social proof (testimonials placeholder)\n- FAQ section (5-7 common questions)\n- Secondary CTA section\n- Trust signals and certifications\n- Meta title (55-60 characters)\n- Meta description (150-160 characters)\n- Schema markup recommendations\n\n**SERVICE PAGE STRUCTURE:**\n- Service-focused H1 with target keyword\n- Service overview and benefits\n- Detailed process/methodology (step-by-step)\n- Pricing structure or packages\n- Case studies/portfolio section placeholder\n- Related services cross-links\n- Local service area coverage (if applicable)\n- Conversion-focused CTAs throughout\n- Technical specifications or requirements\n- Guarantee/warranty information\n- Meta title optimized for service + location\n- Meta description highlighting unique value\n\n**BLOG PAGE STRUCTURE:**\n- SEO-optimized title (60 characters max)\n- Engaging introduction with hook\n- Comprehensive outline with H2/H3 structure\n- 1500-2500 word count target\n- Internal linking opportunities (5-8 links)\n- External authority links (2-3 relevant sources)\n- Image/media placement suggestions\n- Call-to-action integration\n- Related posts section\n- Author bio section\n- Social sharing optimization\n- Featured snippet optimization\n- Meta description for click-through\n\n**LOCATION PAGE STRUCTURE:**\n- Location-specific H1 with geo-keywords\n- Local business information (NAP consistency)\n- Service area coverage map placeholder\n- Local testimonials and reviews section\n- Community involvement/local partnerships\n- Location-specific offers or promotions\n- Driving directions and parking info\n- Local landmarks and accessibility\n- Hours of operation\n- Local schema markup requirements\n- Google My Business optimization tips\n- Local citation opportunities\n\nCONTENT QUALITY STANDARDS:\n- E-A-T compliance (Expertise, Authoritativeness, Trustworthiness)\n- User-first content approach\n- Mobile-responsive design considerations\n- Page speed optimization recommendations\n- Accessibility compliance (WCAG guidelines)\n- Conversion rate optimization elements\n- A/B testing suggestions for key elements\n\nSEO TECHNICAL REQUIREMENTS:\n- Title tag optimization (primary keyword placement)\n- Meta descriptions with compelling CTAs\n- Header tag hierarchy (H1, H2, H3 structure)\n- Image alt text recommendations\n- Internal linking strategy\n- URL structure suggestions\n- Breadcrumb navigation\n- Site speed optimization tips\n- Mobile-first indexing compliance\n- Core Web Vitals considerations\n\nCONTENT TONE & STYLE:\n- Professional yet approachable\n- Industry-appropriate terminology\n- Clear, scannable formatting\n- Action-oriented language\n- Trust-building elements\n- Problem-solution focused\n- Benefit-driven messaging\n- Local community connection (for location pages)\n\nDELIVERABLE FORMAT:\nFor each page type, provide:\n1. Complete HTML/WordPress content structure\n2. SEO metadata (title, description, keywords)\n3. Keyword density recommendations\n4. Internal linking suggestions\n5. Image/media placement guide\n6. CTA placement and copy\n7. Schema markup code\n8. Performance optimization checklist\n9. Competitive advantage points\n10. Conversion optimization recommendations\n\nRESEARCH DEPTH REQUIREMENTS:\n- Minimum 20 competitor pages analyzed per page type\n- 50+ relevant keywords identified per page\n- Industry trend analysis (last 12 months)\n- User intent mapping for each keyword\n- Content gap analysis vs competitors\n- Local search optimization opportunities\n- Voice search optimization considerations\n- Featured snippet optimization strategies\n\nOUTPUT SPECIFICATIONS:\n- WordPress-ready HTML structure\n- Yoast SEO plugin optimization\n- Elementor/Gutenberg block suggestions\n- Mobile responsiveness notes\n- Loading speed recommendations\n- User experience enhancement tips\n- Conversion tracking setup guide\n- Analytics goal configuration\n\nQUALITY ASSURANCE CHECKLIST:\n□ All content is original and plagiarism-free\n□ Keywords naturally integrated (2-3% density)\n□ Readability score 60+ (Flesch Reading Ease)\n□ All CTAs are clear and compelling\n□ Mobile-first design principles applied\n□ Local SEO elements included where relevant\n□ Technical SEO requirements met\n□ User experience optimized\n□ Conversion funnel considered\n□ Brand voice consistency maintained\n\nBegin comprehensive research and generation process for all four page types based on the provided website link analysis.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        1248
+      ],
+      "id": "bd95a088-d170-46b9-a0ad-411fdb835ee1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Webhook').item.json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Location Page",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d18ad9bc-7e21-48b1-85ee-75dfff4ac324"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6e5c2ba4-98bf-45a6-aace-9576efe04d5b",
+                    "leftValue": "={{ $('Webhook').item.json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Landing Page",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Landing Page"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "947d19b2-1c2e-4b2b-9f71-3779f55ac83d",
+                    "leftValue": "={{ $('Webhook').item.json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Service Page",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Service Page"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "070d6f5b-1fdc-4dee-8f80-aba16f617f39",
+                    "leftValue": "={{ $('Webhook').item.json.body.rowValues[0][\"4\"] }}",
+                    "rightValue": "Blog",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Blog "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1728,
+        1216
+      ],
+      "id": "b2ea9066-81e0-4c24-8309-87b3d6a3e666",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1424,
+        1472
+      ],
+      "id": "fa82b7fa-8bd4-41bf-b46e-fb0ee81135e4",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ $json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1040
+      ],
+      "id": "6b43385b-8c1a-46aa-bb01-e4291a9bd535",
+      "name": "Create a document"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('clearing the content').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        1040
+      ],
+      "id": "04322c0c-b3da-4812-8b16-75f49162f84b",
+      "name": "Update a document1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input example: [{\"documentId\": \"1vQwy2sH4eoRNKbK8pUGjvuutbinU18xpd6v1OpkFn-Y\"}]\n\nconst docId = items[0].json.documentId;\n\nif (!docId) {\n  throw new Error(\"❌ No documentId found in input!\");\n}\n\n// Construct the Google Docs URL\nconst docUrl = `https://docs.google.com/document/d/${docId}/edit`;\n\nreturn [\n  {\n    json: {\n      documentId: docId,\n      documentLink: docUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        1040
+      ],
+      "id": "e85533f2-2838-4975-a402-02ad15a3e1d3",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw string output from the previous node\nconst raw = $input.first().json.output;\n\n// Step 1: Remove code fences and extra whitespace\nconst cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();\n\n// Step 2: Parse the cleaned JSON safely\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (err) {\n  throw new Error('❌ Failed to parse JSON: ' + err.message + '\\n\\nContent:\\n' + cleaned);\n}\n\n// Step 3: Return a clean, mappable object\nreturn [\n  {\n    json: {\n      title: parsed.title || \"\",\n      content: parsed.output || \"\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        1040
+      ],
+      "id": "eee4975c-4574-4f60-b1d2-07301d432a39",
+      "name": "clearing the content"
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ $json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        640
+      ],
+      "id": "f443596e-4223-4ea8-ae53-58812518bcc6",
+      "name": "Create a document1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('clearing the content1').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        640
+      ],
+      "id": "c6b2806a-fbda-4eb6-93d1-09e939be515a",
+      "name": "Update a document2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input example: [{\"documentId\": \"1vQwy2sH4eoRNKbK8pUGjvuutbinU18xpd6v1OpkFn-Y\"}]\n\nconst docId = items[0].json.documentId;\n\nif (!docId) {\n  throw new Error(\"❌ No documentId found in input!\");\n}\n\n// Construct the Google Docs URL\nconst docUrl = `https://docs.google.com/document/d/${docId}/edit`;\n\nreturn [\n  {\n    json: {\n      documentId: docId,\n      documentLink: docUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        640
+      ],
+      "id": "7937a0a8-541f-42cd-9f7d-011255c0f297",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw string output from the previous node\nconst raw = $input.first().json.output;\n\n// Step 1: Remove code fences and extra whitespace\nconst cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();\n\n// Step 2: Parse the cleaned JSON safely\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (err) {\n  throw new Error('❌ Failed to parse JSON: ' + err.message + '\\n\\nContent:\\n' + cleaned);\n}\n\n// Step 3: Return a clean, mappable object\nreturn [\n  {\n    json: {\n      title: parsed.title || \"\",\n      content: parsed.output || \"\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        640
+      ],
+      "id": "2f7f48ae-6244-4df1-8192-6ee954894ada",
+      "name": "clearing the content1"
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ $json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1440
+      ],
+      "id": "3f0e35d9-1143-4fc5-bac1-11676afac406",
+      "name": "Create a document2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('clearing the content2').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        1440
+      ],
+      "id": "414fd6fd-acb7-4d5f-84e5-2840d168040d",
+      "name": "Update a document3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input example: [{\"documentId\": \"1vQwy2sH4eoRNKbK8pUGjvuutbinU18xpd6v1OpkFn-Y\"}]\n\nconst docId = items[0].json.documentId;\n\nif (!docId) {\n  throw new Error(\"❌ No documentId found in input!\");\n}\n\n// Construct the Google Docs URL\nconst docUrl = `https://docs.google.com/document/d/${docId}/edit`;\n\nreturn [\n  {\n    json: {\n      documentId: docId,\n      documentLink: docUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        1440
+      ],
+      "id": "56412744-d4b9-46c9-90f0-4320330f725e",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw string output from the previous node\nconst raw = $input.first().json.output;\n\n// Step 1: Remove code fences and extra whitespace\nconst cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();\n\n// Step 2: Parse the cleaned JSON safely\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (err) {\n  throw new Error('❌ Failed to parse JSON: ' + err.message + '\\n\\nContent:\\n' + cleaned);\n}\n\n// Step 3: Return a clean, mappable object\nreturn [\n  {\n    json: {\n      title: parsed.title || \"\",\n      content: parsed.output || \"\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        1440
+      ],
+      "id": "be4e634d-fb46-41a8-8e2d-7b9315a237d0",
+      "name": "clearing the content2"
+    },
+    {
+      "parameters": {
+        "folderId": "default",
+        "title": "={{ $json.title }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1840
+      ],
+      "id": "16db1e97-a12e-4465-8300-8e1ec9694fad",
+      "name": "Create a document3"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "insert",
+              "text": "={{ $('clearing the content3').item.json.content }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        1840
+      ],
+      "id": "89f2466c-d2b8-4f74-b270-b7632fa5ee9c",
+      "name": "Update a document4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input example: [{\"documentId\": \"1vQwy2sH4eoRNKbK8pUGjvuutbinU18xpd6v1OpkFn-Y\"}]\n\nconst docId = items[0].json.documentId;\n\nif (!docId) {\n  throw new Error(\"❌ No documentId found in input!\");\n}\n\n// Construct the Google Docs URL\nconst docUrl = `https://docs.google.com/document/d/${docId}/edit`;\n\nreturn [\n  {\n    json: {\n      documentId: docId,\n      documentLink: docUrl\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        1840
+      ],
+      "id": "e766923f-a091-4b1f-9545-dc9a17835c0f",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw string output from the previous node\nconst raw = $input.first().json.output;\n\n// Step 1: Remove code fences and extra whitespace\nconst cleaned = raw.replace(/```json/g, '').replace(/```/g, '').trim();\n\n// Step 2: Parse the cleaned JSON safely\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (err) {\n  throw new Error('❌ Failed to parse JSON: ' + err.message + '\\n\\nContent:\\n' + cleaned);\n}\n\n// Step 3: Return a clean, mappable object\nreturn [\n  {\n    json: {\n      title: parsed.title || \"\",\n      content: parsed.output || \"\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        1840
+      ],
+      "id": "ea46a42b-8fdb-4d06-aabc-aaa286fed6a2",
+      "name": "clearing the content3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "8333c61f-cfa6-4eb8-92c8-4af41a47ede5",
+      "name": "gpt-4o-mini1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2048,
+        1568
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "1d9efee1-05c8-4fa2-bf7f-5fe5e2d818ee",
+      "name": "gpt-4o-mini2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2048,
+        1968
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "bf8a8d7c-492c-4f84-8b3a-37d8bc30ac2b",
+      "name": "gpt-4o-mini3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2048,
+        768
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an SEO writer creating a **local service/location page** in plain text (no HTML).\n\n--------------------------------------------------------------\n## INPUTS\nResearch:\n{{ $json.output }}\n\nKeywords:\n{{ $('Webhook').item.json.body.rowValues[0]['1'] }}\n\nOnly use the company name if it exists in the research; otherwise, write it generically.\n\n--------------------------------------------------------------\n## OBJECTIVE\nWrite a 900–1200-word **location page** that:\n- Highlights AI consulting or automation expertise for local clients\n- References location-specific insights found in the research\n- Naturally uses the provided keywords\n- Ends with a compelling call-to-action\n\n--------------------------------------------------------------\n## STRUCTURE\nH1: Service or Industry Focus + Location\nIntro: Discuss the importance of the service in this region\n\nH2: About Our Expertise in This Area\n- Reference data or credibility indicators from research\n\nH2: Local Services and Solutions\n- Detail specific offerings mentioned in research\n- Use keywords naturally\n\nH2: Why Businesses in This Location Choose Us\n- Use evidence or testimonials if available in research\n\nConclusion / CTA:\n- Encourage the reader to inquire or learn more\n\n--------------------------------------------------------------\n## STYLE\n- Plain text output only\n- Localized and personable tone\n- Use Canadian English\n- Maintain natural keyword integration\n--------------------------------------------------------------\n\nNow, write the complete **location page content** based solely on the research and keywords above.\n\n\n--------------------------------------------------------------\n## OUTPUT FORMAT\n\nReturn your response in this exact JSON structure:\n\n```json\n{\n  \"output\": \"Complete landing page content with all sections formatted as plain text here\",\n  \"title\": \"SEO-optimized Google Docs title (50-60 characters)\"\n}\n```\n\nNow, write the full-length **landing page content** based only on the research and keywords above, formatted in the simple JSON structure specified.",
+        "options": {}
+      },
+      "id": "4dba8c67-0d1c-4c56-b74d-1809be29e760",
+      "name": "Copywriter for Location Page",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1952,
+        544
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert SEO copywriter for AI consulting and automation brands. Based on the research provided below, create a complete, persuasive, and SEO-optimized **landing page**.\n\n--------------------------------------------------------------\n## INSTRUCTIONS\n\nUse the research insights from:\n{{ $json.output }}\n\nIncorporate the following SEO keywords naturally:\n{{ $('Webhook').item.json.body.rowValues[0]['1'] }}\n\nDo NOT add or assume any company name — use the one from the research if available. If none appears, write the content generically as \"our team\" or \"our company.\"\n\n--------------------------------------------------------------\n## CONTENT OBJECTIVE\nWrite a 900–1500-word **landing page** that:\n1. Attracts and converts readers into leads\n2. Reflects authority and trust in AI automation\n3. Highlights clear benefits, process, and differentiation\n4. Ends with a compelling call-to-action (CTA)\n\n--------------------------------------------------------------\n## STRUCTURE\nH1: Core Offer or Promise (use topic from research)\nIntro: Describe key problem and how the solution helps\n\nH2: Benefits of Our Solution\n- Focus on measurable results and value\n- Integrate research-backed statements\n\nH2: How It Works\n- Explain workflow, process, or framework (3–5 steps)\n\nH2: Why Choose Us\n- Use data, testimonials, or credibility markers from the research\n\nConclusion / CTA:\n- End with an action-inviting close (e.g., \"Get started today\")\n\n--------------------------------------------------------------\n## STYLE\n- Plain text output only (no HTML)\n- Canadian English spelling\n- Tone: authoritative, persuasive, and professional\n- Naturally blend SEO keywords from the provided list\n\n--------------------------------------------------------------\n## OUTPUT FORMAT\n\nReturn your response in this exact JSON structure:\n\n```json\n{\n  \"output\": \"Complete landing page content with all sections formatted as plain text here\",\n  \"title\": \"SEO-optimized Google Docs title (50-60 characters)\"\n}\n```\n\nNow, write the full-length **landing page content** based only on the research and keywords above, formatted in the simple JSON structure specified.",
+        "options": {}
+      },
+      "id": "a1c21cce-5dbd-46db-b88b-e82d1910355c",
+      "name": "Copywriter for Landing Page",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1952,
+        944
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an SEO content specialist writing a full-length **service page** in plain text (no HTML).\n\n--------------------------------------------------------------\n## INPUT DATA\nResearch:\n{{ $json.output }}\n\nKeywords:\n{{ $('Webhook').item.json.body.rowValues[0]['1'] }}\n\nUse the information which exists in the research; otherwise, write generically.\n\n--------------------------------------------------------------\n## OBJECTIVE\nWrite a 1000–1500-word **service page** that:\n- Clearly defines and explains the service described in the research\n- Highlights key benefits, process, and differentiation\n- Incorporates the given keywords naturally\n- Concludes with a clear, persuasive CTA\n\n--------------------------------------------------------------\n## STRUCTURE\nH1: Service Name or Focus (from research)\nIntro: Explain the service and its relevance\n\nH2: What This Service Is\n- Define the service and its context within AI/automation\n\nH2: Key Benefits\n- Outline main advantages using insights from the research\n\nH2: Our Process\n- Describe how the service is delivered (step-by-step)\n\nH2: Why Businesses Trust This Service\n- Use stats, quotes, or findings from the research\n\nConclusion / CTA:\n- Encourage readers to take the next step or inquire\n\n--------------------------------------------------------------\n## STYLE\n- Plain text only\n- Professional, clear, and value-driven tone\n- Use Canadian English\n- Keywords should appear naturally throughout\n--------------------------------------------------------------\n\nNow, write the complete **service page content** using the research and keywords provided.\n\n--------------------------------------------------------------\n## OUTPUT FORMAT\n\nReturn your response in this exact JSON structure:\n\n```json\n{\n  \"output\": \"Complete landing page content with all sections formatted as plain text here\",\n  \"title\": \"SEO-optimized Google Docs title (50-60 characters)\"\n}\n```\n\nNow, write the full-length **landing page content** based only on the research and keywords above, formatted in the simple JSON structure specified.",
+        "options": {}
+      },
+      "id": "024a09e1-6b64-4384-832f-891d36c9dd6c",
+      "name": "Copywriter for Service Page",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1952,
+        1344
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional content writer creating a **long-form, SEO-optimized blog post** (no HTML output).\n\n--------------------------------------------------------------\n## INPUTS\nResearch:\n{{ $json.output }}\n\nKeywords:\n{{ $('Webhook').item.json.body.rowValues[0]['1'] }}\n\nIf a company name appears in the research, use it. Otherwise, write from a neutral, expert-authority perspective (no brand insertion).\n\n--------------------------------------------------------------\n## OBJECTIVE\nWrite a 1500–2000-word blog post that:\n- Uses insights and quotes from the research naturally\n- Incorporates SEO keywords effectively\n- Educates and engages business leaders or operations managers\n- Ends with a strong concluding takeaway\n\n--------------------------------------------------------------\n## STRUCTURE\nH1: Main Blog Title (based on research topic)\nIntro: Context and importance of the topic\n\nH2: Understanding the Core Concept\n- Reference main theme from research\n\nH2: Key Insights from Research\n- Include specific findings or data\n- Attribute sources naturally (e.g., “According to…”)\n\nH2: Real-World Applications\n- Explain practical uses or case examples\n\nH2: Challenges and Solutions\n- Discuss industry challenges and how to overcome them\n\nH2: Future Outlook or Expert Advice\n- Mention what trends or innovations may follow\n\nConclusion:\n- Summarize main points and close with a motivational or action-based thought\n\n--------------------------------------------------------------\n## STYLE\n- Plain text output only\n- Conversational yet authoritative\n- Use Canadian English\n- Avoid keyword stuffing; prioritize readability\n--------------------------------------------------------------\n\nNow, write the full **blog post** based on the research and keywords above.\n\n\n--------------------------------------------------------------\n## OUTPUT FORMAT\n\nReturn your response in this exact JSON structure:\n\n```json\n{\n  \"output\": \"Complete landing page content with all sections formatted as plain text here\",\n  \"title\": \"SEO-optimized Google Docs title (50-60 characters)\"\n}\n```\n\nNow, write the full-length **landing page content** based only on the research and keywords above, formatted in the simple JSON structure specified.",
+        "options": {}
+      },
+      "id": "8bc37530-5b2c-438e-970e-3152ceee5a78",
+      "name": "Copywriter for  Blog Page",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1952,
+        1744
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Location Page",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d18ad9bc-7e21-48b1-85ee-75dfff4ac324"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6e5c2ba4-98bf-45a6-aace-9576efe04d5b",
+                    "leftValue": "={{ $json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Landing Page",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Landing Page"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "947d19b2-1c2e-4b2b-9f71-3779f55ac83d",
+                    "leftValue": "={{ $json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Service Page",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Service Page"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "070d6f5b-1fdc-4dee-8f80-aba16f617f39",
+                    "leftValue": "={{ $json.body.rowValues[0]['4'] }}",
+                    "rightValue": "Blog",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Blog"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1552,
+        2848
+      ],
+      "id": "8f6b1c15-9229-4af0-93e1-7256fdd6b986",
+      "name": "Switch2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are an HTML formatter for WordPress. Convert a structured plain-text page into clean, semantic HTML. Do not invent content. Do not add commentary. Output HTML only.\n\nConversion rules:\n\nHeadings\n\nLines starting with H1: → <h1>…</h1>\n\nLines starting with H2: → <h2>…</h2>\n\nLines starting with H3: → <h3>…</h3>\n\nRemove the H1:/H2:/H3: labels from the rendered text.\n\nIntro / Conclusion\n\nA line starting with Intro: → one or more <p> paragraphs. Remove the Intro: label.\n\nA line starting with Conclusion or Conclusion / CTA: → one or more <p> paragraphs. Remove the label.\n\nIf the conclusion contains a call to action sentence, keep it as <p>; do not invent links. If no URL is present, leave as text.\n\nLists\n\nLines beginning with - → unordered list <ul><li>…</li></ul> (group consecutive bullets into a single list).\n\nNumbered steps like 1., 2., 3. on separate lines → ordered list <ol><li>…</li></ol> (group consecutive steps into a single list).\n\nInline formatting\n\nConvert **bold** to <strong>bold</strong>.\n\nPreserve existing punctuation and smart quotes.\n\nAuto-link any fully qualified URLs present in the content using <a href=\"…\">…</a>.\n\nParagraphs & spacing\n\nFor standalone text blocks that are not headings or list items, wrap as <p>…</p>.\n\nCollapse excessive blank lines. No <br> unless a deliberate single line break is present within the same paragraph.\n\nHTML structure\n\nWrap the entire output in:\n\n<article class=\"entry-content\">\n  …converted HTML…\n</article>\n\n\nDo not include <html>, <head>, or <body> tags.\n\nDo not add CSS, scripts, or JSON-LD unless present in the input.\n\nSafety & fidelity\n\nDo not invent company names, stats, links, or testimonials.\n\nDo not add new sections beyond what exists in the input.\n\nOutput only the final HTML—no explanations.\n\nNow convert the following text to HTML:\n\n{{ $json.content }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2000,
+        2576
+      ],
+      "id": "845eb0dd-04cf-4a99-bd57-581194272a33",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        2800
+      ],
+      "id": "fe246842-cbd9-493e-969f-df787b3672ca",
+      "name": "OpenAI Chat Model2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de4072bb-f49e-430a-bae2-70769cd47ead",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "New Website content",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c75a033d-e79e-4e07-8666-88e3765d2cf1",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 7,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        2656
+      ],
+      "id": "c6ba8037-6804-40fc-b3f8-2a58f1df5288",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "de4072bb-f49e-430a-bae2-70769cd47ead",
+              "leftValue": "={{ $json.body.sheetName }}",
+              "rightValue": "New Website content",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c75a033d-e79e-4e07-8666-88e3765d2cf1",
+              "leftValue": "={{ $json.body.range.columnStart }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        1248
+      ],
+      "id": "1014e702-6d6c-4394-9dc9-3f510ee38605",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook').item.json.body.rowValues[0]['0'] }}",
+            "Website Page Link": "http://newwavedigitalmarketing.com.au/",
+            "doc link": "={{ $json.documentLink }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3248,
+        640
+      ],
+      "id": "ceb98dfc-30da-4d8a-9c15-b9e7b0018eca",
+      "name": "Append or update row in sheet1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook').item.json.body.rowValues[0]['0'] }}",
+            "Website Page Link": "http://newwavedigitalmarketing.com.au/",
+            "doc link": "={{ $json.documentLink }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3248,
+        1040
+      ],
+      "id": "0e5f59d0-1cd2-4d48-ae64-f411e6138bf9",
+      "name": "Append or update row in sheet2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook').item.json.body.rowValues[0]['0'] }}",
+            "doc link": "={{ $json.documentLink }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3248,
+        1440
+      ],
+      "id": "3a3fe44e-c971-4c22-b13c-1cf7c8b2c6d2",
+      "name": "Append or update row in sheet3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook').item.json.body.rowValues[0]['0'] }}",
+            "doc link": "={{ $json.documentLink }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        3248,
+        1840
+      ],
+      "id": "5b6cab43-c6f9-499b-ad9b-ff80b20aea22",
+      "name": "Append or update row in sheet4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.body.rowValues[0]['5'] }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        2672
+      ],
+      "id": "450c3adf-5f22-474e-b157-7073934f7072",
+      "name": "Get a document"
+    },
+    {
+      "parameters": {
+        "title": " ",
+        "additionalFields": {
+          "content": "={{ $json.output }}"
+        }
+      },
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        3472
+      ],
+      "id": "60b65495-3acb-4c10-8d8d-747fc11ce64c",
+      "name": "Create a post1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are an HTML formatter for WordPress. Convert a structured plain-text page into clean, semantic HTML. Do not invent content. Do not add commentary. Output HTML only.\n\nConversion rules:\n\nHeadings\n\nLines starting with H1: → <h1>…</h1>\n\nLines starting with H2: → <h2>…</h2>\n\nLines starting with H3: → <h3>…</h3>\n\nRemove the H1:/H2:/H3: labels from the rendered text.\n\nIntro / Conclusion\n\nA line starting with Intro: → one or more <p> paragraphs. Remove the Intro: label.\n\nA line starting with Conclusion or Conclusion / CTA: → one or more <p> paragraphs. Remove the label.\n\nIf the conclusion contains a call to action sentence, keep it as <p>; do not invent links. If no URL is present, leave as text.\n\nLists\n\nLines beginning with - → unordered list <ul><li>…</li></ul> (group consecutive bullets into a single list).\n\nNumbered steps like 1., 2., 3. on separate lines → ordered list <ol><li>…</li></ol> (group consecutive steps into a single list).\n\nInline formatting\n\nConvert **bold** to <strong>bold</strong>.\n\nPreserve existing punctuation and smart quotes.\n\nAuto-link any fully qualified URLs present in the content using <a href=\"…\">…</a>.\n\nParagraphs & spacing\n\nFor standalone text blocks that are not headings or list items, wrap as <p>…</p>.\n\nCollapse excessive blank lines. No <br> unless a deliberate single line break is present within the same paragraph.\n\nHTML structure\n\nWrap the entire output in:\n\n<article class=\"entry-content\">\n  …converted HTML…\n</article>\n\n\nDo not include <html>, <head>, or <body> tags.\n\nDo not add CSS, scripts, or JSON-LD unless present in the input.\n\nSafety & fidelity\n\nDo not invent company names, stats, links, or testimonials.\n\nDo not add new sections beyond what exists in the input.\n\nOutput only the final HTML—no explanations.\n\nNow convert the following text to HTML:\n\n{{ $json.content }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2000,
+        3472
+      ],
+      "id": "eb7bf237-9976-4edd-a6a8-d43e74ec3a8c",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        3696
+      ],
+      "id": "b8268a69-8cc7-493d-b57c-97f98d249707",
+      "name": "OpenAI Chat Model3"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.body.rowValues[0]['5'] }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        3472
+      ],
+      "id": "0f870b9b-29ba-4c03-96d6-13142f1e6722",
+      "name": "Get a document1"
+    },
+    {
+      "parameters": {
+        "title": " ",
+        "additionalFields": {
+          "content": "={{ $json.output }}"
+        }
+      },
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        2272
+      ],
+      "id": "a4d524f9-0295-43a5-9b77-2c0714071e6b",
+      "name": "Create a post2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are an HTML formatter for WordPress. Convert a structured plain-text page into clean, semantic HTML. Do not invent content. Do not add commentary. Output HTML only.\n\nConversion rules:\n\nHeadings\n\nLines starting with H1: → <h1>…</h1>\n\nLines starting with H2: → <h2>…</h2>\n\nLines starting with H3: → <h3>…</h3>\n\nRemove the H1:/H2:/H3: labels from the rendered text.\n\nIntro / Conclusion\n\nA line starting with Intro: → one or more <p> paragraphs. Remove the Intro: label.\n\nA line starting with Conclusion or Conclusion / CTA: → one or more <p> paragraphs. Remove the label.\n\nIf the conclusion contains a call to action sentence, keep it as <p>; do not invent links. If no URL is present, leave as text.\n\nLists\n\nLines beginning with - → unordered list <ul><li>…</li></ul> (group consecutive bullets into a single list).\n\nNumbered steps like 1., 2., 3. on separate lines → ordered list <ol><li>…</li></ol> (group consecutive steps into a single list).\n\nInline formatting\n\nConvert **bold** to <strong>bold</strong>.\n\nPreserve existing punctuation and smart quotes.\n\nAuto-link any fully qualified URLs present in the content using <a href=\"…\">…</a>.\n\nParagraphs & spacing\n\nFor standalone text blocks that are not headings or list items, wrap as <p>…</p>.\n\nCollapse excessive blank lines. No <br> unless a deliberate single line break is present within the same paragraph.\n\nHTML structure\n\nWrap the entire output in:\n\n<article class=\"entry-content\">\n  …converted HTML…\n</article>\n\n\nDo not include <html>, <head>, or <body> tags.\n\nDo not add CSS, scripts, or JSON-LD unless present in the input.\n\nSafety & fidelity\n\nDo not invent company names, stats, links, or testimonials.\n\nDo not add new sections beyond what exists in the input.\n\nOutput only the final HTML—no explanations.\n\nNow convert the following text to HTML:\n\n{{ $json.content }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2000,
+        2176
+      ],
+      "id": "1908d32e-9ef0-40b5-9413-0224d6184b56",
+      "name": "AI Agent3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        2400
+      ],
+      "id": "4ece5d3f-9526-4c06-bb4f-076912d27ea2",
+      "name": "OpenAI Chat Model4"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.body.rowValues[0]['5'] }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        2272
+      ],
+      "id": "b0335a4a-e922-40de-adf7-ab17fbc087b0",
+      "name": "Get a document2"
+    },
+    {
+      "parameters": {
+        "title": " ",
+        "additionalFields": {
+          "content": "={{ $json.output }}"
+        }
+      },
+      "type": "n8n-nodes-base.wordpress",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        3072
+      ],
+      "id": "9754f48b-b91a-431c-93f7-4d51dac181da",
+      "name": "Create a post4"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are an HTML formatter for WordPress. Convert a structured plain-text page into clean, semantic HTML. Do not invent content. Do not add commentary. Output HTML only.\n\nConversion rules:\n\nHeadings\n\nLines starting with H1: → <h1>…</h1>\n\nLines starting with H2: → <h2>…</h2>\n\nLines starting with H3: → <h3>…</h3>\n\nRemove the H1:/H2:/H3: labels from the rendered text.\n\nIntro / Conclusion\n\nA line starting with Intro: → one or more <p> paragraphs. Remove the Intro: label.\n\nA line starting with Conclusion or Conclusion / CTA: → one or more <p> paragraphs. Remove the label.\n\nIf the conclusion contains a call to action sentence, keep it as <p>; do not invent links. If no URL is present, leave as text.\n\nLists\n\nLines beginning with - → unordered list <ul><li>…</li></ul> (group consecutive bullets into a single list).\n\nNumbered steps like 1., 2., 3. on separate lines → ordered list <ol><li>…</li></ol> (group consecutive steps into a single list).\n\nInline formatting\n\nConvert **bold** to <strong>bold</strong>.\n\nPreserve existing punctuation and smart quotes.\n\nAuto-link any fully qualified URLs present in the content using <a href=\"…\">…</a>.\n\nParagraphs & spacing\n\nFor standalone text blocks that are not headings or list items, wrap as <p>…</p>.\n\nCollapse excessive blank lines. No <br> unless a deliberate single line break is present within the same paragraph.\n\nHTML structure\n\nWrap the entire output in:\n\n<article class=\"entry-content\">\n  …converted HTML…\n</article>\n\n\nDo not include <html>, <head>, or <body> tags.\n\nDo not add CSS, scripts, or JSON-LD unless present in the input.\n\nSafety & fidelity\n\nDo not invent company names, stats, links, or testimonials.\n\nDo not add new sections beyond what exists in the input.\n\nOutput only the final HTML—no explanations.\n\nNow convert the following text to HTML:\n\n{{ $json.content }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        2000,
+        2976
+      ],
+      "id": "100dc568-d30d-4890-b59f-fdb4bec3d4fa",
+      "name": "AI Agent4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        3200
+      ],
+      "id": "2988af6b-d9cb-425a-a9c9-831be2c921c0",
+      "name": "OpenAI Chat Model5"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.body.rowValues[0]['5'] }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1776,
+        3072
+      ],
+      "id": "c2d346c4-8370-4375-bb79-3c0642d73461",
+      "name": "Get a document3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook1').item.json.body.rowValues[0]['0'] }}",
+            "Pagelink": "={{ $json.link }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2624,
+        2672
+      ],
+      "id": "d2c15d64-7b3e-4818-925c-c19528b8d9fd",
+      "name": "Append or update row in sheet5"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook1').item.json.body.rowValues[0]['0'] }}",
+            "Pagelink": "={{ $json.link }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2624,
+        2272
+      ],
+      "id": "278a3615-0aa9-4416-9238-8a8340fb82de",
+      "name": "Append or update row in sheet6"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook1').item.json.body.rowValues[0]['0'] }}",
+            "Pagelink": "={{ $json.link }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2624,
+        3072
+      ],
+      "id": "55fe22e5-5d6d-4ff2-b9a3-cc866711e047",
+      "name": "Append or update row in sheet7"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw",
+          "mode": "list",
+          "cachedResultName": "New content guide",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "New Website content",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19XhKU2LIMRyDeNKE38v8fmFCWRm7t_bB24GBvqbWMZw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Webhook').item.json.body.rowValues[0]['0'] }}",
+            "Pagelink": "={{ $json.link }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website Page Link",
+              "displayName": "Website Page Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type of page",
+              "displayName": "Type of page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "doc link",
+              "displayName": "doc link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Actions",
+              "displayName": "Actions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pagelink",
+              "displayName": "Pagelink",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2624,
+        3472
+      ],
+      "id": "e9cd460a-354a-4113-bf14-4f6ea50f88ac",
+      "name": "Append or update row in sheet8"
+    },
+    {
+      "parameters": {
+        "content": "## Content Generation (Research → Draft → Google Doc)\n\n### What it does\nWhen you pick a page type in the sheet, this workflow researches the target website, generates SEO-optimized copy (landing/service/blog/location), and saves it to Google Docs. It also writes the doc link back to the sheet.\n\n### How it’s triggered (Sheet dropdowns)\n- **Type of page** (Landing Page / Service Page / Blog / Location Page) → tells the workflow which copy template to use.\n- **Keywords + Website URL** cells provide context for research and writing.\n\n### Key steps\n1. **Webhook** receives the row edit from the “New Website content” sheet.  \n2. **Filter** ensures we only act on the correct sheet/column change (the “Type of page” column).  \n3. **AI Agent (Researcher)** analyzes the provided site URL and compiles competitor/keyword/industry insights.  \n4. **Switch (Page Type)** routes to the right copywriter:\n   - Copywriter for Landing Page  \n   - Copywriter for Service Page  \n   - Copywriter for Blog  \n   - Copywriter for Location Page  \n5. **Copywriter Node** produces plain-text content and a suggested SEO title in a strict JSON structure.  \n6. **Cleaning Code** strips code fences and parses JSON to title + content.  \n7. **Google Docs – Create/Update** builds a fresh Doc with the generated content.  \n8. **Code (Doc Link Builder)** converts the Doc ID into a shareable edit URL.  \n9. **Google Sheets – Append/Update** writes the new Doc link back to the same row (using ID to match).\n\n### Outputs\n- A Google Doc per page with the generated draft.  \n- The Doc URL saved to the sheet in the doc link column.\n\n### Notes/Customization\n- Content style uses **Canadian English**, **SEO structure**, and **clear CTAs**.  \n- You can adjust the research depth, word counts, and tone inside each copywriter prompt.  \n- Matching is done by the **ID column** to avoid duplicating rows.\n",
+        "height": 1168,
+        "width": 1264,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2496,
+        624
+      ],
+      "typeVersion": 1,
+      "id": "054b1ffc-1dbd-432b-ac96-ec6b3c84e86f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8e269a4b-a2a5-4eb1-af7f-6106b9f74f9e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        864,
+        1248
+      ],
+      "id": "c5351072-15ab-4507-a4e7-209d2e79aa08",
+      "name": "Webhook",
+      "webhookId": "8e269a4b-a2a5-4eb1-af7f-6106b9f74f9e"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8e269a4b-a2a5-4eb1-af7f-6106b9f74f9e",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        880,
+        2656
+      ],
+      "id": "8cffaaeb-ad32-43c5-8a3f-20355931ead1",
+      "name": "Webhook1",
+      "webhookId": "8e269a4b-a2a5-4eb1-af7f-6106b9f74f9e"
+    }
+  ],
+  "connections": {
+    "gpt-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copywriter for Landing Page",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Copywriter for Location Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Copywriter for Landing Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Copywriter for Service Page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Copywriter for  Blog Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document": {
+      "main": [
+        [
+          {
+            "node": "Update a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clearing the content": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document1": {
+      "main": [
+        [
+          {
+            "node": "Update a document2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clearing the content1": {
+      "main": [
+        [
+          {
+            "node": "Create a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document2": {
+      "main": [
+        [
+          {
+            "node": "Update a document3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document3": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clearing the content2": {
+      "main": [
+        [
+          {
+            "node": "Create a document2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a document3": {
+      "main": [
+        [
+          {
+            "node": "Update a document4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document4": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clearing the content3": {
+      "main": [
+        [
+          {
+            "node": "Create a document3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copywriter for Service Page",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copywriter for  Blog Page",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Copywriter for Location Page",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter for Location Page": {
+      "main": [
+        [
+          {
+            "node": "clearing the content1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter for Landing Page": {
+      "main": [
+        [
+          {
+            "node": "clearing the content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter for Service Page": {
+      "main": [
+        [
+          {
+            "node": "clearing the content2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copywriter for  Blog Page": {
+      "main": [
+        [
+          {
+            "node": "clearing the content3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch2": {
+      "main": [
+        [
+          {
+            "node": "Get a document2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a document",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a document3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a document1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Create a post1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent3": {
+      "main": [
+        [
+          {
+            "node": "Create a post2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a post4": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent4": {
+      "main": [
+        [
+          {
+            "node": "Create a post4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a document3": {
+      "main": [
+        [
+          {
+            "node": "AI Agent4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "8da81a84-604d-41f2-b5a5-e5715854d77b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-25T06:43:38.706Z",
+      "updatedAt": "2025-11-25T06:43:38.706Z",
+      "role": "workflow:owner",
+      "workflowId": "oROoeAEdFJkiFVUL",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
