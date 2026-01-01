@@ -1,0 +1,155 @@
+{
+  "createdAt": "2025-11-04T11:08:24.984Z",
+  "updatedAt": "2025-11-04T11:14:24.000Z",
+  "id": "Vllnoy3EyLvB2K9Z",
+  "name": "Email scraper 1",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1b11882c-12f7-4a87-b5b2-3e856787b188",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -384,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "n7Qrmf6Nq62PITgF",
+          "mode": "list",
+          "cachedResultName": "Email scraper 2"
+        },
+        "options": {}
+      },
+      "id": "aa5413d4-b021-475a-a141-d2747c9c0b93",
+      "name": "Execute Workflow",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        208
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "id": "a29459e8-014b-46cc-83a3-3516cac35ce1",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        208
+      ],
+      "webhookId": "df85adf6-6c79-495e-9a80-b13b0d4df2c8"
+    },
+    {
+      "parameters": {},
+      "id": "92588e4d-dc71-4732-ba91-79248307d330",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## I actually don't think the Wait node is necessary\n",
+        "height": 355.2694215797759
+      },
+      "id": "b944c010-a4c9-484c-9e5c-a47813899699",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Execute Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Workflow": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "When clicking ‘Test workflow’": [
+      {
+        "json": {
+          "query": "CFO Start ups"
+        }
+      }
+    ]
+  },
+  "versionId": "b3995f33-4901-4825-9176-829e189b593c",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-04T11:08:24.987Z",
+      "updatedAt": "2025-11-04T11:08:24.987Z",
+      "role": "workflow:owner",
+      "workflowId": "Vllnoy3EyLvB2K9Z",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
