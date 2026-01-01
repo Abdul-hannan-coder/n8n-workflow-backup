@@ -1,0 +1,271 @@
+{
+  "createdAt": "2025-09-10T06:24:19.293Z",
+  "updatedAt": "2025-09-21T07:16:59.000Z",
+  "id": "lVF9ZpITfVm7N1HC",
+  "name": "Human in loop",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        -48
+      ],
+      "id": "63fe0599-5db2-425e-a8ac-6349fe840c99",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9cd7a5b9-8a81-4bdf-b5b7-6c67604bac47",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -48
+      ],
+      "id": "c21f6dda-f757-49f3-870c-7c96decd1275",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "abdulrehmansultan581@gmail.com",
+        "subject": "Joke of the day",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -192
+      ],
+      "id": "e8c763b4-b312-4d68-825d-58584be54a11",
+      "name": "Send a message1",
+      "webhookId": "2e516b6d-ef22-4214-a23f-2261587ffc9e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZPabwd2uGmeGSBfG",
+          "name": "Gmail account Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1EK5iBDwgxERCGqK-d23m3Xb7UKcgXrnZOHgIG4QKvE8",
+          "mode": "list",
+          "cachedResultName": "CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EK5iBDwgxERCGqK-d23m3Xb7UKcgXrnZOHgIG4QKvE8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EK5iBDwgxERCGqK-d23m3Xb7UKcgXrnZOHgIG4QKvE8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        160
+      ],
+      "id": "0847800d-327b-4d5f-994d-6f03ed3e21a7",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "sCssplBDjql0fXQ3",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "message": "={{ $json.output }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "limitWaitTime": {
+            "values": {
+              "resumeAmount": 45,
+              "resumeUnit": "minutes"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "c4fcb8f6-9e5e-4b91-92f0-be5b8f02e3c6",
+      "name": "Send a text message",
+      "webhookId": "eda30178-ca25-41fd-86b2-4f473f77d77f",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        128
+      ],
+      "id": "fc80f3bb-d4b2-4ac4-ac20-357c725d15fb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NzvUp8uEBfs9MYqI",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -464,
+        -48
+      ],
+      "id": "076b3b95-3bbb-4e7f-aec6-5d198b6e8549",
+      "name": "When chat message received",
+      "webhookId": "62f866a1-beca-41e4-9aa9-33a035129fa0"
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2e6cabfd-504c-4a5c-ba05-f851a38b052f",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-10T06:24:19.297Z",
+      "updatedAt": "2025-09-10T06:24:19.297Z",
+      "role": "workflow:owner",
+      "workflowId": "lVF9ZpITfVm7N1HC",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
