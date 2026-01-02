@@ -1,0 +1,309 @@
+{
+  "createdAt": "2025-11-24T18:24:16.944Z",
+  "updatedAt": "2025-11-24T19:34:51.000Z",
+  "id": "hkb3Br8E3NIlZsVB",
+  "name": "Logistics extra",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "YOUR_WEBHOOK_ID",
+      "id": "bca67c05-e710-41eb-8ea1-f32662cd2c6b",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "=Enter Shipment Details:",
+        "additionalFields": {}
+      },
+      "name": "Ask Shipment Number",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c9990653-e259-4709-a630-b7f62c9179f0",
+      "webhookId": "d26de631-2523-443c-aa20-1d7d946b5d84",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse user input\nconst message = $input.item.json.message.text;\n\n// For demo - you'll need proper state management\nreturn {\n  json: {\n    shipmentNumber: \"SH-\" + Date.now(),\n    pickup: \"Warehouse A\",\n    delivery: \"Store B\",\n    weight: \"500kg\",\n    chatId: $input.item.json.message.chat.id\n  }\n};"
+      },
+      "name": "Process Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        0
+      ],
+      "id": "8b0d2423-2e77-4769-a6ef-0c2138cfeacb"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=Choose Driver Assignment:\n\n1️⃣ Single Driver\n2️⃣ All Drivers\n\nReply with 1 or 2",
+        "additionalFields": {}
+      },
+      "name": "Ask Driver Selection",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        0
+      ],
+      "id": "10d249cb-486f-4dd7-9ac5-2377383032df",
+      "webhookId": "9bc82324-7fab-4ed1-8d8d-c8ffa83a04d0",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Wait for Driver Selection",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "61c23869-401e-41cf-a0ba-85fe2f14b1c5",
+      "webhookId": "1fd12167-411e-493b-b953-1f125c0cf06f",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get driver list from database or hardcode for testing\nconst driverSelection = $input.item.json.callback_query.data;\nconst shipment = $input.first().json;\n\n// Sample driver IDs - replace with your actual driver chat IDs\nconst drivers = [\n  { id: \"DRIVER_CHAT_ID_1\", name: \"Ali\" },\n  { id: \"DRIVER_CHAT_ID_2\", name: \"Ahmed\" },\n  { id: \"DRIVER_CHAT_ID_3\", name: \"Hassan\" }\n];\n\nif (driverSelection === 'all') {\n  return drivers.map(driver => ({\n    json: {\n      driverId: driver.id,\n      driverName: driver.name,\n      shipment: shipment,\n      action: 'broadcast'\n    }\n  }));\n} else {\n  return [{\n    json: {\n      driverId: drivers[0].id,\n      driverName: drivers[0].name,\n      shipment: shipment,\n      action: 'single'\n    }\n  }];\n}"
+      },
+      "name": "Select Drivers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "fd0cd37a-5944-46f7-a9d6-d33a83346595"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.driverId }}",
+        "text": "=🚚 *New Shipment Assignment*\n\n📦 Shipment #: {{ $json.shipment.shipmentNumber }}\n📍 Pickup: {{ $json.shipment.pickup }}\n🎯 Delivery: {{ $json.shipment.delivery }}\n⚖️ Weight: {{ $json.shipment.weight }}\n\nDo you accept this job?",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send to Driver",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        0
+      ],
+      "id": "2158df06-727a-4a11-9447-3651092c9fe1",
+      "webhookId": "3e1aa201-af1b-42b3-a13b-a8d98a269185",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Driver Response Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1408,
+        0
+      ],
+      "id": "5b5a8078-abd4-4cc6-bb9b-6f41133d5323",
+      "webhookId": "dda10748-d513-4669-8b1f-c1d08c7ddff7",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.item.json.callback_query.data;\nconst driverName = $input.item.json.callback_query.from.first_name;\nconst shipmentNumber = response.split('_')[1];\n\nif (response.startsWith('accept')) {\n  return [{\n    json: {\n      status: 'accepted',\n      driverName: driverName,\n      shipmentNumber: shipmentNumber,\n      driverId: $input.item.json.callback_query.from.id,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} else {\n  return [{\n    json: {\n      status: 'declined',\n      driverName: driverName,\n      shipmentNumber: shipmentNumber,\n      driverId: $input.item.json.callback_query.from.id,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+      },
+      "name": "Process Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        0
+      ],
+      "id": "4e02d459-4891-469a-833f-9b936b0ee690"
+    },
+    {
+      "parameters": {
+        "chatId": "MANAGER_CHAT_ID",
+        "text": "=📊 *Driver Response Update*\n\n👤 Driver: {{ $json.driverName }}\n📦 Shipment: {{ $json.shipmentNumber }}\n{{ $json.status === 'accepted' ? '✅ ACCEPTED' : '❌ DECLINED' }}\n🕐 Time: {{ $json.timestamp }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Notify Manager",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1808,
+        0
+      ],
+      "id": "a76ac716-9d89-427d-8cdb-5f62859fbc27",
+      "webhookId": "371d287d-1e9c-492f-a750-168abde41676",
+      "credentials": {
+        "telegramApi": {
+          "id": "8qAvoG3hdoSEs87q",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Ask Shipment Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Shipment Number": {
+      "main": [
+        [
+          {
+            "node": "Process Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Input": {
+      "main": [
+        [
+          {
+            "node": "Ask Driver Selection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Driver Selection": {
+      "main": [
+        [
+          {
+            "node": "Select Drivers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Drivers": {
+      "main": [
+        [
+          {
+            "node": "Send to Driver",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Driver Response Trigger": {
+      "main": [
+        [
+          {
+            "node": "Process Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Response": {
+      "main": [
+        [
+          {
+            "node": "Notify Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "94a40cd2-a0fc-41b7-aafa-a4c7c1bef8b3",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-24T18:24:16.948Z",
+      "updatedAt": "2025-11-24T18:24:16.948Z",
+      "role": "workflow:owner",
+      "workflowId": "hkb3Br8E3NIlZsVB",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
