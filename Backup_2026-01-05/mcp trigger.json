@@ -1,0 +1,160 @@
+{
+  "createdAt": "2025-09-23T06:23:00.915Z",
+  "updatedAt": "2025-09-23T10:01:25.000Z",
+  "id": "d87NjRYpxXuPfHzR",
+  "name": "mcp trigger",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "862df0b2-0757-421c-b30d-28622af3c461"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        -96
+      ],
+      "id": "f1e19750-94bd-428c-a439-4ae4055116d0",
+      "name": "MCP Server Trigger",
+      "webhookId": "862df0b2-0757-421c-b30d-28622af3c461"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1EK5iBDwgxERCGqK-d23m3Xb7UKcgXrnZOHgIG4QKvE8",
+          "mode": "list",
+          "cachedResultName": "CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EK5iBDwgxERCGqK-d23m3Xb7UKcgXrnZOHgIG4QKvE8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EK5iBDwgxERCGqK-d23m3Xb7UKcgXrnZOHgIG4QKvE8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -128,
+        112
+      ],
+      "id": "96d54f78-9a7f-49e7-8d0a-f817cf0945e2",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "U89aUYJrJ0Gzczvl",
+          "name": "Google Sheets account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        96
+      ],
+      "id": "74a15ee2-bb57-4b6c-be86-bc898f43174a",
+      "name": "Send a message in Gmail",
+      "webhookId": "9fea933c-9fa3-4340-b47d-82aa6bd0319a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZPabwd2uGmeGSBfG",
+          "name": "Gmail account Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "abdulrehmansultan581@gmail.com",
+          "mode": "list",
+          "cachedResultName": "abdulrehmansultan581@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        112
+      ],
+      "id": "3b55113f-7951-4213-b37c-09ff57366c9d",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "3RZoKsAuHMjntik1",
+          "name": "Google Calendar account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "15fc7195-fd11-462d-b08b-27624cf8ceba",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-23T06:23:00.918Z",
+      "updatedAt": "2025-09-23T06:23:00.918Z",
+      "role": "workflow:owner",
+      "workflowId": "d87NjRYpxXuPfHzR",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
