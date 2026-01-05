@@ -1,0 +1,395 @@
+{
+  "createdAt": "2025-09-17T08:59:19.371Z",
+  "updatedAt": "2025-09-17T11:00:35.000Z",
+  "id": "bIT5C7thPvn2Nv9b",
+  "name": "Vapi Outbound Call",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.vapi.ai/assistant/{{ $json.assistant_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.vapi_api_key }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ad6ee486-e9bd-4c79-8924-449331852739",
+      "name": "Get Assistant",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        512,
+        0
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "dNUf4RCJzPvB4hmI",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9638b3de-ac27-42c4-bd9b-c4e75eca6035",
+      "name": "Set Dynamic Assistant",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        736,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create dynamic variables array\nconst dynamicVars = [\n  {\n    \"tag\": \"first_name\",\n    \"value\": $input.first().json.first_name || \"\"\n  }\n];\n\nreturn dynamicVars.map(item => ({ json: item }));"
+      },
+      "id": "13c38b00-e319-4e59-87e8-a77d616cb48b",
+      "name": "Create Dynamic Variables",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the dynamic assistant data\nlet dynamicAssistant = $node['Set Dynamic Assistant'].json;\n\n// Process each dynamic variable\nfor (const item of $input.all()) {\n  const tag = item.json.tag;\n  const value = item.json.value;\n  \n  // Convert assistant object to string for replacement\n  let assistantString = JSON.stringify(dynamicAssistant);\n  \n  // Replace the placeholder with actual value\n  assistantString = assistantString.replace(`[${tag}]`, value);\n  \n  // Convert back to object\n  dynamicAssistant = JSON.parse(assistantString);\n}\n\n// Return the updated assistant configuration\nreturn [{ json: dynamicAssistant }];"
+      },
+      "id": "3e50a042-7911-4c70-8c24-f777b5fe211f",
+      "name": "Process Dynamic Variables",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1184,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the processed assistant data\nconst assistantData = $input.first().json;\n\n// Whitelist only the required keys\nconst whitelistedKeys = [\n  'name',\n  'model', \n  'voice',\n  'serverUrl',\n  'transcriber',\n  'analysisPlan',\n  'firstMessage',\n  'hipaaEnabled',\n  'clientMessages',\n  'endCallMessage',\n  'endCallPhrases',\n  'serverMessages',\n  'backgroundSound',\n  'recordingEnabled',\n  'voicemailMessage',\n  'endCallFunctionEnabled',\n  'dialKeypadFunctionEnabled'\n];\n\n// Create filtered object with only whitelisted keys\nconst filteredAssistant = {};\nfor (const key of whitelistedKeys) {\n  if (assistantData.hasOwnProperty(key)) {\n    filteredAssistant[key] = assistantData[key];\n  }\n}\n\nreturn [{ json: filteredAssistant }];"
+      },
+      "id": "5f63a451-f6ed-457e-93b9-30a391a0bbef",
+      "name": "Key Whitelist",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d6855ad7-1b89-4cc9-b8a5-cc56c1770868",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "dfbbf43c-d6b5-4817-8d5d-2e485d3c9357",
+      "name": "Webhook1",
+      "webhookId": "d6855ad7-1b89-4cc9-b8a5-cc56c1770868"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Take the input object and convert to JSON string\nconst inputObject = $input.first().json;\n\n// Transform to JSON with no spacing (equivalent to space: \"\")\nconst jsonString = JSON.stringify(inputObject);\n\nreturn [{ \n  json: {\n    jsonString: jsonString,\n    object: inputObject\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        0
+      ],
+      "id": "66b31a15-8d6e-45fa-8930-cf4d53b078f1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/call/phone",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Set Variables').item.json.vapi_api_key }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phoneNumberId",
+              "value": "={{ $('Set Variables').item.json.phone_number_id }}"
+            },
+            {
+              "name": "customer",
+              "value": "={{ {\n  \"number\": $('Set Variables').item.json.body.phone,\n  \"name\": $('Set Variables').item.json.body.first_name\n} }}"
+            },
+            {
+              "name": "assistant",
+              "value": "={{ $('Code').item.json.object }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "db54b283-e38c-416d-84f9-1c7959fd7ce2",
+      "name": "Make VAPI Call1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1824,
+        0
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "GiOlXa6n8TJXCdyu",
+          "name": "VAPI Bearer Auth Tom"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a4974c31-65ff-40bd-939a-903a48ba1677",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        336
+      ],
+      "id": "756dca64-7b2e-49ab-85e0-f52a412a0014",
+      "name": "Webhook",
+      "webhookId": "a4974c31-65ff-40bd-939a-903a48ba1677"
+    },
+    {
+      "parameters": {
+        "fromEmail": "candmlegal71@gmail.com",
+        "toEmail": "rehanzzz1590@gmail.com",
+        "subject": "CM Law Outbound Agent Call Summary",
+        "html": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CM Law Client Intake Summary</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333333;\n            max-width: 600px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background-color: #1a3e72;\n            color: white;\n            padding: 20px;\n            text-align: center;\n        }\n        .content {\n            padding: 20px;\n            border: 1px solid #dddddd;\n            border-top: none;\n        }\n        .footer {\n            margin-top: 20px;\n            font-size: 12px;\n            color: #777777;\n            text-align: center;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-weight: bold;\n            color: #1a3e72;\n            margin-bottom: 10px;\n            font-size: 18px;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            margin-bottom: 15px;\n        }\n        table, th, td {\n            border: 1px solid #dddddd;\n        }\n        th, td {\n            padding: 10px;\n            text-align: left;\n        }\n        th {\n            background-color: #f2f2f2;\n            width: 30%;\n        }\n        .call-summary, .call-transcript {\n            background-color: #f9f9f9;\n            padding: 15px;\n            border-left: 4px solid #1a3e72;\n        }\n        .transcript-line {\n            margin-bottom: 10px;\n            padding: 8px 12px;\n            border-radius: 4px;\n        }\n        .transcript-line.agent {\n            background-color: #f0f7ff;\n            border-left: 3px solid #1a3e72;\n            margin-right: 20%;\n        }\n        .transcript-line.user {\n            background-color: #f5f5f5;\n            border-left: 3px solid #cccccc;\n            margin-left: 20%;\n        }\n        .transcript-line strong {\n            color: #1a3e72;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h2>CM Law Client Outbound Call Summary</h2>\n    </div>\n    \n    <div class=\"content\">\n        <div class=\"section\">\n            <div class=\"section-title\">Client Information</div>\n            <table>\n<tr>\n                    <th>Phone:</th>\n                    <td>{{$json.body.message.call.customer.number}}</td>\n                </tr>\n                <tr>\n                    <th>Call Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.call_type }}</td>\n                </tr>\n                <tr>\n                    <th>State:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.work_state }}</td>\n                </tr>\n                <tr>\n                    <th>Company:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.company_name }}</td>\n                </tr>\n                <tr>\n                    <th>Status:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_status }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Case Details</div>\n            <table>\n                <tr>\n                    <th>Termination Reason:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.termination_reason }}</td>\n                </tr>\n                <tr>\n                    <th>Last Employment Date:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_end_date }}</td>\n                </tr>\n                <tr>\n                    <th>Severance Offered:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.severance_offered }}</td>\n                </tr>\n                <tr>\n                    <th>Case Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.case_category }}</td>\n                </tr>\n                <tr>\n                    <th>Situation Description:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.situation_description }}</td>\n                </tr>\n                <tr>\n                    <th>Recording URL:</th>\n                    <td>{{ $json.body.message.recordingUrl }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Summary</div>\n            <div class=\"call-summary\">\n                {{ $json.body.message.analysis.summary }}\n            </div>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Transcript</div>\n            <div class=\"call-transcript\">\n                <pre style=\"white-space: pre-wrap; font-family: Arial, sans-serif;\">{{ $json.body.message.transcript }}</pre>\n            </div>\n        </div>\n    </div>\n    \n    <div class=\"footer\">\n        <p>Castronovo & McKinney LLC | 420 Lexington Avenue, Suite 1830 | Phone: 646.755.3781</p>\n        <p>This email is confidential and intended solely for the use of the individual to whom it is addressed.</p>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        640
+      ],
+      "id": "a793ac48-54c2-495a-a30a-84097018607c",
+      "name": "Send email",
+      "webhookId": "d86cf05a-10a0-40ef-9acb-821b3d3706a8",
+      "credentials": {
+        "smtp": {
+          "id": "VTrIwSIdretn9oWO",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "candmlegal71@gmail.com",
+        "toEmail": "tom@cmlaw.com",
+        "subject": "CM Law Outbound Agent Call Summary",
+        "html": "=<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>CM Law Client Intake Summary</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            line-height: 1.6;\n            color: #333333;\n            max-width: 600px;\n            margin: 0 auto;\n            padding: 20px;\n        }\n        .header {\n            background-color: #1a3e72;\n            color: white;\n            padding: 20px;\n            text-align: center;\n        }\n        .content {\n            padding: 20px;\n            border: 1px solid #dddddd;\n            border-top: none;\n        }\n        .footer {\n            margin-top: 20px;\n            font-size: 12px;\n            color: #777777;\n            text-align: center;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-weight: bold;\n            color: #1a3e72;\n            margin-bottom: 10px;\n            font-size: 18px;\n        }\n        table {\n            width: 100%;\n            border-collapse: collapse;\n            margin-bottom: 15px;\n        }\n        table, th, td {\n            border: 1px solid #dddddd;\n        }\n        th, td {\n            padding: 10px;\n            text-align: left;\n        }\n        th {\n            background-color: #f2f2f2;\n            width: 30%;\n        }\n        .call-summary, .call-transcript {\n            background-color: #f9f9f9;\n            padding: 15px;\n            border-left: 4px solid #1a3e72;\n        }\n        .transcript-line {\n            margin-bottom: 10px;\n            padding: 8px 12px;\n            border-radius: 4px;\n        }\n        .transcript-line.agent {\n            background-color: #f0f7ff;\n            border-left: 3px solid #1a3e72;\n            margin-right: 20%;\n        }\n        .transcript-line.user {\n            background-color: #f5f5f5;\n            border-left: 3px solid #cccccc;\n            margin-left: 20%;\n        }\n        .transcript-line strong {\n            color: #1a3e72;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"header\">\n        <h2>CM Law Client Outbound Call Summary</h2>\n    </div>\n    \n    <div class=\"content\">\n        <div class=\"section\">\n            <div class=\"section-title\">Client Information</div>\n            <table>\n<tr>\n                    <th>Phone:</th>\n                    <td>{{$json.body.message.call.customer.number}}</td>\n                </tr>\n                <tr>\n                    <th>Call Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.call_type }}</td>\n                </tr>\n                <tr>\n                    <th>State:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.work_state }}</td>\n                </tr>\n                <tr>\n                    <th>Company:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.company_name }}</td>\n                </tr>\n                <tr>\n                    <th>Status:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_status }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Case Details</div>\n            <table>\n                <tr>\n                    <th>Termination Reason:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.termination_reason }}</td>\n                </tr>\n                <tr>\n                    <th>Last Employment Date:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.employment_end_date }}</td>\n                </tr>\n                <tr>\n                    <th>Severance Offered:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.severance_offered }}</td>\n                </tr>\n                <tr>\n                    <th>Case Type:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.case_category }}</td>\n                </tr>\n                <tr>\n                    <th>Situation Description:</th>\n                    <td>{{ $json.body.message.analysis.structuredData.situation_description }}</td>\n                </tr>\n                <tr>\n                    <th>Recording URL:</th>\n                    <td>{{ $json.body.message.recordingUrl }}</td>\n                </tr>\n            </table>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Summary</div>\n            <div class=\"call-summary\">\n                {{ $json.body.message.analysis.summary }}\n            </div>\n        </div>\n        \n        <div class=\"section\">\n            <div class=\"section-title\">Call Transcript</div>\n            <div class=\"call-transcript\">\n                <pre style=\"white-space: pre-wrap; font-family: Arial, sans-serif;\">{{ $json.body.message.transcript }}</pre>\n            </div>\n        </div>\n    </div>\n    \n    <div class=\"footer\">\n        <p>Castronovo & McKinney LLC | 420 Lexington Avenue, Suite 1830 | Phone: 646.755.3781</p>\n        <p>This email is confidential and intended solely for the use of the individual to whom it is addressed.</p>\n    </div>\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        832
+      ],
+      "id": "863be230-0840-4634-866f-9116d2c22498",
+      "name": "Send email1",
+      "webhookId": "d86cf05a-10a0-40ef-9acb-821b3d3706a8",
+      "credentials": {
+        "smtp": {
+          "id": "VTrIwSIdretn9oWO",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "assistant_id",
+              "value": "16a4d74f-f0c2-4ea3-8217-d4e9998bd5f1"
+            },
+            {
+              "name": "vapi_api_key",
+              "value": "719d9ae9-63e0-41d8-8cf7-4aaa9c45a4fb"
+            },
+            {
+              "name": "phone_number_id",
+              "value": "af51573f-e30f-4913-8e16-7d750700704a"
+            }
+          ],
+          "boolean": [
+            {
+              "name": "isTesting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0a368d82-7e8b-41c4-9b3d-351cfd13e755",
+      "name": "Set Variables",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        304,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Get Assistant": {
+      "main": [
+        [
+          {
+            "node": "Set Dynamic Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Dynamic Assistant": {
+      "main": [
+        [
+          {
+            "node": "Create Dynamic Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Dynamic Variables": {
+      "main": [
+        [
+          {
+            "node": "Process Dynamic Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Dynamic Variables": {
+      "main": [
+        [
+          {
+            "node": "Key Whitelist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Key Whitelist": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Set Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Make VAPI Call1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "node": "Get Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "955a8ff3-d2b5-4ab8-872c-23c9755e608b",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-17T08:59:19.378Z",
+      "updatedAt": "2025-09-17T08:59:19.378Z",
+      "role": "workflow:owner",
+      "workflowId": "bIT5C7thPvn2Nv9b",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
