@@ -1,0 +1,44 @@
+{
+  "createdAt": "2025-09-24T06:21:25.453Z",
+  "updatedAt": "2025-09-24T06:27:46.000Z",
+  "id": "gE7MZKAyrim3XYz2",
+  "name": "My workflow 3",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "6b7fdbbd-592a-4ba7-a21e-636353e1b2bc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -368,
+        -32
+      ],
+      "id": "2cefcd66-d9e7-4574-97ce-c68e8cc2112a",
+      "name": "Webhook",
+      "webhookId": "6b7fdbbd-592a-4ba7-a21e-636353e1b2bc"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "c2ee005c-c3a6-4b7c-832d-86357cbfecc6",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-09-24T06:21:25.460Z",
+      "updatedAt": "2025-09-24T06:21:25.460Z",
+      "role": "workflow:owner",
+      "workflowId": "gE7MZKAyrim3XYz2",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
