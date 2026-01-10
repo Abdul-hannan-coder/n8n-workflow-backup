@@ -1,0 +1,511 @@
+{
+  "createdAt": "2025-11-24T19:38:36.114Z",
+  "updatedAt": "2025-11-24T19:38:36.000Z",
+  "id": "c0keHolcupu1Eokh",
+  "name": "OCR documentations",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "3b8923d8-15b3-45cf-91d7-51071031575b",
+      "name": "Telegram Document Upload Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -2000,
+        208
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "fd6ebae6-74d0-42bc-857f-f41e8f1952db"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.message.photo !== undefined || $json.message.document !== undefined }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "e3155404-5dd9-4f00-bdd8-0b2d5c370290",
+      "name": "IF Has Photo/Document",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1808,
+        208
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract file information from Telegram message\nconst message = $input.item.json.message;\nconst chatId = message.chat.id;\nconst driverName = message.from.first_name;\nconst driverId = message.from.id;\n\n// Get GPS location if shared\nconst location = message.location || null;\nconst locationLat = location ? location.latitude : null;\nconst locationLng = location ? location.longitude : null;\n\n// Get file ID (photo or document)\nlet fileId, fileType;\nif (message.photo) {\n  // Get highest resolution photo\n  const photos = message.photo;\n  fileId = photos[photos.length - 1].file_id;\n  fileType = 'photo';\n} else if (message.document) {\n  fileId = message.document.file_id;\n  fileType = 'document';\n}\n\n// Extract shipment number from message caption or text\nconst caption = message.caption || message.text || '';\nconst shipmentMatch = caption.match(/SH-\\d{4}-\\d{3}/);\nconst shipmentNumber = shipmentMatch ? shipmentMatch[0] : null;\n\nreturn [{\n  json: {\n    file_id: fileId,\n    file_type: fileType,\n    chat_id: chatId,\n    driver_id: driverId,\n    driver_name: driverName,\n    shipment_number: shipmentNumber,\n    location_lat: locationLat,\n    location_lng: locationLng,\n    upload_time: new Date().toISOString(),\n    caption: caption\n  }\n}];"
+      },
+      "id": "e1a3088b-536e-41a1-882b-90221c10e593",
+      "name": "Extract File Information",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1600,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $credentials.telegramApi.accessToken }}/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $json.file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dc784529-da99-4c2d-866a-c915968d0a9f",
+      "name": "Get File Path from Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1408,
+        112
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot{{ $credentials.telegramApi.accessToken }}/{{ $json.result.file_path }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "e7024de9-1d77-4799-923e-8eb65692ec1a",
+      "name": "Download Document File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1200,
+        112
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://vision.googleapis.com/v1/images:annotate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "requests",
+              "value": "=[\n  {\n    \"image\": {\n      \"content\": \"{{ $binary.data.data }}\"\n    },\n    \"features\": [\n      {\n        \"type\": \"DOCUMENT_TEXT_DETECTION\",\n        \"maxResults\": 1\n      },\n      {\n        \"type\": \"LABEL_DETECTION\",\n        \"maxResults\": 10\n      }\n    ]\n  }\n]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8051d53b-83fd-4578-ac75-5efb596d4b53",
+      "name": "Google Vision OCR Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1008,
+        112
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process OCR results from Google Vision API\nconst visionResponse = $input.item.json.responses[0];\nconst fullText = visionResponse.fullTextAnnotation?.text || '';\nconst labels = visionResponse.labelAnnotations || [];\n\n// Extract key information using regex patterns\nconst patterns = {\n  weight: /(?:weight|peso|poids)[:\\s]*([\\d,.]+)\\s*(?:kg|KG)/i,\n  signature: /(?:signature|signed|firmado|signé)/i,\n  date: /(?:\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4})/,\n  cmr_number: /(?:CMR|cmr)[:\\s#]*([A-Z0-9-]+)/i,\n  receiver_name: /(?:received by|receiver|destinataire)[:\\s]*([A-Z\\s]+)/i\n};\n\n// Extract data\nconst weightMatch = fullText.match(patterns.weight);\nconst extractedWeight = weightMatch ? parseFloat(weightMatch[1].replace(',', '.')) : null;\n\nconst dateMatch = fullText.match(patterns.date);\nconst deliveryDate = dateMatch ? dateMatch[0] : null;\n\nconst cmrMatch = fullText.match(patterns.cmr_number);\nconst cmrNumber = cmrMatch ? cmrMatch[1] : null;\n\nconst receiverMatch = fullText.match(patterns.receiver_name);\nconst receiverName = receiverMatch ? receiverMatch[1].trim() : null;\n\n// Check for signature indicators\nconst hasSignatureKeyword = patterns.signature.test(fullText);\nconst hasSignatureLabel = labels.some(label => \n  label.description.toLowerCase().includes('signature') ||\n  label.description.toLowerCase().includes('handwriting')\n);\nconst hasSignature = hasSignatureKeyword || hasSignatureLabel;\n\n// Calculate confidence score\nlet confidenceScore = 0;\nif (extractedWeight) confidenceScore += 25;\nif (hasSignature) confidenceScore += 30;\nif (deliveryDate) confidenceScore += 20;\nif (cmrNumber) confidenceScore += 15;\nif (receiverName) confidenceScore += 10;\n\n// Text quality check\nconst wordCount = fullText.split(/\\s+/).length;\nconst isReadable = wordCount > 10;\n\nreturn [{\n  json: {\n    full_text: fullText,\n    extracted_data: {\n      weight_kg: extractedWeight,\n      delivery_date: deliveryDate,\n      cmr_number: cmrNumber,\n      receiver_name: receiverName,\n      has_signature: hasSignature\n    },\n    quality: {\n      is_readable: isReadable,\n      word_count: wordCount,\n      confidence_score: confidenceScore\n    },\n    labels: labels.map(l => l.description),\n    shipment_number: $('Extract File Information').item.json.shipment_number,\n    driver_id: $('Extract File Information').item.json.driver_id,\n    upload_time: $('Extract File Information').item.json.upload_time\n  }\n}];"
+      },
+      "id": "a048b8aa-078a-4092-ac92-e7e5a49139ce",
+      "name": "Process OCR Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "shipment_number",
+              "lookupValue": "={{ $json.shipment_number }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c6454d5-5e6f-475a-8a27-e3cec538b56e",
+      "name": "Get Original Order Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -608,
+        112
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "jsCode": "// Cross-verify extracted data with original order\nconst ocrData = $('Process OCR Results').item.json;\nconst originalOrder = $input.item.json;\nconst driverLocation = $('Extract File Information').item.json;\n\n// Weight verification (allow 5% tolerance)\nconst originalWeight = parseFloat(originalOrder.weight);\nconst extractedWeight = ocrData.extracted_data.weight_kg;\nconst weightDiff = extractedWeight ? Math.abs(extractedWeight - originalWeight) : 999;\nconst weightTolerance = originalWeight * 0.05; // 5% tolerance\nconst weightValid = weightDiff <= weightTolerance;\n\n// GPS location verification (500m tolerance)\nfunction calculateDistance(lat1, lon1, lat2, lon2) {\n  if (!lat1 || !lon1 || !lat2 || !lon2) return 999;\n  const R = 6371; // km\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLon = (lon2 - lon1) * Math.PI / 180;\n  const a = \n    Math.sin(dLat/2) * Math.sin(dLat/2) +\n    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\n    Math.sin(dLon/2) * Math.sin(dLon/2);\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\n  return R * c;\n}\n\nconst gpsDistance = calculateDistance(\n  driverLocation.location_lat,\n  driverLocation.location_lng,\n  parseFloat(originalOrder.delivery_latitude),\n  parseFloat(originalOrder.delivery_longitude)\n);\nconst gpsValid = gpsDistance < 0.5; // 500m tolerance\n\n// Signature check\nconst hasSignature = ocrData.extracted_data.has_signature;\n\n// Document quality check\nconst isReadable = ocrData.quality.is_readable;\nconst confidenceScore = ocrData.quality.confidence_score;\n\n// Overall validation\nconst issues = [];\nif (!hasSignature) issues.push('Missing signature');\nif (!weightValid && extractedWeight) issues.push(`Weight mismatch: Expected ${originalWeight}kg, got ${extractedWeight}kg`);\nif (!gpsValid && driverLocation.location_lat) issues.push(`GPS mismatch: ${gpsDistance.toFixed(2)}km from delivery location`);\nif (!isReadable) issues.push('Document not readable');\nif (confidenceScore < 50) issues.push('Low confidence score');\n\nconst isValid = issues.length === 0;\n\nreturn [{\n  json: {\n    validation: {\n      is_valid: isValid,\n      has_signature: hasSignature,\n      weight_valid: weightValid,\n      gps_valid: gpsValid,\n      is_readable: isReadable,\n      confidence_score: confidenceScore,\n      issues: issues\n    },\n    verification_details: {\n      original_weight: originalWeight,\n      extracted_weight: extractedWeight,\n      weight_difference: weightDiff.toFixed(2),\n      gps_distance_km: gpsDistance.toFixed(2),\n      delivery_location: {\n        expected_lat: originalOrder.delivery_latitude,\n        expected_lng: originalOrder.delivery_longitude,\n        actual_lat: driverLocation.location_lat,\n        actual_lng: driverLocation.location_lng\n      }\n    },\n    shipment_number: ocrData.shipment_number,\n    driver_id: ocrData.driver_id,\n    extracted_data: ocrData.extracted_data,\n    verification_time: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "cc1a1e3a-cc64-4224-a1e8-2fd954a5328c",
+      "name": "Validate Document Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.validation.is_valid }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "a77586fb-75ea-4dfb-add6-154076e5e58c",
+      "name": "IF Document Valid",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -208,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "name": "=CMR_{{ $('Validate Document Data').item.json.shipment_number }}_{{ $('Validate Document Data').item.json.verification_time }}.jpg",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "e5e0ab1a-f586-40fe-9b92-39343cc46161",
+      "name": "Save to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "shipment_number": "={{ $json.shipment_number }}",
+            "status": "Completed",
+            "pod_uploaded": "Yes",
+            "pod_verified": "Yes",
+            "pod_url": "={{ $('Save to Google Drive').item.json.webViewLink }}",
+            "delivery_confirmed_time": "={{ $json.verification_time }}",
+            "delivered_weight": "={{ $json.extracted_data.weight_kg }}",
+            "receiver_name": "={{ $json.extracted_data.receiver_name }}"
+          },
+          "matchingColumns": [
+            "shipment_number"
+          ]
+        },
+        "options": {}
+      },
+      "id": "49f4427c-60a2-4011-9eef-70cb298f7c44",
+      "name": "Mark Shipment Complete",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        208,
+        0
+      ],
+      "typeVersion": 4.6
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Validate Document Data').item.json.driver_id }}",
+        "text": "=✅ **DOCUMENT VERIFIED SUCCESSFULLY**\n\n📦 Shipment: {{ $json.shipment_number }}\n⚖️ Weight: {{ $json.extracted_data.weight_kg }} kg ✓\n📍 GPS Location: Verified ✓\n✍️ Signature: Detected ✓\n\n✅ Delivery completed and logged!\n\nThank you for your work!",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "1530bd34-f5ac-4787-9395-7684b76a04f6",
+      "name": "Confirm Valid Document",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        400,
+        0
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "f7b34be7-486f-43cc-9c82-cbf520cce230"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Validate Document Data').item.json.driver_id }}",
+        "text": "=❌ **DOCUMENT VALIDATION FAILED**\n\n📦 Shipment: {{ $json.shipment_number }}\n\n⚠️ **Issues Found:**\n{{ $json.validation.issues.join('\\n') }}\n\n📸 **Please retake the photo with:**\n- Clear view of all signatures\n- Visible weight information\n- Good lighting\n- No blur or shadows\n\nUpload the corrected document now.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "250140c5-520f-4eea-89f5-0e55696c705b",
+      "name": "Request Document Retake",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        0,
+        208
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "fddd7f16-1990-455e-a881-9cd1e2ad6c2f"
+    },
+    {
+      "parameters": {
+        "chatId": "MANAGER_TELEGRAM_CHAT_ID",
+        "text": "=⚠️ **DOCUMENT VERIFICATION ISSUE**\n\n📦 Shipment: {{ $json.shipment_number }}\n👤 Driver: {{ $('Extract File Information').item.json.driver_name }}\n\n❌ **Validation Failed:**\n{{ $json.validation.issues.join('\\n') }}\n\n📊 **Details:**\n- Confidence Score: {{ $json.validation.confidence_score }}%\n- Signature: {{ $json.validation.has_signature ? '✓' : '✗' }}\n- Weight Check: {{ $json.validation.weight_valid ? '✓' : '✗' }}\n- GPS Check: {{ $json.validation.gps_valid ? '✓' : '✗' }}\n\nDriver has been asked to retake the photo.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "0987de31-e394-4c20-8bee-8b1b365fcbac",
+      "name": "Alert Manager",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        208,
+        208
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "e6400305-7d47-4651-9966-1e2afdf77c70"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "⚠️ Please send a photo or document file.\n\nMake sure to include the shipment number in the caption.",
+        "additionalFields": {}
+      },
+      "id": "20e80c1c-b80a-4d61-bda6-b6a1a48d178c",
+      "name": "Error - No File Detected",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -1600,
+        304
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "b8576a2d-af32-4e4c-98a4-a5a87b0aa92b"
+    }
+  ],
+  "connections": {
+    "Telegram Document Upload Trigger": {
+      "main": [
+        [
+          {
+            "node": "IF Has Photo/Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Has Photo/Document": {
+      "main": [
+        [
+          {
+            "node": "Extract File Information",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error - No File Detected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract File Information": {
+      "main": [
+        [
+          {
+            "node": "Get File Path from Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Path from Telegram": {
+      "main": [
+        [
+          {
+            "node": "Download Document File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Document File": {
+      "main": [
+        [
+          {
+            "node": "Google Vision OCR Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vision OCR Analysis": {
+      "main": [
+        [
+          {
+            "node": "Process OCR Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process OCR Results": {
+      "main": [
+        [
+          {
+            "node": "Get Original Order Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Original Order Data": {
+      "main": [
+        [
+          {
+            "node": "Validate Document Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Document Data": {
+      "main": [
+        [
+          {
+            "node": "IF Document Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Document Valid": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Request Document Retake",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Mark Shipment Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Shipment Complete": {
+      "main": [
+        [
+          {
+            "node": "Confirm Valid Document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f9387d27-1e0d-46e1-802c-396b4c80d641",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2025-11-24T19:38:36.118Z",
+      "updatedAt": "2025-11-24T19:38:36.118Z",
+      "role": "workflow:owner",
+      "workflowId": "c0keHolcupu1Eokh",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
