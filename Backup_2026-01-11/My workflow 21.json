@@ -1,0 +1,83 @@
+{
+  "createdAt": "2026-01-03T05:34:30.913Z",
+  "updatedAt": "2026-01-03T10:59:21.000Z",
+  "id": "L79txKQVh0MO4Aq7",
+  "name": "My workflow 21",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "67eed3eb-22bb-4d6a-bbc5-948766780253",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "7735650d-f58b-4576-b4f2-4d51dcc63684",
+      "name": "Webhook",
+      "webhookId": "67eed3eb-22bb-4d6a-bbc5-948766780253"
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -96,
+        -32
+      ],
+      "id": "a9aace51-21e3-4905-8cf6-5cab3b4e8477",
+      "name": "Append a block",
+      "credentials": {
+        "notionApi": {
+          "id": "TXww74NwpVGW3BF6",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append a block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "f0618200-546a-48f1-a6c3-9431bb22d265",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "createdAt": "2026-01-03T05:34:30.939Z",
+      "updatedAt": "2026-01-03T05:34:30.939Z",
+      "role": "workflow:owner",
+      "workflowId": "L79txKQVh0MO4Aq7",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "tags": []
+}
