@@ -1,0 +1,451 @@
+{
+  "updatedAt": "2026-01-13T17:34:23.269Z",
+  "createdAt": "2026-01-13T14:58:10.466Z",
+  "id": "cerbPiReP0hXQ3kN6RHOW",
+  "name": "Add Competitor (LinkedIn or X) - Using Existing Actors",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "add-competitor",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0ff3688d-035c-4315-b6ce-ec02fdc15738",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        384
+      ],
+      "webhookId": "add-competitor"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"message\": \"Competitor added successfully\", \"data\": $json } }}",
+        "options": {}
+      },
+      "id": "c8a1d5ad-7955-4788-850e-c600bfc22263",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        768,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "profile_url",
+              "name": "profile_url",
+              "value": "={{ $json.body.profile_url }}",
+              "type": "string"
+            },
+            {
+              "id": "platform",
+              "name": "platform",
+              "value": "={{ $json.body.platform }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b8664e04-a505-4364-9701-e9c729537c60",
+      "name": "Extract Input Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "linkedin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9c2f0420-5392-4c79-a2ea-5be13238a12b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Linkedin"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "1aa39aee-ae86-45ef-81f1-9fd7f918e3e8",
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "x",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "X"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f08f5357-575d-47ad-bfe9-3fb6d2472a5d",
+      "name": "Switch Platform",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -128,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "LQQIXN9Othf8f7R5n",
+          "mode": "list",
+          "cachedResultName": "Linkedin Profile Posts Scraper [NO COOKIES] (apimaestro/linkedin-profile-posts)",
+          "cachedResultUrl": "https://console.apify.com/actors/LQQIXN9Othf8f7R5n/input"
+        },
+        "customBody": "={\n  \"username\":\" {{ $json.profile_url }}\"\n  \n}",
+        "timeout": {}
+      },
+      "id": "ad79d01a-4261-47e5-88d8-6bf023e3332b",
+      "name": "Run LinkedIn Actor",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        96,
+        288
+      ],
+      "credentials": {
+        "apifyApi": {
+          "id": "FN1UBo443TfhpPqq",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform LinkedIn data to Supabase format\nconst inputData = $input.first().json;\nconst originalInput = $('Extract Input Data').first().json;\n\n// Extract fields from Apify output (adjust field names based on actual output)\nconst transformed = {\n  name: inputData.author.first_name +inputData.author.last_name  ||'',\n  headline: inputData.author.headline ||  '',\n  profile_url: $('Extract Input Data').first().json.profile_url ,\n  photo_url: inputData.author.profile_picture ||'',\n  platform: 'linkedin',\n  created_at: new Date().toISOString(),\n  updated_at: new Date().toISOString()\n};\n\nreturn [{ json: transformed }];"
+      },
+      "id": "4aa648a9-7faf-43a6-9c62-a2c85e089ea2",
+      "name": "Transform LinkedIn Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "competitors",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.name }}"
+            },
+            {
+              "fieldId": "headline",
+              "fieldValue": "={{ $json.headline }}"
+            },
+            {
+              "fieldId": "profile_url",
+              "fieldValue": "={{ $json.profile_url }}"
+            },
+            {
+              "fieldId": "photo_url",
+              "fieldValue": "={{ $json.photo_url }}"
+            },
+            {
+              "fieldId": "platform",
+              "fieldValue": "={{ $json.platform }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $json.created_at }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $json.updated_at }}"
+            }
+          ]
+        }
+      },
+      "id": "21194a22-759c-4045-b85b-43e47e538b98",
+      "name": "Insert LinkedIn to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        544,
+        288
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "wbpC5fjeAxy06bonV",
+          "mode": "list",
+          "cachedResultName": "Twitter Profile Scraper (epctex/twitter-profile-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/wbpC5fjeAxy06bonV/input"
+        },
+        "customBody": "={\n  \"startUrls\": [\n    \"https://x.com/MuhammadUz1654\"\n  ]\n}\n",
+        "memory": 128
+      },
+      "id": "83748101-29b6-46c4-8a00-87f78ae68d96",
+      "name": "Run Twitter Actor",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        96,
+        480
+      ],
+      "credentials": {
+        "apifyApi": {
+          "id": "FN1UBo443TfhpPqq",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Twitter data to Supabase format\nconst inputData = $input.first().json;\nconst originalInput = $('Extract Input Data').first().json;\n\n// Extract fields from Apify output (adjust field names based on actual output)\nconst transformed = {\n  name: inputData.author.name || inputData.fullName || inputData.displayName || '',\n  headline: inputData.author.description || inputData.summary || '',\n  profile_url:   inputData.url || originalInput.profile_url,\n  photo_url: inputData.profilePicture || inputData.avatar || inputData.profileImageUrl || inputData.profileImage || '',\n  platform: 'x',\n  created_at: new Date().toISOString(),\n  updated_at: new Date().toISOString()\n};\n\nreturn [{ json: transformed }];"
+      },
+      "id": "9930ec55-a1be-4039-910e-4880e33c16bb",
+      "name": "Transform Twitter Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "competitors",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "name",
+              "fieldValue": "={{ $json.name }}"
+            },
+            {
+              "fieldId": "headline",
+              "fieldValue": "={{ $json.headline }}"
+            },
+            {
+              "fieldId": "profile_url",
+              "fieldValue": "={{ $json.profile_url }}"
+            },
+            {
+              "fieldId": "photo_url",
+              "fieldValue": "={{ $json.photo_url }}"
+            },
+            {
+              "fieldId": "platform",
+              "fieldValue": "={{ $json.platform }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $json.created_at }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $json.updated_at }}"
+            }
+          ]
+        }
+      },
+      "id": "2479d595-c3f6-4162-81e5-fd4916bfada2",
+      "name": "Insert X to Supabase1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        544,
+        480
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Input Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Input Data": {
+      "main": [
+        [
+          {
+            "node": "Switch Platform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Platform": {
+      "main": [
+        [
+          {
+            "node": "Run LinkedIn Actor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Twitter Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run LinkedIn Actor": {
+      "main": [
+        [
+          {
+            "node": "Transform LinkedIn Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform LinkedIn Data": {
+      "main": [
+        [
+          {
+            "node": "Insert LinkedIn to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert LinkedIn to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Twitter Actor": {
+      "main": [
+        [
+          {
+            "node": "Transform Twitter Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Twitter Data": {
+      "main": [
+        [
+          {
+            "node": "Insert X to Supabase1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert X to Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "fa0616c1-0acb-4ab1-a87a-8435c2398e1f",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T14:58:10.470Z",
+      "createdAt": "2026-01-13T14:58:10.470Z",
+      "role": "workflow:owner",
+      "workflowId": "cerbPiReP0hXQ3kN6RHOW",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
