@@ -1,0 +1,492 @@
+{
+  "updatedAt": "2026-01-13T22:09:17.449Z",
+  "createdAt": "2026-01-13T21:50:07.546Z",
+  "id": "AXSnpRyh2z9blZRNOJ2m5",
+  "name": "Dynamic Post Sync - One by One",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Merge Structure Data with AI Agent output\n// Get original posts from Structure Data\nconst originalPosts = $('Structure Data').all();\n\n// Get AI Agent output\nconst aiOutputs = $input.all();\n\n// Create a map of post_url to AI output for matching\nconst aiOutputMap = new Map();\naiOutputs.forEach(item => {\n  // AI Agent output is in item.json.output\n  const output = item.json.output || item.json;\n  if (output && output.post_url) {\n    aiOutputMap.set(output.post_url, output);\n  }\n});\n\n// Merge: original posts + AI analysis\nconst mergedPosts = originalPosts.map((originalItem) => {\n  const original = originalItem.json;\n  \n  // Try to match AI output by post_url (exact match or partial match)\n  let aiData = aiOutputMap.get(original.post_url);\n  \n  // If exact match not found, try partial match (in case URLs have query params differences)\n  if (!aiData && original.post_url) {\n    // Extract base URL without query params for matching\n    const baseUrl = original.post_url.split('?')[0];\n    for (const [url, data] of aiOutputMap.entries()) {\n      if (url.split('?')[0] === baseUrl) {\n        aiData = data;\n        break;\n      }\n    }\n  }\n  \n  // Merge AI analysis fields with original data\n  return {\n    json: {\n      ...original,\n      post_type: aiData?.post_type || null,\n      hook: aiData?.hook || null,\n      format: aiData?.format || null,\n      cta: aiData?.cta === 'null' || aiData?.cta === null || aiData?.cta === '' ? null : (aiData?.cta || null),\n      engagement_mechanics: aiData?.engagement_mechanics ? (Array.isArray(aiData.engagement_mechanics) ? JSON.stringify(aiData.engagement_mechanics) : aiData.engagement_mechanics) : null,\n      opportunity_type: aiData?.opportunity_type || null,\n      lead_magnet_subtype: aiData?.lead_magnet_subtype === 'null' || aiData?.lead_magnet_subtype === null || aiData?.lead_magnet_subtype === '' ? null : (aiData?.lead_magnet_subtype || null),\n      updated_at: new Date().toISOString()\n    }\n  };\n});\n\nreturn mergedPosts;"
+      },
+      "id": "b3fae634-e1b6-4ce8-aa43-f6ebee22fc7a",
+      "name": "Merge AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        1712
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": true
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3168,
+        1840
+      ],
+      "id": "fe8d8b99-66fa-4c20-936f-cd665e9564ec",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "competitor_linkedin_posts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "post_id",
+              "keyValue": "={{ $json.post_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        1856
+      ],
+      "id": "b98baeb4-36d0-4a36-a07b-4c0fe8a3190a",
+      "name": "Check Post Exists",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check if post exists and preserve original data\nconst checkResult = $input.all();\nconst loopItem = $('Loop Over Items1').item.json;\n\n// Check if query returned any results (post exists)\n// Supabase GET returns array of items, empty if not found\nconst postExists = checkResult && checkResult.length > 0;\n\n// Return the original item with existence flag\nreturn [{\n  json: {\n    ...loopItem,\n    _postExists: postExists ? 'true' : 'false'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        1856
+      ],
+      "id": "8734fc4a-642b-4a75-a871-c68ac039de3f",
+      "name": "Determine Action"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "check-exists",
+              "leftValue": "={{ $json._postExists }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3792,
+        1856
+      ],
+      "id": "9b8694e4-88cd-48b3-b85c-09cb52ed4f3e",
+      "name": "Route: Create or Update"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "competitor_linkedin_posts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "post_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.post_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "competitor_id",
+              "fieldValue": "={{ $json.competitor_id }}"
+            },
+            {
+              "fieldId": "post_id",
+              "fieldValue": "={{ $json.post_id }}"
+            },
+            {
+              "fieldId": "post_url",
+              "fieldValue": "={{ $json.post_url }}"
+            },
+            {
+              "fieldId": "post_content",
+              "fieldValue": "={{ $json.post_content }}"
+            },
+            {
+              "fieldId": "media_type",
+              "fieldValue": "={{ $json.media_type }}"
+            },
+            {
+              "fieldId": "views",
+              "fieldValue": "={{ $json.views }}"
+            },
+            {
+              "fieldId": "reactions",
+              "fieldValue": "={{ $json.reactions }}"
+            },
+            {
+              "fieldId": "comments",
+              "fieldValue": "={{ $json.comments }}"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $json.hook }}"
+            },
+            {
+              "fieldId": "format",
+              "fieldValue": "={{ $json.format }}"
+            },
+            {
+              "fieldId": "cta",
+              "fieldValue": "={{ $json.cta }}"
+            },
+            {
+              "fieldId": "engagement_mechanics",
+              "fieldValue": "={{ $json.engagement_mechanics }}"
+            },
+            {
+              "fieldId": "opportunity_type",
+              "fieldValue": "={{ $json.opportunity_type }}"
+            },
+            {
+              "fieldId": "lead_magnet_subtype",
+              "fieldValue": "={{ $json.lead_magnet_subtype }}"
+            },
+            {
+              "fieldId": "raw_json",
+              "fieldValue": "={{ $json.raw_json }}"
+            },
+            {
+              "fieldId": "shares",
+              "fieldValue": "={{ $json.shares }}"
+            },
+            {
+              "fieldId": "is_repost",
+              "fieldValue": "={{ $json.is_repost }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $json.updated_at }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3984,
+        1792
+      ],
+      "id": "04c3be2b-30b5-49b6-9f9b-4f4ea3a608be",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "competitor_linkedin_posts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "competitor_id",
+              "fieldValue": "={{ $json.competitor_id }}"
+            },
+            {
+              "fieldId": "post_id",
+              "fieldValue": "={{ $json.post_id }}"
+            },
+            {
+              "fieldId": "post_url",
+              "fieldValue": "={{ $json.post_url }}"
+            },
+            {
+              "fieldId": "post_content",
+              "fieldValue": "={{ $json.post_content }}"
+            },
+            {
+              "fieldId": "media_type",
+              "fieldValue": "={{ $json.media_type }}"
+            },
+            {
+              "fieldId": "views",
+              "fieldValue": "={{ $json.views }}"
+            },
+            {
+              "fieldId": "reactions",
+              "fieldValue": "={{ $json.reactions }}"
+            },
+            {
+              "fieldId": "comments",
+              "fieldValue": "={{ $json.comments }}"
+            },
+            {
+              "fieldId": "shares",
+              "fieldValue": "={{ $json.shares }}"
+            },
+            {
+              "fieldId": "is_repost",
+              "fieldValue": "={{ $json.is_repost }}"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $json.hook }}"
+            },
+            {
+              "fieldId": "format",
+              "fieldValue": "={{ $json.format }}"
+            },
+            {
+              "fieldId": "cta",
+              "fieldValue": "={{ $json.cta }}"
+            },
+            {
+              "fieldId": "engagement_mechanics",
+              "fieldValue": "={{ $json.engagement_mechanics }}"
+            },
+            {
+              "fieldId": "opportunity_type",
+              "fieldValue": "={{ $json.opportunity_type }}"
+            },
+            {
+              "fieldId": "lead_magnet_subtype",
+              "fieldValue": "={{ $json.lead_magnet_subtype }}"
+            },
+            {
+              "fieldId": "raw_json",
+              "fieldValue": "={{ $json.raw_json }}"
+            },
+            {
+              "fieldId": "created_at",
+              "fieldValue": "={{ $json.created_at }}"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "={{ $json.updated_at }}"
+            }
+          ]
+        }
+      },
+      "id": "0cb2e215-6386-43e0-8351-d1f47171623e",
+      "name": "Create Post1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        4000,
+        1968
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Update Post": {
+      "main": [
+        [
+          {
+            "node": "Check Post Exists",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge AI Output": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Check Post Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Post Exists": {
+      "main": [
+        [
+          {
+            "node": "Determine Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Determine Action": {
+      "main": [
+        [
+          {
+            "node": "Route: Create or Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route: Create or Update": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Post1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Post1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Merge AI Output": [
+      {
+        "json": {
+          "competitor_id": "7f81399c-f625-4035-a3ba-fe119f3c80f7",
+          "post_id": "7345343809628639234",
+          "post_url": "https://www.linkedin.com/posts/uzair-yasin_alhamdulillah-another-achievement-activity-7345343809628639234-x46T?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAGLuaFkBy-OroJ-oa1ctxZqT4ew_l-m19js",
+          "post_content": "Alhamdulillah, another achievement ✅",
+          "media_type": "image",
+          "views": null,
+          "reactions": 44,
+          "comments": 14,
+          "shares": 0,
+          "is_repost": false,
+          "hook": "Alhamdulillah, another achievement ✅",
+          "format": "image",
+          "cta": null,
+          "engagement_mechanics": "[\"personal story\",\"emotional appeal\",\"social proof\",\"visual storytelling\"]",
+          "opportunity_type": "standard_post",
+          "lead_magnet_subtype": null,
+          "raw_json": "{\"urn\":{\"activity_urn\":\"7345343809628639234\",\"share_urn\":\"7345343808571650048\",\"ugcPost_urn\":null},\"full_urn\":\"urn:li:activity:7345343809628639234\",\"posted_at\":{\"date\":\"2025-06-30 08:53:54\",\"relative\":\"6 months ago • Visible to anyone on or off LinkedIn\",\"timestamp\":1751266434104},\"text\":\"Alhamdulillah, another achievement ✅\",\"url\":\"https://www.linkedin.com/posts/uzair-yasin_alhamdulillah-another-achievement-activity-7345343809628639234-x46T?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAGLuaFkBy-OroJ-oa1ctxZqT4ew_l-m19js\",\"post_type\":\"regular\",\"author\":{\"first_name\":\"Muhammad\",\"last_name\":\"Uzair Yasin\",\"headline\":\"\"Aspiring Full Stack Developer | Proficient in HTML, CSS, Python, JavaScript, TypeScript,Nextjs OOP, and DSA | Learning Applied Generative AI | Passionate About Building Dynamic Web Applications\" and Custom GPTs\",\"username\":\"uzair-yasin\",\"profile_url\":\"https://www.linkedin.com/in/uzair-yasin?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAAEBGpc8BMFvt_feVt_QtDSRd84y7CcGdWE4\",\"profile_picture\":\"https://media.licdn.com/dms/image/v2/D4D35AQHV6AHa3cIvpQ/profile-framedphoto-shrink_800_800/profile-framedphoto-shrink_800_800/0/1737635306564?e=1768946400&v=beta&t=LGEpWztsLm7W7_tazaaslclbcz-GfBGfHGW4LmtihVk\"},\"stats\":{\"total_reactions\":44,\"like\":39,\"support\":0,\"love\":1,\"insight\":0,\"celebrate\":4,\"funny\":0,\"comments\":14,\"reposts\":0},\"media\":{\"type\":\"image\",\"url\":\"https://media.licdn.com/dms/image/v2/D4D22AQHhfU5lk0z_rg/feedshare-shrink_2048_1536/B4DZe_nRQoH4Ao-/0/1751266432832?e=1769644800&v=beta&t=3gTGpfgUBsIJcHqKOvrUyhuOgkZV3A5PWkNMZ3euKNY\",\"images\":[{\"url\":\"https://media.licdn.com/dms/image/v2/D4D22AQHhfU5lk0z_rg/feedshare-shrink_2048_1536/B4DZe_nRQoH4Ao-/0/1751266432832?e=1769644800&v=beta&t=3gTGpfgUBsIJcHqKOvrUyhuOgkZV3A5PWkNMZ3euKNY\",\"width\":1915,\"height\":966}]},\"pagination_token\":\"dXJuOmxpOmFjdGl2aXR5OjcxNjc0Mjc3NTY0MDA2MTk1MjAtMTcwODg0Nzk0MTQ2OQ==\",\"is_repost\":false}",
+          "created_at": "2026-01-13T21:20:00.805Z",
+          "updated_at": "2026-01-13T21:24:12.396Z",
+          "post_type": "storytelling"
+        }
+      },
+      {
+        "json": {
+          "competitor_id": "7f81399c-f625-4035-a3ba-fe119f3c80f7",
+          "post_id": "7409741032629751808",
+          "post_url": "https://www.linkedin.com/posts/mfahadjbr_ai-accounting-fintech-activity-7409741032629751808-pVRp?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAGLbdDgBKCofA4WxR5fs73dtNlAHQ0PaqOs",
+          "post_content": "🚀 Excited to share my new project — AI Receipt Smart Accounting! 🧾✨\nThis tool uses AI to simplify receipt processing and smart accounting — helping businesses and freelancers save time and stay organized.\n\n👉 Check it out: https://lnkd.in/dVj6GUXC\nWould love your feedback! 💬\n#AI #Accounting #FinTech #Productivity",
+          "media_type": "video",
+          "views": null,
+          "reactions": 37,
+          "comments": 12,
+          "shares": 0,
+          "is_repost": false,
+          "hook": "🚀 Launching a behind-the-scenes look at how I built AI Receipt Smart Accounting — from idea to implementation.",
+          "format": "video",
+          "cta": "Drop a comment with your thoughts or a gut-check if you want a written version next.",
+          "engagement_mechanics": "[\"story-driven\",\"emotional resonance\",\"value-first\",\"question-driven\"]",
+          "opportunity_type": "standard_post",
+          "lead_magnet_subtype": "ai_accounting_template",
+          "raw_json": "{\"urn\":{\"activity_urn\":\"7409741032629751808\",\"share_urn\":null,\"ugcPost_urn\":\"7409740392482484224\"},\"full_urn\":\"urn:li:ugcPost:7409740392482484224\",\"posted_at\":{\"date\":\"2025-12-25 00:45:28\",\"relative\":\"2 weeks ago • Edited • Visible to anyone on or off LinkedIn\",\"timestamp\":1766619928510},\"text\":\"🚀 Excited to share my new project — AI Receipt Smart Accounting! 🧾✨\\nThis tool uses AI to simplify receipt processing and smart accounting — helping businesses and freelancers save time and stay organized.\\n\\n👉 Check it out: https://lnkd.in/dVj6GUXC\nWould love your feedback! 💬\\n#AI #Accounting #FinTech #Productivity\",\"url\":\"https://www.linkedin.com/posts/mfahadjbr_ai-accounting-fintech-activity-7409741032629751808-pVRp?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAGLbdDgBKCofA4WxR5fs73dtNlAHQ0PaqOs\",\"post_type\":\"regular\",\"author\":{\"first_name\":\"Muhammad\",\"last_name\":\"Fahad Jabbar\",\"headline\":\"NextJs Developer | Full Stack Developer | Agentic AI Engineer Aspirant | Agentic AI | Generative AI\",\"username\":\"mfahadjbr\",\"profile_url\":\"https://www.linkedin.com/in/mfahadjbr?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAAFCe7pcBbLhXanNr_dgcAI0Ul31e_DGe8eQ\",\"profile_picture\":\"https://media.licdn.com/dms/image/v2/D4E35AQG26bf1N06xEg/profile-framedphoto-shrink_800_800/B4EZilw0ixHEAk-/0/1755127695828?e=1768946400&v=beta&t=RIQgw4GVPH74eBkmloDLqPRg_9Y4XV4tsWsx3u666PU\"},\"stats\":{\"total_reactions\":37,\"like\":32,\"support\":0,\"love\":3,\"insight\":0,\"celebrate\":2,\"funny\":0,\"comments\":12,\"reposts\":0},\"media\":{\"type\":\"video\",\"url\":\"https://dms.licdn.com/playlist/vid/v2/D4E05AQG1YlWxOjF-qg/mp4-720p-30fp-crf28/B4EZtSwEhIGkCI-/0/1766619906111?e=1768946400&v=beta&t=PZX6Sh2wQqRQ9pJeeI6YuBgbQJaTQzu4Drhh0dK1XD0\"},\"pagination_token\":\"dXJuOmxpOmFjdGl2aXR5OjcyOTE2NzQ5MjEwNzg4NDk1MzgtMTczODQ3MDc3MzkxNw==\",\"is_repost\":false}",
+          "created_at": "2026-01-13T21:20:00.805Z",
+          "updated_at": "2026-01-13T21:24:12.396Z",
+          "post_type": "storytelling"
+        }
+      }
+    ]
+  },
+  "versionId": "3657186b-558b-4457-9bff-e30a3cf10110",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T21:50:07.559Z",
+      "createdAt": "2026-01-13T21:50:07.559Z",
+      "role": "workflow:owner",
+      "workflowId": "AXSnpRyh2z9blZRNOJ2m5",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
