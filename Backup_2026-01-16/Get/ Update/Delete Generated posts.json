@@ -1,0 +1,288 @@
+{
+  "updatedAt": "2026-01-14T17:28:09.000Z",
+  "createdAt": "2026-01-14T17:28:09.559Z",
+  "id": "aZQYekvSvWsg2CF1oZ3WR",
+  "name": "Get/ Update/Delete Generated posts",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        464,
+        0
+      ],
+      "id": "42d60316-8c40-4ac7-a88c-88d6ea5a7d9f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        496,
+        224
+      ],
+      "id": "f96234b7-b280-44d0-a541-168974439519",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "path": "e208260e-8d23-482f-a498-66a2c49e78c3",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "25c87a97-e07c-4b8b-bdca-e4dfeac8899f",
+      "name": "get",
+      "webhookId": "e208260e-8d23-482f-a498-66a2c49e78c3"
+    },
+    {
+      "parameters": {
+        "httpMethod": "PUT",
+        "path": "09ddcf71-81d9-4eed-8a22-600151ff5cde",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        224
+      ],
+      "id": "2e732b3d-f22f-4a12-a2b4-bf7530a523c5",
+      "name": "update",
+      "webhookId": "09ddcf71-81d9-4eed-8a22-600151ff5cde"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "generated_posts",
+        "limit": 100
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "93ad818c-6033-4ee1-a169-4be8f3a0ef45",
+      "name": "Get many rows"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "generated_posts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "post_content",
+              "fieldValue": "={{ $json.body.post_content }}"
+            },
+            {
+              "fieldId": "post_type",
+              "fieldValue": "={{ $json.body.post_type }}"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $json.body.hook }}"
+            },
+            {
+              "fieldId": "cta",
+              "fieldValue": "={{ $json.body.cta }}"
+            },
+            {
+              "fieldId": "full_post",
+              "fieldValue": "={{ $json.body.full_post }}"
+            },
+            {
+              "fieldId": "image_prompt",
+              "fieldValue": "={{ $json.body.image_prompt }}"
+            },
+            {
+              "fieldId": "image_url",
+              "fieldValue": "={{ $json.body.image_url }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.body.status }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        256,
+        224
+      ],
+      "id": "cf77c581-0647-470e-ace3-c5326fe080fe",
+      "name": "Update a row"
+    },
+    {
+      "parameters": {
+        "httpMethod": "DELETE",
+        "path": "449102f8-5e83-47bd-84ad-ba8d87e7b4c9",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        480
+      ],
+      "id": "953b96c2-7339-4b07-9b5f-4547fd2113f1",
+      "name": "Webhook",
+      "webhookId": "449102f8-5e83-47bd-84ad-ba8d87e7b4c9"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "generated_posts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        256,
+        480
+      ],
+      "id": "08779a92-f47c-4eca-831a-06758c5be021",
+      "name": "Delete a row"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        496,
+        480
+      ],
+      "id": "c2ae425a-73c9-47ff-9b7e-117086c95f75",
+      "name": "Respond to Webhook2"
+    }
+  ],
+  "connections": {
+    "get": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Delete a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f96cb14c-75e2-4490-a4aa-b27ac15c8bf1",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-14T17:28:09.566Z",
+      "createdAt": "2026-01-14T17:28:09.566Z",
+      "role": "workflow:owner",
+      "workflowId": "aZQYekvSvWsg2CF1oZ3WR",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
