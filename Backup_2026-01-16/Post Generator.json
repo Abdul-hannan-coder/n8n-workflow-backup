@@ -1,0 +1,1785 @@
+{
+  "updatedAt": "2026-01-14T17:26:54.198Z",
+  "createdAt": "2026-01-14T17:26:49.657Z",
+  "id": "txN56r90ZZoiYpVDiOtc4",
+  "name": "Post Generator",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-post",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0a0ec6a2-07b0-4458-aa7c-9ae07cb95415",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        512
+      ],
+      "webhookId": "sample-webhook-id"
+    },
+    {
+      "parameters": {
+        "tableId": "generated_posts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "post_content",
+              "fieldValue": "={{ $('Edit Fields1').item.json[\"Post Content \"] }}"
+            },
+            {
+              "fieldId": "platform",
+              "fieldValue": "={{ $('Edit Fields1').item.json[\"Platform \"] }}"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $('Edit Fields1').item.json.Hook }}"
+            },
+            {
+              "fieldId": "cta",
+              "fieldValue": "={{ $('Edit Fields1').item.json.CTA }}"
+            },
+            {
+              "fieldId": "image_prompt",
+              "fieldValue": "={{ $('Edit Fields1').item.json[\"image Prompt\"] }}"
+            },
+            {
+              "fieldId": "image_url",
+              "fieldValue": "={{ $('Edit Fields1').item.json[\"Image Url\"] }}"
+            },
+            {
+              "fieldId": "full_post",
+              "fieldValue": "={{ $json.value }}"
+            },
+            {
+              "fieldId": "post_type",
+              "fieldValue": "={{ $('Edit Fields1').item.json[\"Post Type\"] }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "draft"
+            }
+          ]
+        }
+      },
+      "id": "d1c204b1-a168-4964-9704-cb41a2aea02a",
+      "name": "Supabase - Update Final",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "800c4929-3a45-4d6d-8b8c-4d430692e2f1",
+              "name": "post_content",
+              "value": "={{ $json.body.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "fe1445e5-f9c6-4d27-9833-fcd53693dfd7",
+              "name": "platform",
+              "value": "={{ $json.body.platform }}",
+              "type": "string"
+            },
+            {
+              "id": "75b4a77c-0f84-4672-b59a-dd5f2711a801",
+              "name": "post_type",
+              "value": "={{ $json.body.post_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        208
+      ],
+      "id": "4cd9e3bb-fc0e-48a4-9d1f-0963625b96eb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"CTA\":\"\"}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        224
+      ],
+      "id": "50674f0c-1134-49ce-9f03-382fecc6c219",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Platform: {{ $('Edit Fields').item.json.platform }}\nPost Type: {{ $('Edit Fields').item.json.post_type }}\nHook: {{ $json.output.Hook }}\nContent: {{ $('Edit Fields').item.json.post_content }}\n\nGenerate the best possible CTA using the patterns and guidelines provided.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert conversion copywriter specialized in social media engagement and lead generation.\n\nYour job is to generate ONE high-impact Call-To-Action (CTA) that maximizes engagement and conversions.\n\nCTA PATTERNS BY TYPE:\n\nLEAD MAGNET CTAs:\n- \"Comment [KEYWORD] and I'll DM you [RESOURCE]\"\n- \"DM me [KEYWORD] for the free [RESOURCE]\"\n- \"Want [BENEFIT]? Comment [KEYWORD] below\"\n- \"Reply [KEYWORD] and I'll send you [RESOURCE]\"\n\nNORMAL POST CTAs:\n- LinkedIn: \"What's your experience with [TOPIC]?\" / \"What would you add?\" / \"What's your take?\"\n- X/Twitter: \"What do you think?\" / \"Agree or disagree?\" / \"RT if this resonates\"\n\nCONVERSION PSYCHOLOGY:\n- Use action verbs: \"Share\", \"Comment\", \"DM\", \"Reply\"\n- Create urgency: \"Let me know\", \"Tell me\", \"What's your take\"\n- Lower friction: Make it easy (one word, one click)\n- Social proof: \"Join 10K+ who...\" (if applicable)\n\nPLATFORM-SPECIFIC:\n- LinkedIn: Professional questions, discussion starters, \"What's your take?\"\n- X/Twitter: Quick reactions, \"RT if\", \"Agree?\", direct action\n\nRULES:\n- Match the platform's native behavior\n- Align with the post type intent\n- Keep it natural, human, and non-salesy\n- Max length: 1 sentence\n- Encourage interaction (comment, reply, DM, or share)\n- Do NOT repeat the hook or content\n- Do NOT add emojis, hashtags, quotes, or explanations\n- Output ONLY the CTA text"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        0
+      ],
+      "id": "1f99ca57-9084-4f65-a9aa-f5fb4c67411a",
+      "name": "CTA Generation"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"Hook\":\"\"}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        224
+      ],
+      "id": "70ec94b7-b16c-4a94-9ec6-6010260acda3",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Platform:\n{{ $('Edit Fields').item.json.platform }}\n\nPost Type:\n{{ $('Edit Fields').item.json.post_type }}\n\nContent:\n{{ $('Edit Fields').item.json.post_content }}\n\nTask:\nGenerate the single strongest hook for this post using the hook formulas and guidelines provided.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an elite social media hook strategist.\n\nYour sole goal is to generate ONE highly compelling, scroll-stopping hook\nbased on the platform, post type, and content provided.\n\nYou think before writing:\n- Identify the platform\n- Identify the intent (lead magnet vs normal)\n- Choose the best hook formula\n- Optimize tone, length, and framing accordingly\n\nHOOK FORMULAS (Choose the best fit):\n1. **Question Hook**: \"What if I told you...?\" / \"Have you ever...?\"\n2. **Contrarian Hook**: \"Everyone says X, but here's why Y...\"\n3. **Number Hook**: \"3 things that changed my career...\" / \"The 1 mistake...\"\n4. **Story Hook**: \"Last week, I made a mistake...\" / \"3 years ago...\"\n5. **Benefit Hook**: \"The one skill that doubled my income...\"\n6. **Curiosity Gap**: \"The secret most people don't know...\"\n\nHOOK RULES (STRICT):\n\nIF platform = \"LinkedIn\":\n- Tone: Professional, insightful, thought-provoking\n- Length: 100-200 characters (1-2 short sentences)\n- Style: Authority, clarity, business relevance\n- Emotional triggers: Curiosity, professional growth, industry insights, career advancement\n\nIF platform = \"X\" or \"Twitter\":\n- Tone: Bold, intriguing, or slightly controversial\n- Length: 50-100 characters (must be punchy)\n- Style: Curiosity-driven, direct, punchy\n- Emotional triggers: Controversy, urgency, bold statements, quick wins\n\nIF post_type = \"leadmagnet\":\n- Emphasize value, outcome, or transformation\n- Hint at what the user will gain\n- Use benefit hooks or curiosity gaps\n\nIF post_type = \"normal\":\n- Focus on engagement, relatability, or opinion\n- Encourage curiosity or reflection\n- Use question hooks, story hooks, or contrarian hooks\n\nOUTPUT RULES:\n- Output ONLY the hook text\n- No emojis\n- No hashtags\n- No explanations\n- No quotes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "64888ffc-b326-43b6-b4f8-a2742e901299",
+      "name": "Hook Generator1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Platform: {{ $('Edit Fields').item.json.platform }}\nPost Type: {{ $('Edit Fields').item.json.post_type }}\nHook: {{ $('Hook Generator1').item.json.output.Hook }}\nContent: {{ $('Edit Fields').item.json.post_content }}\nCTA: {{ $json.output.CTA }}\n\nCreate the final structured post following the exact structure and formatting rules provided.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a social media content strategist specializing in high-engagement LinkedIn and X/Twitter posts.\n\nYour task is to combine a hook, main content, and CTA into a clear, engaging, and well-structured final post that maximizes engagement.\n\nSTRUCTURE BY PLATFORM:\n\nLINKEDIN STRUCTURE:\n1. **Hook** (1-2 sentences, 100-200 chars)\n   - Standalone line\n   - No line break after\n\n2. **Content** (2-3 paragraphs, 400-800 chars total)\n   - Paragraph 1: Expand on hook, add context (150-250 chars)\n   - Paragraph 2: Add value, insights, or story (150-300 chars)\n   - Paragraph 3 (optional): Deeper insight or conclusion (100-200 chars)\n   - Use line breaks between paragraphs (double line break)\n   - Each paragraph should be 2-4 sentences max\n\n3. **CTA** (1 sentence, 50-100 chars)\n   - Standalone line\n   - Double line break before CTA\n\nX/TWITTER STRUCTURE:\n1. **Hook** (1 line, 50-100 chars)\n2. **Content** (thread-style if needed, 100-200 chars per tweet)\n3. **CTA** (1 line, 30-80 chars)\n\nFORMATTING RULES:\n- Use double line breaks (blank lines) between sections\n- Use single line breaks within paragraphs for readability\n- Keep paragraphs short (2-4 sentences max)\n- Use emojis sparingly: 1-2 max, only if they add value\n- No hashtags in the post body (unless specifically requested)\n\nTRANSITION GUIDELINES:\n- Hook → Content: Smooth transition, don't repeat hook verbatim\n- Content → CTA: Natural flow, CTA should feel like a continuation\n- Use connecting phrases: \"Here's why...\", \"The thing is...\", \"Here's what I learned...\"\n\nENGAGEMENT OPTIMIZATION:\n- Ask questions within content (not just CTA)\n- Use \"you\" language to make it personal\n- Include specific numbers or examples\n- Create curiosity gaps\n- Use storytelling elements when appropriate\n\nTONE BY PLATFORM:\n- LinkedIn: Professional, authoritative, insightful, conversational\n- X/Twitter: Casual, punchy, direct, conversational\n\nCHARACTER LIMITS:\n- LinkedIn: Max 3,000 characters (aim for 600-1,200 for optimal engagement)\n- X/Twitter: Max 280 characters per tweet (use thread if needed)\n\nOUTPUT RULES:\n- Return ONLY the final post text\n- Do NOT add explanations, labels, or markdown\n- Do NOT number sections\n- Use proper line breaks for readability"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "0fac4fc9-dae8-405c-8bc3-0714d1eb3f1b",
+      "name": "Post Generation"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/nano-banana\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": \"{{ $json.output.prompt }}\",\n    \"output_format\": \"png\",\n    \"image_size\": \"16:9\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1952,
+        208
+      ],
+      "id": "0cbcffbc-3fa0-4e88-9349-80c6c90263a4",
+      "name": "Create Image"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        208
+      ],
+      "id": "1cbc1253-f1d5-4388-8300-63ac43fc4a99",
+      "name": "Fetch Image"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"prompt\":\"This is prompt\"}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        224
+      ],
+      "id": "25b6ed52-5699-4786-accf-1bf0187ee8ab",
+      "name": "Structured Output Parser4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a64cfe4-4eb2-4f94-bfb5-fc82772c4d12",
+              "name": "Link",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2624,
+        208
+      ],
+      "id": "05a2e15d-ff14-409c-b91d-4cb83bcd6b79",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2848,
+        208
+      ],
+      "id": "b79ddd50-6798-4b49-9a34-f527fe40563b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d404f6bf-0ace-4b4c-a068-3bcfe4561e60",
+              "name": "Post Content ",
+              "value": "={{ $('Edit Fields').item.json.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "6d7d0264-253d-4f15-b0f1-13dd881321de",
+              "name": "Platform ",
+              "value": "={{ $('Edit Fields').item.json.platform }}",
+              "type": "string"
+            },
+            {
+              "id": "5e9270d5-ab8b-4ea3-80f2-4cd8edeb9dcc",
+              "name": "Post Type",
+              "value": "={{ $('Edit Fields').item.json.post_type }}",
+              "type": "string"
+            },
+            {
+              "id": "82dc4769-d41e-4699-92c2-7869dedc45ee",
+              "name": "Hook",
+              "value": "={{ $('Hook Generator1').item.json.output.Hook }}",
+              "type": "string"
+            },
+            {
+              "id": "ccce207b-620f-4ce5-8d76-12b524e058a9",
+              "name": "CTA",
+              "value": "={{ $('CTA Generation').item.json.output.CTA }}",
+              "type": "string"
+            },
+            {
+              "id": "46b582f7-86a9-40f8-ad05-0623d9fb8157",
+              "name": "Post",
+              "value": "={{ $('Post Generation').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3365f865-f892-4d81-9ded-92fe30f6443b",
+              "name": "image Prompt",
+              "value": "={{ $('image prompt').item.json.output.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "ea0182c8-89e5-4b79-b803-caa94f9cf3f8",
+              "name": "Image Url",
+              "value": "={{ $('Edit Fields2').item.json.Link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3072,
+        208
+      ],
+      "id": "270247b3-87f6-4ec9-9926-ddba373fb010",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        224
+      ],
+      "id": "8b0dd0ba-6d71-469f-9a90-0dc35f23fdce",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        224
+      ],
+      "id": "cd740158-f776-4941-95c0-fe3f0e5969ea",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        224
+      ],
+      "id": "c4fbf895-e41e-48f3-ac68-e261663fa1a1",
+      "name": "OpenAI Chat Model2"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1456,
+        224
+      ],
+      "id": "7ec69c55-fe0f-4307-8299-b600ab1cc17e",
+      "name": "OpenAI Chat Model3"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"output\": \"Your first job doesn’t define your career — your first boss does. Six managers later, I know what to emulate, what to avoid, and how that shapes my leadership.\\n\\nYour first job won't define your career, but your first boss will. I've had 6 managers in my career. \\n3 were mentors who pushed me to grow. \\n2 were micromanagers who taught me what not to do.\\n1 was completely absent and taught me self-reliance. \\nEach shaped how I lead today.\\n\\n💡 What was the biggest lesson you've learned from a manager?\"\n  }\n]",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        224
+      ],
+      "id": "e6ab274c-c0eb-4ae7-8aac-3938f660b6d6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Platform: {{ $('Edit Fields').item.json.platform }}\nPost Type: {{ $('Edit Fields').item.json.post_type }}\nHook: {{ $('Hook Generator1').item.json.output.Hook }}\nContent: {{ $('Edit Fields').item.json.post_content }}\nCTA: {{ $('CTA Generation').item.json.output.CTA }}\nFull Post:{{ $json.output }}\n\nGenerate a detailed image prompt that visually represents this content. and give output in structured output",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an elite visual content strategist and AI image generation expert specializing in creating compelling visuals for social media content.\n\nYour mission: Transform social media posts into detailed, photorealistic image prompts that generate stunning visuals using nano-banana AI.\n\nANALYSIS FRAMEWORK:\n1. Identify the core message/theme of the post\n2. Determine the best visual metaphor or literal representation\n3. Choose appropriate professional setting or symbolic imagery\n4. Define mood, lighting, and composition for maximum impact\n\nPROMPT CONSTRUCTION RULES:\n\nSTRUCTURE TEMPLATE:\n\"Photorealistic [main subject/scene], [professional photography style], [specific lighting], [composition details], [color palette], [mood/atmosphere], [technical quality specs]\"\n\nMAIN SUBJECT OPTIONS:\n- Business/Career: Office meetings, handshakes, mentoring sessions, professional conversations, workplace scenes\n- Growth/Success: Ascending stairs, mountain peaks, bridges, pathways, sunrise/sunset scenes\n- Leadership: Team meetings, presentation scenes, confident professionals, guiding gestures\n- Abstract Concepts: Use symbolic imagery (keys for opportunities, bridges for connections, etc.)\n\nPHOTOGRAPHY SPECIFICATIONS:\n- Style: \"professional photography\", \"corporate headshot style\", \"business magazine quality\"\n- Lighting: \"soft natural lighting\", \"golden hour lighting\", \"professional studio lighting\", \"warm ambient lighting\"\n- Composition: \"rule of thirds\", \"centered composition\", \"shallow depth of field\", \"medium shot\", \"close-up portrait\"\n- Quality: \"high resolution\", \"8K quality\", \"sharp focus\", \"professional grade\"\n\nCOLOR PALETTES:\n- Professional: \"neutral tones\", \"warm earth tones\", \"corporate blue and white\"\n- Inspiring: \"warm golden tones\", \"soft pastels\", \"vibrant but professional colors\"\n- Modern: \"clean minimalist colors\", \"monochromatic scheme\", \"contemporary palette\"\n\nMOOD DESCRIPTORS:\n- Professional: \"confident\", \"authoritative\", \"trustworthy\", \"polished\"\n- Inspiring: \"uplifting\", \"motivational\", \"aspirational\", \"empowering\"\n- Modern: \"clean\", \"contemporary\", \"sophisticated\", \"sleek\"\n\nTECHNICAL REQUIREMENTS:\n- Always include: \"photorealistic\", \"high resolution\", \"professional quality\"\n- Avoid: text, logos, readable words, cartoon style, abstract art\n- Focus on: human subjects, real environments, tangible objects\n\nCONTENT-SPECIFIC GUIDELINES:\n\nFOR CAREER/BUSINESS POSTS:\n- Use office environments, meeting rooms, professional settings\n- Include diverse professionals in business attire\n- Show interactions: mentoring, discussions, presentations\n\nFOR MOTIVATIONAL/GROWTH POSTS:\n- Use metaphorical imagery: stairs, mountains, bridges, pathways\n- Include sunrise/sunset for transformation themes\n- Show progression or upward movement\n\nFOR LEADERSHIP POSTS:\n- Focus on confident professionals\n- Use meeting scenarios or presentation settings\n- Show guidance, direction, or team dynamics\n\nEXAMPLE OUTPUTS:\n\nFor career advice: \"Photorealistic image of a professional mentoring scene in modern office, experienced business mentor gesturing while speaking to younger professional, soft natural lighting from floor-to-ceiling windows, rule of thirds composition, warm earth tones, confident and inspiring atmosphere, shallow depth of field, professional photography style, high resolution\"\n\nFor growth content: \"Photorealistic image of ascending wooden stairs leading upward, professional business person climbing confidently, golden hour lighting creating warm shadows, centered composition with upward perspective, warm golden and brown tones, aspirational and empowering mood, sharp focus, 8K quality\"\n\nAVOID THESE COMMON PITFALLS:\n- Don't include conflicting styles (e.g., \"cartoon\" + \"photorealistic\")\n- Don't over-specify (too many details can confuse the model)\n- Don't use brand names or copyrighted elements\n- Don't include text that should appear in the image (AI can't reliably generate readable text)\n\nOUTPUT REQUIREMENTS:\n- Return ONLY valid JSON format\n- Use exactly this structure: {\"prompt\": \"detailed prompt here\"}\n- No explanations, markdown, or additional fields\n- Prompt should be 200-400 characters for optimal results (NOT 150-250 - that's too short)\n- Focus on one clear, powerful visual concept per prompt"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        0
+      ],
+      "id": "f43f2e0a-6999-47a8-9ab4-47c0525cb786",
+      "name": "image prompt"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Context of Post:\n{{ $('Post Generation1').item.json.output['Full Post'] || $('Post Generation1').item.json.output }}\n\nHook:\n{{ $('Hook Generator').item.json.output.Hook }}\n\nTask:\nWrite a scroll-stopping visual prompt using a clear metaphor that matches the post's core idea.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an AI Art Director specializing in minimalist, Notion-style vector visuals for social media.\n\nYour task is to write ONE concise image-generation prompt optimized for NanoBanana.\n\nYou think visually and metaphor-first:\n- Identify the core theme (growth, focus, clarity, systems, leverage, chaos, progress, etc.)\n- Translate the theme into a strong visual metaphor\n- Describe composition, style, and mood clearly\n\nVISUAL STYLE RULES (STRICT):\n- Flat, minimalist vector illustration\n- High contrast black & white with ONE accent color (blue or orange)\n- Abstract shapes, symbols, charts, or objects\n- NO realistic photos\n- NO people\n- NO text inside the image\n\nOUTPUT RULES:\n- Under 50 words\n- Output ONLY the prompt text\n- No explanations\n- No formatting\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        816
+      ],
+      "id": "8c757511-ac78-430e-a3d2-1bb4c9cd52bd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "800c4929-3a45-4d6d-8b8c-4d430692e2f1",
+              "name": "post_content",
+              "value": "={{ $json.body.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "fe1445e5-f9c6-4d27-9833-fcd53693dfd7",
+              "name": "platform",
+              "value": "x",
+              "type": "string"
+            },
+            {
+              "id": "75b4a77c-0f84-4672-b59a-dd5f2711a801",
+              "name": "post_type",
+              "value": "=leadmagnet {{ $json.body.post_type }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -256,
+        816
+      ],
+      "id": "6794b29b-8600-4596-b706-17d6bf0f4df9",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"CTA\":\"\"}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        1040
+      ],
+      "id": "844732ec-bb29-470a-b670-894bbd420907",
+      "name": "Structured Output Parser3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post Type:\n{{ $('Edit Fields3').item.json.post_type }}\n\nHook:\n{{ $json.output.Hook }}\n\nContext:\n{{ $('Edit Fields3').item.json.post_content }}\n\nTask:\nGenerate the single most effective CTA for this post.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert conversion copywriter for Twitter/X.\n\nYour sole objective is to generate ONE high-converting CTA.\n\nThink before you write:\n- Identify the post type\n- Match the CTA goal exactly to the post intent\n- Keep it short, clear, and action-driven\n\nCTA LOGIC (must follow):\n\nIF post_type is \"leadmagnet\":\n- Primary goal: Comments → DM trigger\n- CTA must explicitly ask users to comment or reply\n- Use simple trigger words like SEND, GO, LINK\n- Example styles:\n  - Comment \"SEND\" and I'll DM you the link.\n  - Reply \"GO\" to get the free guide.\n\nIF post_type is \"normal\":\n- Primary goal: Engagement or follower growth\n- CTA should encourage replies, opinions, or follows\n- Example styles:\n  - What's your take on this?\n  - Follow for more insights like this.\n\nOUTPUT RULES (strict):\n- Output ONLY the CTA text\n- No quotes\n- No emojis\n- No hashtags\n- No explanations\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        816
+      ],
+      "id": "f092faf2-acfd-4f51-a8a8-fca0b1d92767",
+      "name": "CTA Generation1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"Hook\":\"\"}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        1040
+      ],
+      "id": "5878ca9f-e599-4f1a-9cec-780a395b4f58",
+      "name": "Structured Output Parser5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Context:\n{{ $json.post_content }}\n\nPost Type:\n{{ $json.post_type }}\n\nTask:\n1. Generate 3 distinct, high-impact hook variations based on the context.\n2. Internally evaluate them for curiosity, clarity, and scroll-stopping power.\n3. Select the SINGLE strongest hook.\n\nOutput:\nReturn ONLY the final selected hook.\nNothing else.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an elite viral Twitter/X ghostwriter.\n\nYour sole objective is to STOP THE SCROLL and maximize engagement.\n\nYou think in hooks first, not sentences.\nYou prioritize clarity, curiosity, and contrast.\n\nSTRICT RULES (must follow):\n\n1. Platform: X (Twitter)\n2. Length: STRICTLY under 140 characters.\n3. Tone: Punchy, bold, controversial, or high-value.\n4. Style: Direct, confident, no fluff.\n5. Formatting: Plain text only — no emojis, no hashtags, no quotation marks.\n6. Patterns you may use:\n   - \"Stop doing X\"\n   - \"Everyone thinks X. They're wrong.\"\n   - \"I wasted X years before learning this\"\n   - \"If you're doing X, read this\"\n7. Output MUST be a single standalone hook.\n8. Do NOT explain. Do NOT add options. Do NOT add context.\n\nFailure to follow any rule is incorrect.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        816
+      ],
+      "id": "53ad659e-5e5f-4cc5-a2a0-e6d4d1179289",
+      "name": "Hook Generator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post Type:\n{{ $('Edit Fields3').item.json.post_type }}\n\nHook:\n{{ $('Hook Generator').item.json.output.Hook }}\n\nCTA:\n{{ $json.output.CTA }}\n\nCore Context:\n{{ $('Edit Fields3').item.json.post_content }}\n\nTask:\nConstruct the final X post (or thread) following the formatting rules exactly.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert Twitter/X post and thread writer.\n\nYour objective is to construct the FINAL publish-ready X post using the provided Hook, CTA, and Context.\nYou prioritize clarity, flow, readability, and engagement.\n\nYou MUST strictly follow the formatting logic below.\nThink internally before writing, but NEVER show reasoning.\n\n────────────────────────────\nFORMATTING LOGIC (STRICT)\n────────────────────────────\n\nIF post_type = \"normal\":\n\n- Output a SINGLE tweet only\n- Structure MUST be exactly:\n\n[Hook]\n\n[One concise, punchy supporting insight derived from the Core Context]\n\n[CTA]\n\nRules:\n- No numbering\n- No emojis\n- No hashtags\n- Each section separated by a blank line\n- Supporting sentence must add value, not repeat the hook\n\n────────────────────────────\n\nIF post_type = \"leadmagnet\":\n\n- Output a THREAD of 5–10 tweets\n- Structure MUST be exactly:\n\n1/ [Hook]\n\n2/ [Insight or problem framing]\n\n3/ [Key insight or realization]\n\n4/ [Practical takeaway or breakdown]\n\n5/ [Optional example, mistake, or clarification]\n\n6/ [Optional advanced insight or reinforcement]\n\n7/ [Optional summary or mental model]\n\n8/ [Optional recap or bridge]\n\n9/ [High-value summary or conclusion]\n\n10/ [CTA]\n\nRules:\n- Use numbering format exactly: 1/, 2/, 3/, etc.\n- Each tweet separated by a blank line\n- Flow must be educational, logical, and progressive\n- No filler tweets\n- CTA must ONLY appear in the final tweet\n- No emojis\n- No hashtags\n\n────────────────────────────\nOUTPUT RULES (NON-NEGOTIABLE)\n────────────────────────────\n\n- Output ONLY the raw post text\n- No explanations\n- No commentary\n- No markdown\n- No extra spacing before or after\n- Failure to follow format is incorrect\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        816
+      ],
+      "id": "96acab70-beaa-4d77-abb5-05faa2827454",
+      "name": "Post Generation1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"prompt\":\"This is prompt\"}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        1040
+      ],
+      "id": "96fbded2-e396-4c83-a0f7-bfefcc4eef05",
+      "name": "Structured Output Parser6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d404f6bf-0ace-4b4c-a068-3bcfe4561e60",
+              "name": "Post Content ",
+              "value": "={{ $('Edit Fields3').item.json.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "6d7d0264-253d-4f15-b0f1-13dd881321de",
+              "name": "Platform ",
+              "value": "={{ $('Edit Fields3').item.json.platform }}",
+              "type": "string"
+            },
+            {
+              "id": "5e9270d5-ab8b-4ea3-80f2-4cd8edeb9dcc",
+              "name": "Post Type",
+              "value": "={{ $('Edit Fields3').item.json.post_type }}",
+              "type": "string"
+            },
+            {
+              "id": "82dc4769-d41e-4699-92c2-7869dedc45ee",
+              "name": "Hook",
+              "value": "={{ $('Hook Generator').item.json.output.Hook }}",
+              "type": "string"
+            },
+            {
+              "id": "ccce207b-620f-4ce5-8d76-12b524e058a9",
+              "name": "CTA",
+              "value": "={{ $('CTA Generation1').item.json.output.CTA }}",
+              "type": "string"
+            },
+            {
+              "id": "46b582f7-86a9-40f8-ad05-0623d9fb8157",
+              "name": "Post",
+              "value": "={{ $('Post Generation1').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3365f865-f892-4d81-9ded-92fe30f6443b",
+              "name": "image Prompt",
+              "value": "={{ $('AI Agent').item.json.output.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "ea0182c8-89e5-4b79-b803-caa94f9cf3f8",
+              "name": "Image Url",
+              "value": "={{ $('Edit Fields5').item.json.Link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3072,
+        816
+      ],
+      "id": "d81f7a3b-dc8b-4433-a315-7b1a9a0daea2",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/nano-banana\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": \"{{ $json.output.prompt }}\",\n    \"output_format\": \"png\",\n    \"image_size\": \"16:9\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1952,
+        816
+      ],
+      "id": "029d191a-b643-4c5e-806a-5488d0ced6eb",
+      "name": "Create Image1"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        816
+      ],
+      "id": "29631c27-5360-4db9-9586-5f9c195d5c3c",
+      "name": "Fetch Image1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a64cfe4-4eb2-4f94-bfb5-fc82772c4d12",
+              "name": "Link",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2624,
+        816
+      ],
+      "id": "1d9cc4c4-c09a-421c-9e4e-d655a0cfb22c",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2848,
+        816
+      ],
+      "id": "e4c6d7bf-a389-4f06-955f-4f36f30f8e6d",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "tableId": "generated_posts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "post_content",
+              "fieldValue": "={{ $('Edit Fields4').item.json[\"Post Content \"] }}"
+            },
+            {
+              "fieldId": "platform",
+              "fieldValue": "=x"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $('Edit Fields4').item.json.Hook }}"
+            },
+            {
+              "fieldId": "cta",
+              "fieldValue": "={{ $('Edit Fields4').item.json.CTA }}"
+            },
+            {
+              "fieldId": "image_prompt",
+              "fieldValue": "={{ $('Edit Fields4').item.json[\"image Prompt\"] }}"
+            },
+            {
+              "fieldId": "image_url",
+              "fieldValue": "={{ $('Edit Fields4').item.json[\"Image Url\"] }}"
+            },
+            {
+              "fieldId": "full_post",
+              "fieldValue": "={{ $json.value[\"Full Post\"] }}"
+            },
+            {
+              "fieldId": "post_type",
+              "fieldValue": "={{ $('Edit Fields4').item.json[\"Post Type\"] }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "draft"
+            }
+          ]
+        }
+      },
+      "id": "6ccc997c-1705-447e-916c-2fbf7de2eeea",
+      "name": "Supabase -Create",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        1040
+      ],
+      "id": "a8d5d410-1667-4635-b5bc-011d80c2d4ba",
+      "name": "OpenAI Chat Model4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        1040
+      ],
+      "id": "a85adbed-7e33-44df-9070-3d8bab539a59",
+      "name": "OpenAI Chat Model5"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "mistral",
+          "mode": "list",
+          "cachedResultName": "mistral"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        1040
+      ],
+      "id": "14875bdf-bdd2-42b9-8df1-8839b554dfd2",
+      "name": "OpenAI Chat Model6"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude",
+          "mode": "list",
+          "cachedResultName": "claude"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1456,
+        1040
+      ],
+      "id": "00c172aa-0667-4c0b-ab68-29facfa17a16",
+      "name": "OpenAI Chat Model7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1b183bc9-184e-4a06-bbdd-8e254dc5dcfe",
+              "leftValue": "={{ $json.body.platform }}",
+              "rightValue": "linkedin",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -480,
+        512
+      ],
+      "id": "d0dc1a2a-ced7-4266-a076-149255619777",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3744,
+        512
+      ],
+      "id": "26f6cf74-6dfd-416c-8d8e-096486fde62d",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "dbb5fcff-6aec-4800-8303-8ed32d3f0711",
+      "name": "Wait 30 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        208
+      ],
+      "webhookId": "18002bae-7f59-43f6-a48f-96e58d0176d3"
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "seconds"
+      },
+      "id": "5ab057a6-6aaa-41e7-8d22-80e25a4c4837",
+      "name": "Wait 30 Seconds1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        816
+      ],
+      "webhookId": "18002bae-7f59-43f6-a48f-96e58d0176d3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.Post;\n\n// If Post is a JSON string like '[{\"output\":\"...\"}]'\nconst parsed = JSON.parse(raw);\n\n// Extract ONLY the output text\nconst cleanText = parsed[0].output;\n\nreturn [\n  {\n    json: {\n      value: cleanText\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        208
+      ],
+      "id": "fbdc054a-a5a1-4af3-b477-b2cbe361f6e4",
+      "name": "output extracter"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.Post;\n// If Post is a JSON string like '[{\"output\":\"...\"}]'\nconst parsed = JSON.parse(raw);\n\n// Extract ONLY the output text\nconst cleanText = parsed;\n\nreturn [\n  {\n    json: {\n      value: cleanText\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        816
+      ],
+      "id": "bd78e68f-65ab-436a-9b1b-11a549b601a8",
+      "name": "output extracter1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"Full Post\":\"This is post....\"}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        1040
+      ],
+      "id": "bdd673ec-9f34-43cc-890e-90e0953ce588",
+      "name": "Structured Output Parser7"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        1248
+      ],
+      "id": "ed4f6419-0248-42b5-9433-8b38a07bb432",
+      "name": "OpenAI Chat Model8"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        1248
+      ],
+      "id": "98f56c0e-1a27-44cb-8c03-75f4b5af40f4",
+      "name": "OpenAI Chat Model9"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1664,
+        1248
+      ],
+      "id": "16bb9cf8-d0b4-44e7-a469-2a7dab50f0ca",
+      "name": "OpenAI Chat Model10"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        432
+      ],
+      "id": "b9113198-01c9-4a53-bf5a-8dcabc294488",
+      "name": "OpenAI Chat Model11"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        672,
+        432
+      ],
+      "id": "27ff98b0-7cba-4fef-bf90-c18b789d0988",
+      "name": "OpenAI Chat Model12"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        432
+      ],
+      "id": "e2bbcf72-8fa7-491e-a062-b8cea230a29e",
+      "name": "OpenAI Chat Model13"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-fast",
+          "mode": "list",
+          "cachedResultName": "gemini-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1664,
+        432
+      ],
+      "id": "601c4ce4-e9b4-4d0c-8683-b6b8c499b36a",
+      "name": "OpenAI Chat Model14"
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Hook Generator1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "CTA Generation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CTA Generation": {
+      "main": [
+        [
+          {
+            "node": "Post Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Hook Generator1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hook Generator1": {
+      "main": [
+        [
+          {
+            "node": "CTA Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Generation": {
+      "main": [
+        [
+          {
+            "node": "image prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser4": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "image prompt",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "output extracter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hook Generator1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CTA Generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Post Generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "image prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Post Generation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image prompt": {
+      "main": [
+        [
+          {
+            "node": "Create Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Hook Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "CTA Generation1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CTA Generation1": {
+      "main": [
+        [
+          {
+            "node": "Post Generation1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser5": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Hook Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hook Generator": {
+      "main": [
+        [
+          {
+            "node": "CTA Generation1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Generation1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser6": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "output extracter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image1": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 Seconds1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Image1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hook Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CTA Generation1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Post Generation1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase -Create": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Update Final": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Fetch Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30 Seconds1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output extracter": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Update Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "output extracter1": {
+      "main": [
+        [
+          {
+            "node": "Supabase -Create",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser7": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Post Generation1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model8": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser7",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model9": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model10": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser6",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model11": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model12": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model13": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model14": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "automation.postsiva.com",
+            "x-real-ip": "111.68.102.12",
+            "x-forwarded-for": "111.68.102.12",
+            "x-forwarded-proto": "https",
+            "connection": "upgrade",
+            "content-length": "570",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Chromium\";v=\"142\", \"Google Chrome\";v=\"142\", \"Not_A Brand\";v=\"99\"",
+            "content-type": "application/json",
+            "sec-ch-ua-mobile": "?0",
+            "accept": "*/*",
+            "origin": "http://localhost:5173",
+            "sec-fetch-site": "cross-site",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-dest": "empty",
+            "referer": "http://localhost:5173/",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "post_content": "🚀 Automate Your LinkedIn Lead Generation Like Never Before!\nTired of manually hunting for leads? Our LinkedIn Leads Generation Platform combines a Next.js frontend with an n8n backend, enabling seamless automation across multiple platforms. Generate high-quality leads faster and smarter!\n\n💡 Check it out here: https://lnkd.in/dDu-DDpq\n\n🎁 Bonus:\nWhoever comments “Good Work” will get the complete frontend code + n8n automation setup for FREE!\nLet’s automate smarter, not harder.\n",
+            "platform": "linkedin",
+            "post_type": "lead_magnet"
+          },
+          "webhookUrl": "https://automation.postsiva.com/webhook/generate-post",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "fef8d7a9-b9f2-4b93-a505-99a9bd709891",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-14T17:26:49.660Z",
+      "createdAt": "2026-01-14T17:26:49.660Z",
+      "role": "workflow:owner",
+      "workflowId": "txN56r90ZZoiYpVDiOtc4",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
