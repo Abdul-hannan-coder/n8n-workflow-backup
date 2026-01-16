@@ -1,0 +1,273 @@
+{
+  "updatedAt": "2026-01-14T20:04:27.042Z",
+  "createdAt": "2026-01-14T17:25:44.237Z",
+  "id": "-1pBab9B_ZHcJawpIaeQU",
+  "name": "Post Publishing",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "publish-post",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "839a32cc-7a0a-4dfd-91c5-f63469d159a3",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -816,
+        112
+      ],
+      "webhookId": "72849d4b-a71d-4338-a0db-eddb9ad834ed"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.body.image_url}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "0c703909-4c50-4e27-97c9-bcdf485cd406",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -512,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "person": "3Ndm8wooKy",
+        "text": "={{$node[\"Webhook\"].json.body.full_post}}",
+        "shareMediaCategory": "IMAGE",
+        "additionalFields": {}
+      },
+      "id": "37c243ba-9b34-4ec5-933d-7b5dd78b7b6c",
+      "name": "LinkedIn Post",
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "JP9MOBl4Hzmg9v0v",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.unipile.com/v1/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{$env.UNIPILE_ACCOUNT_ID}}"
+            },
+            {
+              "name": "message",
+              "value": "={{$node[\"Webhook\"].json.body.full_post}}"
+            },
+            {
+              "name": "platform",
+              "value": "={{$node[\"Webhook\"].json.body.platform}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7a08c68f-831e-46fe-81df-09a5f74f85e4",
+      "name": "Unipile API (Future)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -144,
+        512
+      ],
+      "disabled": true,
+      "notes": "Unipile API node - Configure credentials and connect later. Will replace LinkedIn node when ready."
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "generated_posts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{$node[\"Webhook\"].json.body.post_id}}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "posted"
+            },
+            {
+              "fieldId": "updated_at",
+              "fieldValue": "=={{ $now }}"
+            }
+          ]
+        }
+      },
+      "id": "757a7f94-4027-4ec5-8793-8bfa3b52c36c",
+      "name": "Supabase Update (Future)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        336,
+        112
+      ],
+      "notes": "Supabase Update node - Configure credentials and connect later. Will replace Data Table node when ready."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "a98e3cd1-c10b-430a-a2ef-bf399eed6190",
+              "leftValue": "={{ $('Webhook').item.json.body.platform }}",
+              "rightValue": "linkedin",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "24027681-7d8d-477a-ada9-6fee69a96c2e",
+      "name": "Check Platform",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{$node['Webhook'].json.body.full_post}}",
+        "additionalFields": {}
+      },
+      "id": "8b539984-ad22-4894-9fb1-e38c6217fca3",
+      "name": "X Post",
+      "type": "n8n-nodes-base.twitter",
+      "typeVersion": 2,
+      "position": [
+        0,
+        224
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Check Platform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Platform": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Post",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "X Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "X Post": {
+      "main": [
+        [
+          {
+            "node": "Supabase Update (Future)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LinkedIn Post": {
+      "main": [
+        [
+          {
+            "node": "Supabase Update (Future)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "0a80425b-9418-4ec0-8311-f2edf51434c4",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-14T17:25:44.240Z",
+      "createdAt": "2026-01-14T17:25:44.240Z",
+      "role": "workflow:owner",
+      "workflowId": "-1pBab9B_ZHcJawpIaeQU",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
