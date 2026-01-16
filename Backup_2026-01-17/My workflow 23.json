@@ -1,0 +1,91 @@
+{
+  "updatedAt": "2026-01-16T17:51:40.132Z",
+  "createdAt": "2026-01-16T16:59:38.216Z",
+  "id": "_H4AQcBqcEJrv0mGt4S5X",
+  "name": "My workflow 23",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "b51ba169-2c83-47e4-897d-da71ac9a68b6",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v18.0/973276369199721/feed",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "hello"
+            },
+            {
+              "name": "access_token",
+              "value": "EAA8IRGRGGasBQWUHZAecnUxwYbyeCgtHmW5jaeFxPU5XhHbpgjbDhl5ZAvHxnhPPj7CaLLDNeRrM7ABF6ttOgZC5SfGuGBEXr4ZB4sbUMmPdNs3dv21KlaeXYAoODZBdtGzuAtBCHJdZAC08y4uV8qZAS25nfkisDX6UqGhZCnKukWV1EJLfRZCDnVwnsy2GIDKbJoPp4DwR3FZBNXZC5HJmMelZATrxXEoWyNZC3F6s3NpxpefQxrE1AYff8dtoZD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        336,
+        0
+      ],
+      "id": "fb682cfa-4729-4aab-aa94-ad7d22fae009",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "defceb10-ac2f-42c4-8f26-92b002a80505",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T16:59:38.223Z",
+      "createdAt": "2026-01-16T16:59:38.223Z",
+      "role": "workflow:owner",
+      "workflowId": "_H4AQcBqcEJrv0mGt4S5X",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
