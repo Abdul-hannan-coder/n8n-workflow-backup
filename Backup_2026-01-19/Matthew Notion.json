@@ -1,0 +1,161 @@
+{
+  "updatedAt": "2026-01-18T12:54:01.871Z",
+  "createdAt": "2026-01-18T11:57:16.567Z",
+  "id": "4Cot_5IpADCkKRcteUnrh",
+  "name": "Matthew Notion",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "872637a1-a0e5-4ea5-8f13-11a17cb41373",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        -32
+      ],
+      "id": "326bbaf4-6815-4fcb-802b-20c0855e62ef",
+      "name": "Webhook",
+      "webhookId": "872637a1-a0e5-4ea5-8f13-11a17cb41373"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9251765-f54c-4d12-bd90-414eeb29915d",
+              "name": "NAME",
+              "value": "={{ $json.body.full_name }}",
+              "type": "string"
+            },
+            {
+              "id": "c3ac641b-ca6d-4f83-913f-f5035a1f4add",
+              "name": "EMAIL",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "6933b125-8624-433c-a08d-791fb711a916",
+              "name": "TAG",
+              "value": "={{ $json.body.tags }}",
+              "type": "string"
+            },
+            {
+              "id": "1ced04d3-4669-4c71-be29-c33b1872720f",
+              "name": "DATE_CREATED",
+              "value": "={{ $json.body.date_created }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -32
+      ],
+      "id": "990b1b18-92c2-44e2-9bd7-487ef50b8c7e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "2eca61fa-8d41-80ef-96e9-cf0b49b139fd",
+          "mode": "list",
+          "cachedResultName": "2eca61fa-8d41-80ef-96e9-cf0b49b139fd",
+          "cachedResultUrl": "https://www.notion.so/2eca61fa8d4180ef96e9cf0b49b139fd"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Name|title",
+              "title": "={{ $json.NAME }}"
+            },
+            {
+              "key": "Email|email",
+              "emailValue": "={{ $json.EMAIL }}"
+            },
+            {
+              "key": "Created|date",
+              "date": "={{ $json.DATE_CREATED }}"
+            },
+            {
+              "key": "Tag|rich_text",
+              "textContent": "={{ $json.TAG }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -32
+      ],
+      "id": "55db80bc-b043-428f-b81f-744de2322f14",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "nGU2KlcY6UpcVfCk",
+          "name": "Matthew Notion"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "7a5d716c-b916-4dcb-9c75-18b6d05faa42",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-18T11:57:16.576Z",
+      "createdAt": "2026-01-18T11:57:16.576Z",
+      "role": "workflow:owner",
+      "workflowId": "4Cot_5IpADCkKRcteUnrh",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
