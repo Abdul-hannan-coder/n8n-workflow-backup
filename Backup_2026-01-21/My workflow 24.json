@@ -1,0 +1,81 @@
+{
+  "updatedAt": "2026-01-18T12:57:43.214Z",
+  "createdAt": "2026-01-18T12:55:39.016Z",
+  "id": "pnDQ8WnT877Tj1Tg-Hfyp",
+  "name": "My workflow 24",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "836492552891673",
+        "recipientPhoneNumber": "923334688363",
+        "textBody": "hello",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "aaff6bf2-dd4e-4439-9e6c-be1d5fc83e38",
+      "name": "Send message",
+      "webhookId": "232363bf-1d34-4de3-a160-5cc7e8848574",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "NqmkGLoL154ML1gL",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "49fa5b28-f920-4e4d-be2b-6670e938ebeb",
+      "name": "WhatsApp Trigger",
+      "webhookId": "7bf51355-efdb-43aa-b5b1-d86800e55c72",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "5T1Ugxg1YTEeKP1w",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a9decfd4-a968-44c7-a96e-97e38b8b2c00",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-18T12:55:39.019Z",
+      "createdAt": "2026-01-18T12:55:39.019Z",
+      "role": "workflow:owner",
+      "workflowId": "pnDQ8WnT877Tj1Tg-Hfyp",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
