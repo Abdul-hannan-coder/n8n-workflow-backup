@@ -1,0 +1,158 @@
+{
+  "updatedAt": "2025-12-21T14:17:13.000Z",
+  "createdAt": "2025-12-20T16:36:25.244Z",
+  "id": "Z3Y9kY5ePDyFgTdq",
+  "name": "My workflow 18",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        0
+      ],
+      "id": "471d029a-64f9-4de7-9df0-f76253a861c2",
+      "name": "WhatsApp Trigger",
+      "webhookId": "f6cb09fa-08ae-4074-b454-c0c0e9a7ac0c",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "1M0smesOxUyRfi4U",
+          "name": "WhatsApp OAuth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        192,
+        -176
+      ],
+      "id": "e49755fe-85a9-41ad-8e35-68397aac244a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "f6cb09fa-08ae-4074-b454-c0c0e9a7ac0c",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -64,
+        -176
+      ],
+      "id": "74a36755-78ec-4a92-a1d2-f191c6d4a447",
+      "name": "Webhook",
+      "webhookId": "287d7848-8998-4980-81b4-da42cf10272a"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "851848004689667",
+        "recipientPhoneNumber": "923266339927",
+        "textBody": "hi",
+        "additionalFields": {
+          "previewUrl": true
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b41917d4-e78d-4800-abc6-386b2bbee4ef",
+      "name": "Send message",
+      "webhookId": "d18f17e5-36e3-4161-a6af-f9410bf40c3e",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "SzGUcHT7fuatdSVz",
+          "name": "WhatsApp account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.srv990213.hstgr.cloud",
+            "user-agent": "facebookplatform/1.0 (+http://developers.facebook.com)",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip",
+            "x-forwarded-for": "172.18.0.1",
+            "x-forwarded-host": "n8n.srv990213.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "e1cc8252c442",
+            "x-real-ip": "172.18.0.1"
+          },
+          "params": {},
+          "query": {
+            "hub.mode": "subscribe",
+            "hub.challenge": "633893288",
+            "hub.verify_token": "12345"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.srv990213.hstgr.cloud/webhook/f6cb09fa-08ae-4074-b454-c0c0e9a7ac0c",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "3ad23248-f10e-4c25-8562-4ef9bf30efbc",
+  "activeVersionId": null,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2025-12-20T16:36:25.246Z",
+      "createdAt": "2025-12-20T16:36:25.246Z",
+      "role": "workflow:owner",
+      "workflowId": "Z3Y9kY5ePDyFgTdq",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
