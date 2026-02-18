@@ -1,0 +1,99 @@
+{
+  "updatedAt": "2026-01-19T21:12:58.216Z",
+  "createdAt": "2026-01-19T21:12:58.216Z",
+  "id": "T9dZ7tDnQXDvuOV75dJD_",
+  "name": "My workflow 25",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "04b946d4-776b-4d33-b553-45202d8ffff1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-fast",
+          "mode": "list",
+          "cachedResultName": "claude-fast"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        208
+      ],
+      "id": "3a65b804-cb1a-4680-aa68-5dbe7ecb206a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "iM0SEOecqDIQe1qI",
+          "name": "Pollination"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1e8f19f7-530f-4018-857e-7f4ed15b1359",
+      "name": "When chat message received",
+      "webhookId": "3c760771-6bf7-4f88-9586-99b9d7b1859f"
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "c4cc44e6-4671-49af-a7ae-69d185817b0b",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-19T21:12:58.219Z",
+      "createdAt": "2026-01-19T21:12:58.219Z",
+      "role": "workflow:owner",
+      "workflowId": "T9dZ7tDnQXDvuOV75dJD_",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
