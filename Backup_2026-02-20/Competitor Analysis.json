@@ -1,0 +1,1124 @@
+{
+  "updatedAt": "2026-01-14T17:27:31.000Z",
+  "createdAt": "2026-01-14T17:27:31.176Z",
+  "id": "h1XgLfQ0lfFYcee-09dCY",
+  "name": "Competitor Analysis",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      },
+      "id": "113169a0-38cc-4fb7-84b8-f9e262564b4c",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -944,
+        720
+      ],
+      "notes": "🕐 WORKFLOW TRIGGER\n\nThis workflow runs automatically every Monday at 8:00 AM (cron: 0 8 * * 1)\n\nYou can also trigger it manually by clicking \"Execute Workflow\" in n8n.\n\n📋 What it does:\n- Fetches all competitors from Supabase database\n- Processes LinkedIn competitors first, then Twitter/X competitors\n- Scrapes posts, analyzes with AI, and stores results in database"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "LQQIXN9Othf8f7R5n",
+          "mode": "list",
+          "cachedResultName": "Linkedin Profile Posts Scraper [NO COOKIES] (apimaestro/linkedin-profile-posts)",
+          "cachedResultUrl": "https://console.apify.com/actors/LQQIXN9Othf8f7R5n/input"
+        },
+        "customBody": "={\n  \"page_number\": 1,\n  \"limit\": 7,\n  \"username\": \"{{ $json.username }}\",\n  \"total_posts\": 7 \n}",
+        "timeout": {}
+      },
+      "id": "d687a985-342b-4f1e-add6-7faf6bafdd2c",
+      "name": "Scrape LinkedIn Posts",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "notes": "🌐 APIFY SCRAPER - LINKEDIN\n\nUses Apify actor to scrape LinkedIn posts:\n- Actor: LinkedIn Profile Posts Scraper\n- Fetches: 7 most recent posts\n- Uses: Extracted username from previous node\n\n⚠️ Requires valid Apify API credentials\n💡 Check Apify console for usage limits"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detect reposts based on post_type and reshared_post field\nconst items = $input.all();\n\nconst processedItems = items.map(item => {\n  const post = item.json;\n  let is_repost = false;\n  \n  // Check 1: post_type is explicitly \"repost\"\n  if (post.post_type === \"repost\") {\n    is_repost = true;\n  }\n  \n  // Check 2: post_type is \"quote\" (which means it's a repost with comment)\n  if (post.post_type === \"quote\") {\n    is_repost = true;\n  }\n  \n  // Check 3: reshared_post field exists (indicates repost/quote)\n  if (post.reshared_post) {\n    is_repost = true;\n  }\n  \n  // Add is_repost field to the post\n  return {\n    json: {\n      ...post,\n      is_repost: is_repost\n    }\n  };\n});\n\nreturn processedItems;"
+      },
+      "id": "c5786cde-535e-45a7-a637-1c9050e5e321",
+      "name": "Detect Reposts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "notes": "🔍 REPOST DETECTION\n\nIdentifies reposted content by checking:\n- post_type === \"repost\"\n- post_type === \"quote\"\n- reshared_post field exists\n\nAdds is_repost boolean flag to each post."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{$json.is_repost}}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "175bddee-cea8-4465-8e0f-1e39da24a2d7",
+      "name": "Filter Non-Reposts",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1168,
+        0
+      ],
+      "notes": "✅ FILTER ORIGINAL POSTS\n\nKeeps only original posts (is_repost = false)\n\nFilters out:\n- Reposts\n- Quote tweets/posts\n- Shared content\n\nOnly original content proceeds to AI analysis."
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "stats.total_reactions",
+              "order": "descending"
+            },
+            {
+              "fieldName": "stats.comments",
+              "order": "descending"
+            },
+            {
+              "fieldName": "stats.reposts",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "011cdbd8-4fbc-451c-99f3-b51af58923fb",
+      "name": "Sort Posts by Performance",
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "notes": "📈 PERFORMANCE SORTING\n\nSorts posts by engagement metrics:\n1. Total reactions (descending)\n2. Comments (descending)\n3. Reposts/shares (descending)\n\nEnsures highest-performing content is analyzed first."
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai-fast",
+          "mode": "list",
+          "cachedResultName": "openai-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1904,
+        432
+      ],
+      "id": "11237d16-a027-4ada-af72-e708e7211774",
+      "name": "OpenAI Chat Model",
+      "notes": "🤖 OPENAI LANGUAGE MODEL - LINKEDIN\n\nProvides AI language model for LinkedIn post analysis:\n- Model: openai-fast\n- Used by: Structured Output Parser → AI Agent\n- Purpose: Powers AI content analysis for LinkedIn posts\n\n⚠️ Requires valid OpenAI API credentials"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "  {\n    \"post_type\": \"expertise\",\n    \"hook\": \"The exact opening hook text from the post\",\n    \"format\": \"carousel\",\n    \"cta\": \"Save this post for later\",\n    \"engagement_mechanics\": [\"question-driven\", \"value-first\", \"personal story\"],\n    \"opportunity_type\": \"lead_magnet\",\n    \"lead_magnet_subtype\": \"checklist\",\n    \"post_url\": \"https://www.linkedin.com/posts/example\"\n  }",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1968,
+        224
+      ],
+      "id": "345c1f69-caac-4279-8361-6d37f558c8cc",
+      "name": "Structured Output Parser",
+      "notes": "📋 STRUCTURED OUTPUT PARSER - LINKEDIN\n\nParses AI model output into structured JSON format:\n- Ensures consistent data structure\n- Validates output schema\n- Used by: AI Agent for LinkedIn posts\n\nOutput format includes:\n- post_type, hook, format, cta\n- engagement_mechanics, opportunity_type\n- lead_magnet_subtype, post_url"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Remove duplicate posts based on activity_urn or full_urn\nconst items = $input.all();\nconst seen = new Set();\nconst uniqueItems = [];\n\nitems.forEach(item => {\n  const post = item.json;\n  // Use activity_urn as primary unique identifier, fallback to full_urn, then url\n  const uniqueId = post.urn?.activity_urn || post.full_urn || post.url;\n  \n  if (!seen.has(uniqueId)) {\n    seen.add(uniqueId);\n    uniqueItems.push(item);\n  }\n});\n\nreturn uniqueItems;"
+      },
+      "id": "ee29d81d-5063-4212-ba38-ae140471ede0",
+      "name": "Remove Duplicates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "notes": "🧹 DEDUPLICATION\n\nRemoves duplicate posts based on:\n1. activity_urn (primary)\n2. full_urn (fallback)\n3. url (last resort)\n\nEnsures each post is processed only once."
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following LinkedIn post and provide comprehensive insights.\n\n## POST DATA\n\nPost Content: {{ $json.post_content }}\nPost URL: {{ $json.post_url }}\n\nEngagement Metrics:\n- Views: {{ $json.views || \"Not available\" }}\n- Total Reactions: {{ $json.reactions }}\n- Comments: {{ $json.comments }}\n- Shares/Reposts: {{ $json.stats?.reposts || \"Not available\" }}\n- Media Type: {{ $json.media_type }}\n\nReturn your analysis as a structured JSON response following the framework provided in the system message.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert social media strategist and content analyst specializing in LinkedIn content performance analysis. Your task is to analyze competitor posts to identify patterns, opportunities, and strategic insights.\n\n## IMPORTANT: USE THINKING TOOL FOR COMPLEX REASONING\n\nBefore providing your final analysis, you MUST use the thinking tool to:\n1. **Break down complex analysis** - Use the tool to think through each step of your analysis\n2. **Cache your reasoning** - Document your thought process for each decision point\n3. **Ensure accuracy** - Think through the decision framework before finalizing your output\n4. **Handle edge cases** - Use the tool when post content is ambiguous or mixed signals\n\n**When to use the thinking tool:**\n- When categorizing post type (especially if multiple types seem possible)\n- When determining lead_magnet_subtype (requires careful evaluation)\n- When extracting hooks from complex or long-form content\n- When identifying engagement mechanics (multiple techniques may apply)\n- When recommending opportunity_type (requires value assessment)\n\n**How to use it:**\n1. Use the thinking tool to document your reasoning for each step\n2. Think through the decision framework systematically\n3. Consider all factors before making final decisions\n4. Then provide your structured JSON output\n\n## ANALYSIS FRAMEWORK\n\nFollow this Chain-of-Thought reasoning process:\n\n### STEP 1: Performance Analysis\nAnalyze the engagement metrics and assess performance:\n- **Views**: Evaluate view count (if available) relative to typical LinkedIn benchmarks\n- **Reactions**: Evaluate reaction count relative to typical LinkedIn benchmarks\n- **Comments**: Assess comment engagement (quality indicator - high comments indicate strong engagement)\n- **Shares/Reposts**: Evaluate share/repost count (indicates content value and virality potential)\n- Consider media type impact on engagement\n- Identify performance strengths and weaknesses\n- Calculate engagement rate if possible (reactions + comments + shares relative to views)\n\n### STEP 2: Post Type Detection\nCategorize the post into ONE primary type based on these specific criteria:\n\n**expertise** - Choose this if:\n- Post teaches something, explains a concept, or shares knowledge\n- Contains educational content, tips, tutorials, or how-to information\n- Focuses on sharing expertise or skills\n- Examples: \"Here's how to...\", \"5 ways to...\", \"The key to...\", technical explanations, step-by-step guides\n\n**storytelling** - Choose this if:\n- Post tells a personal story, anecdote, or narrative\n- Contains \"I\", \"we\", \"my experience\", personal journey, or first-person perspective\n- Focuses on personal experiences, challenges, outcomes, or life lessons\n- Examples: \"Last week I...\", \"When I started...\", \"My journey...\", personal anecdotes, case studies with personal elements\n\n**opinion** - Choose this if:\n- Post shares a perspective, viewpoint, or thought leadership\n- Contains strong opinions, takes a stance, or debates a topic\n- Focuses on \"I believe\", \"I think\", controversial takes, industry commentary, or editorial content\n- Examples: \"Here's why I disagree...\", \"The industry needs to...\", \"My take on...\", opinion pieces, hot takes, industry critiques\n\n**lead_magnet** - Choose this if:\n- Post explicitly offers free resources, downloads, or lead capture mechanisms\n- Contains CTAs like \"Download\", \"Get free\", \"Sign up\", \"Grab your copy\", \"Free guide\", \"Free template\"\n- **IMPORTANT**: If the post text contains the word \"comment\" (in any form: \"comment\", \"Comment\", \"COMMENT\", \"comments\", \"Comments\"), automatically classify as **lead_magnet**\n- Focuses on capturing emails or leads through freebies, giveaways, downloadable content, or comment-based lead capture\n- Examples: \"Download my free guide\", \"Get this template\", \"Free checklist\", \"Sign up for...\", \"Comment 'YES' to get...\", \"Comment below\", \"What do you think? Comment below\", any post containing the word \"comment\"\n\n**Decision Process:**\n1. **First Priority**: Check if post text contains the word \"comment\" (case-insensitive, any variation: comment, Comment, comments, Comments, COMMENT, etc.) → **lead_magnet**\n2. **Second Priority**: Check for other explicit lead capture language (download, free, sign up, get) → **lead_magnet**\n3. **Third Priority**: Check for personal pronouns (I, we, my) and narrative structure → **storytelling**\n4. **Fourth Priority**: Check for opinion language (I believe, I think, my take) and stance-taking → **opinion**\n5. **Default**: If educational/informational without personal story or opinion → **expertise**\n6. **Fallback**: If unclear or mixed signals, default to **expertise**\n\n### STEP 3: Pattern Extraction\nIdentify key content patterns using these specific extraction methods:\n\n**Hook Extraction:**\n- **Location**: Extract the first 1-2 sentences (or first 50-100 characters) of the post\n- **Types to identify**:\n  - Question hooks: \"What if...\", \"Have you ever...\", \"Why do...\"\n  - Bold statement hooks: \"The biggest mistake...\", \"Nobody talks about...\"\n  - Number/statistic hooks: \"5 ways to...\", \"90% of people...\"\n  - Personal story hooks: \"Last week I...\", \"When I started...\"\n  - Controversy hooks: \"Everyone says X, but...\", \"I disagree with...\"\n- **Extraction rule**: Copy the EXACT text from the post - do not paraphrase or summarize\n- **If no clear hook**: Use the first sentence as the hook\n\n**Format Detection:**\n- **Primary source**: Use the `media_type` field from the input data\n- **Mapping rules**:\n  - `media_type: \"image\"` → format: \"image\"\n  - `media_type: \"video\"` → format: \"video\"\n  - `media_type: \"carousel\"` or multiple images → format: \"carousel\"\n  - `media_type: null` or no media → format: \"text\"\n  - Multiple different media types → format: \"mixed\"\n- **Fallback**: If `media_type` is unavailable, infer from post description or content\n\n**CTA Identification:**\n- **Where to look**:\n  - End of post (most common)\n  - Middle section (embedded CTAs)\n  - Beginning (rare but possible)\n- **Common CTA patterns**:\n  - Direct action: \"Download\", \"Sign up\", \"Get free\", \"Comment\", \"Share\", \"Click here\"\n  - Soft engagement: \"Save this post\", \"Follow for more\", \"Let me know your thoughts\"\n  - Question-based: \"What do you think?\", \"Have you tried this?\", \"Comment below\"\n  - Lead capture: \"Comment 'YES' to get...\", \"DM me for...\"\n- **Extraction rule**: Copy the EXACT CTA text, or use `null` if no CTA is present\n- **Multiple CTAs**: Extract the primary/most prominent one\n\n**Engagement Mechanics:**\nIdentify 2-4 most prominent techniques used in the post:\n- **question-driven**: Post asks questions to prompt responses\n- **value-first**: Leads with actionable tips, insights, or educational content\n- **controversy**: Takes strong stance, challenges conventional wisdom, creates debate\n- **personal story**: Shares personal experience, anecdote, or journey\n- **data-driven**: Uses statistics, numbers, research, or data to support points\n- **emotional appeal**: Triggers emotions (fear, hope, excitement, curiosity, anger)\n- **social proof**: Mentions testimonials, case studies, client results, endorsements\n- **urgency/scarcity**: Creates urgency (\"limited time\", \"only 5 spots\", \"ends today\")\n- **storytelling arc**: Uses narrative structure with beginning/middle/end\n- **list format**: Organized as numbered or bulleted list\n- **before/after**: Shows transformation, comparison, or improvement\n- **humor**: Uses jokes, wit, or lighthearted content\n- **call-to-comment**: Explicitly asks for comments (already covered by lead_magnet detection)\n- **visual storytelling**: Relies heavily on images/videos to convey message\n\n### STEP 4: Opportunity Recommendation\nBased on your analysis, recommend the best content opportunity type using these decision criteria:\n\n**Decision Framework:**\n\n1. **Check Post Type First:**\n   - If `post_type` is `lead_magnet` → Recommend `opportunity_type: \"lead_magnet\"` with appropriate subtype\n   - If `post_type` is `expertise` → Consider `lead_magnet` (checklist, guide, framework, educational_resource) or `standard_post`\n   - If `post_type` is `storytelling` or `opinion` → Usually `standard_post`, but can be `lead_magnet` if valuable insights\n\n2. **Evaluate Content Value:**\n   - **High value content** (actionable tips, step-by-step, frameworks, templates) → `lead_magnet`\n   - **General content** (thoughts, opinions, stories without actionable value) → `standard_post`\n\n3. **Determine Lead Magnet Subtype:**\n   - **checklist** - Choose if:\n     - Post contains a list of items, steps, or points\n     - Content is organized as numbered/bulleted list\n     - Can be converted to a quick-reference checklist\n     - Examples: \"5 ways to...\", \"10 tips for...\", \"7 mistakes to avoid\"\n   \n   - **guide** - Choose if:\n     - Post provides step-by-step instructions or comprehensive how-to\n     - Content is educational and can be expanded into detailed guide\n     - Contains multiple sections or detailed explanations\n     - Examples: \"How to...\", \"Complete guide to...\", \"Step-by-step process\"\n   \n   - **framework** - Choose if:\n     - Post presents a structured methodology or system\n     - Content can be reused as a template for similar situations\n     - Contains a model, process, or approach that can be applied\n     - Examples: \"The X Framework\", \"A 3-step process\", \"This model helps...\"\n   \n   - **template** - Choose if:\n     - Post provides a format that can be copied and reused\n     - Content is a structure/formula that others can follow\n     - Contains fill-in-the-blank style content\n     - Examples: \"Email template\", \"Meeting agenda\", \"Content formula\"\n   \n   - **educational_resource** - Choose if:\n     - Post teaches concepts, explains topics, or shares knowledge\n     - Content is educational but doesn't fit checklist/guide/framework/template\n     - Can be developed into course material, ebook, or learning resource\n     - Examples: Educational posts, concept explanations, knowledge sharing\n\n4. **Consider Format Impact:**\n   - **Carousel** → Often good for checklist, guide, or framework\n   - **Video** → Can be educational_resource or guide\n   - **Image** → Could be template or checklist\n   - **Text-only** → Usually standard_post or guide\n\n5. **Consider Engagement Mechanics:**\n   - High engagement (views, reactions, comments, shares) → More likely to be valuable as `lead_magnet`\n   - Question-driven or value-first → Often good for lead magnet conversion\n   - Personal story → Usually `standard_post` unless contains actionable insights\n\n**Recommendation Rules:**\n- If recommending `lead_magnet`, MUST specify `lead_magnet_subtype`\n- If recommending `standard_post`, set `lead_magnet_subtype` to `null`\n- Prioritize lead magnet opportunities for high-value, actionable content\n- Consider post performance metrics when deciding value\n\n## OUTPUT REQUIREMENTS\n\nProvide your analysis as a valid JSON object with this exact structure:\n\n{\n  \"post_type\": \"expertise|storytelling|opinion|lead_magnet\",\n  \"hook\": \"The exact opening hook text from the post\",\n  \"format\": \"carousel|image|video|text|mixed\",\n  \"cta\": \"Exact CTA text if present, or null if none\",\n  \"engagement_mechanics\": [\"technique1\", \"technique2\", \"technique3\"],\n  \"opportunity_type\": \"standard_post|lead_magnet|checklist|guide|framework|template|educational_resource\",\n  \"lead_magnet_subtype\": \"checklist|guide|framework|template|educational_resource|null\",\n  \"post_url\": \"{{$json.post_url}}\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1872,
+        0
+      ],
+      "id": "c63288df-cfb2-4e2e-bfc0-5e9f31ec4feb",
+      "name": "AI Agent",
+      "notes": "🤖 AI CONTENT ANALYSIS - LINKEDIN\n\nAnalyzes each post using OpenAI/Claude:\n\nExtracts:\n- Post type (expertise/storytelling/opinion/lead_magnet)\n- Hook (opening line)\n- Format (image/video/carousel/text)\n- CTA (call-to-action)\n- Engagement mechanics\n- Opportunity type\n- Lead magnet subtype\n\nUses structured output parser for consistent JSON format."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Structure data and keep only required fields\nconst items = $input.all();\n\nconst now = new Date().toISOString();\n\nconst structuredItems = items.map(item => {\n  const post = item.json;\n  \n  // Get competitor_id from the post (preserved from Get Competitor by Index)\n  const competitor_id = post._competitor_id || $('Get Competitor by Index').first()?.json.id || $('Get many rows').first().json.id;\n  \n  // Preserve loop control variables\n  const total_competitors = $('Get Competitor by Index').first()?.json._total_competitors || 1;\n  const current_index = $('Get Competitor by Index').first()?.json._current_index || 0;\n  \n  // Extract post_id from activity_urn, full_urn, or url\n  let post_id = null;\n  if (post.urn?.activity_urn) {\n    post_id = post.urn.activity_urn;\n  } else if (post.full_urn) {\n    // Extract ID from full_urn (e.g., 'urn:li:activity:7416816531071815681' -> '7416816531071815681')\n    const match = post.full_urn.match(/activity:(\\d+)/) || post.full_urn.match(/ugcPost:(\\d+)/);\n    post_id = match ? match[1] : post.full_urn;\n  } else if (post.url) {\n    // Extract ID from URL if available\n    const urlMatch = post.url.match(/activity-(\\d+)/);\n    post_id = urlMatch ? urlMatch[1] : post.url;\n  }\n  \n  // Extract media_type from media.type\n  let media_type = null;\n  if (post.media?.type) {\n    media_type = post.media.type;\n  }\n  \n  // Structure only the required fields\n  return {\n    json: {\n      // id - will be auto-generated by database, set to null\n      competitor_id: competitor_id,\n      post_id: post_id || post.url || 'unknown',\n      post_url: post.url || null,\n      post_content: post.text || null,\n      media_type: media_type,\n      views: post.views || null,\n      reactions: post.stats?.total_reactions || 0,\n      comments: post.stats?.comments || 0,\n      shares: post.stats?.reposts || 0,\n      is_repost: post.is_repost || false,\n      hook: null, // Will be filled by AI Agent later\n      format: null, // Will be filled by AI Agent later\n      cta: null, // Will be filled by AI Agent later\n      engagement_mechanics: null, // Will be filled by AI Agent later\n      opportunity_type: null, // Will be filled by AI Agent later\n      lead_magnet_subtype: null, // Will be filled by AI Agent later\n      raw_json: JSON.stringify(post), // Store entire original JSON\n      _total_competitors: total_competitors, // Preserve for loop\n      _current_index: current_index, // Preserve for loop\n      created_at: now,\n      updated_at: now\n    }\n  };\n});\n\nreturn structuredItems;"
+      },
+      "id": "cce99996-4631-4f61-8fda-6770bd963867",
+      "name": "Structure Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        0
+      ],
+      "notes": "📦 DATA STRUCTURING - LINKEDIN\n\nTransforms scraped data into database format:\n- Extracts post_id from URN\n- Maps engagement metrics\n- Initializes AI fields (hook, format, CTA, etc.)\n- Preserves loop control variables\n\nOutput ready for AI analysis."
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "competitors",
+        "limit": 10
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        720
+      ],
+      "id": "8a130e82-8b96-4de3-ab16-1aad7c1dcd5f",
+      "name": "Get many rows",
+      "notes": "📊 FETCH COMPETITORS\n\nRetrieves all competitor records from Supabase \"competitors\" table.\n\nEach competitor should have:\n- id: Unique identifier\n- platform: \"linkedin\" or \"twitter\"/\"x\"\n- profile_url: Full profile URL\n- name: Competitor name (optional)\n\n💡 Tip: Add competitors via Supabase dashboard or API"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorSource": "store",
+        "actorId": {
+          "__rl": true,
+          "value": "Fo9GoU5wC270BgcBr",
+          "mode": "list",
+          "cachedResultName": "X (Twitter) Profile Posts Scraper (scraper_one/x-profile-posts-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/Fo9GoU5wC270BgcBr/input"
+        },
+        "customBody": "={\n    \"profileUrls\": [\n        \"https://x.com/MuhammadUz1654\"\n    ],\n    \"resultsLimit\": 7\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        624,
+        1152
+      ],
+      "id": "64eeb90c-1dbb-4dee-9279-21c5d4a1eb6b",
+      "name": "Run an Actor and get dataset",
+      "notes": "🌐 APIFY SCRAPER - TWITTER/X\n\nUses Apify actor to scrape Twitter/X posts:\n- Actor: X Profile Posts Scraper\n- Fetches: 7 most recent posts\n- Uses: Extracted username from previous node\n\n⚠️ Requires valid Apify API credentials\n💡 Check Apify console for usage limits"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Function to extract username from LinkedIn profile URL\nfunction getUsernameFromLinkedInUrl(url) {\n  if (!url) return null;\n  \n  // Match pattern: https://www.linkedin.com/in/{username}/\n  const match = url.match(/linkedin\\.com\\/in\\/([^\\/\\?]+)/);\n  \n  if (match && match[1]) {\n    return match[1];\n  }\n  \n  return null;\n}\n\n// Process current item\nconst item = $input.item;\nconst profileUrl = item.json.profile_url;\n\n// Preserve _total_competitors for loop control\nreturn [{\n  json: {\n    ...item.json,\n    username: getUsernameFromLinkedInUrl(profileUrl),\n    _total_competitors: item.json._total_competitors || 1,\n    _current_index: item.json._current_index || 0\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9380d574-9fc3-43c9-ba73-ae4b225cd966",
+      "name": "Code in JavaScript",
+      "notes": "🔧 EXTRACT LINKEDIN USERNAME\n\nExtracts username from LinkedIn profile URL:\nInput: https://www.linkedin.com/in/username/\nOutput: username\n\nUsed by Apify scraper to fetch posts.\n\nPreserves loop control variables for next iteration."
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1840,
+        224
+      ],
+      "id": "336a47ef-d5c8-4a0c-93a3-16496dd9bad2",
+      "name": "OpenAI Chat Model1",
+      "notes": "🤖 CLAUDE LANGUAGE MODEL - LINKEDIN\n\nProvides Claude AI model for LinkedIn post analysis:\n- Model: claude\n- Used by: AI Agent\n- Purpose: Alternative AI model option for content analysis\n\n⚠️ Requires valid OpenAI/Claude API credentials"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge Structure Data with AI Agent output\n// Get original posts from Structure Data\nconst originalPosts = $('Structure Data').all();\n\n// Get AI Agent output\nconst aiOutputs = $input.all();\n\n// Create a map of post_url to AI output for matching\nconst aiOutputMap = new Map();\naiOutputs.forEach(item => {\n  // AI Agent output is in item.json.output\n  const output = item.json.output || item.json;\n  if (output && output.post_url) {\n    aiOutputMap.set(output.post_url, output);\n  }\n});\n\n// Merge: original posts + AI analysis\nconst mergedPosts = originalPosts.map((originalItem) => {\n  const original = originalItem.json;\n  \n  // Try to match AI output by post_url (exact match or partial match)\n  let aiData = aiOutputMap.get(original.post_url);\n  \n  // If exact match not found, try partial match (in case URLs have query params differences)\n  if (!aiData && original.post_url) {\n    // Extract base URL without query params for matching\n    const baseUrl = original.post_url.split('?')[0];\n    for (const [url, data] of aiOutputMap.entries()) {\n      if (url.split('?')[0] === baseUrl) {\n        aiData = data;\n        break;\n      }\n    }\n  }\n  \n  // Merge AI analysis fields with original data\n  return {\n    json: {\n      ...original,\n      post_type: aiData?.post_type || null,\n      hook: aiData?.hook || null,\n      format: aiData?.format || null,\n      cta: aiData?.cta === 'null' || aiData?.cta === null || aiData?.cta === '' ? null : (aiData?.cta || null),\n      engagement_mechanics: aiData?.engagement_mechanics ? (Array.isArray(aiData.engagement_mechanics) ? JSON.stringify(aiData.engagement_mechanics) : aiData.engagement_mechanics) : null,\n      opportunity_type: aiData?.opportunity_type || null,\n      lead_magnet_subtype: aiData?.lead_magnet_subtype === 'null' || aiData?.lead_magnet_subtype === null || aiData?.lead_magnet_subtype === '' ? null : (aiData?.lead_magnet_subtype || null),\n      updated_at: new Date().toISOString()\n    }\n  };\n});\n\nreturn mergedPosts;"
+      },
+      "id": "9c53ef83-540c-4ad2-9bf1-cdc0e72212a0",
+      "name": "Merge AI Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2336,
+        0
+      ],
+      "notes": "🔗 MERGE AI ANALYSIS - LINKEDIN\n\nCombines original post data with AI analysis:\n- Matches by post_url\n- Handles URL query parameter differences\n- Merges all AI-extracted fields\n- Updates timestamp\n\nFinal data ready for database storage."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare JSON array for bulk upsert to Supabase\n// Get all items from Merge AI Output\nconst items = $input.all();\n\n// Get loop control variables from Structure Data\nconst total_competitors = $('Structure Data').first()?.json._total_competitors || $('Get Competitor by Index').first()?.json._total_competitors || 1;\nconst current_index = $('Structure Data').first()?.json._current_index || $('Get Competitor by Index').first()?.json._current_index || 0;\n\n// Map to array of objects with all required fields\nconst postsArray = items.map(item => {\n  const data = item.json;\n  return {\n    competitor_id: data.competitor_id || null,\n    post_id: data.post_id,\n    post_url: data.post_url || null,\n    post_content: data.post_content || null,\n    media_type: data.media_type || null,\n    views: data.views || null,\n    reactions: data.reactions || 0,\n    comments: data.comments || 0,\n    shares: data.shares || 0,\n    is_repost: data.is_repost || false,\n    hook: data.hook || null,\n    format: data.format || null,\n    cta: data.cta || null,\n    engagement_mechanics: data.engagement_mechanics || null,\n    opportunity_type: data.opportunity_type || null,\n    lead_magnet_subtype: data.lead_magnet_subtype || null,\n    raw_json: data.raw_json || null,\n    created_at: data.created_at || new Date().toISOString(),\n    updated_at: data.updated_at || new Date().toISOString()\n  };\n});\n\n// Return as JSON string for HTTP Request body, preserving loop control\nreturn [{\n  json: {\n    postsArray: postsArray,\n    jsonBody: JSON.stringify(postsArray),\n    _total_competitors: total_competitors,\n    _current_index: current_index\n  }\n}];"
+      },
+      "id": "55bb36cc-f067-46a5-aa4a-a2c80747baf2",
+      "name": "Prepare Bulk Upsert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        0
+      ],
+      "notes": "📋 PREPARE DATABASE PAYLOAD - LINKEDIN\n\nFormats data for Supabase bulk upsert:\n- Maps all required fields\n- Creates JSON array\n- Preserves loop control variables\n- Handles null values\n\nOutput: JSON string ready for HTTP Request."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://oqlvyggtsytqjmkpkpoc.supabase.co/rest/v1/competitor_linkedin_posts?on_conflict=post_id",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.jsonBody }}",
+        "options": {}
+      },
+      "id": "88b5f16a-5bb5-45ef-8c1d-a5454da017f6",
+      "name": "Bulk Upsert Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2784,
+        0
+      ],
+      "notes": "💾 SAVE TO DATABASE - LINKEDIN\n\nStores analyzed posts in Supabase:\n- Table: competitor_linkedin_posts\n- Method: POST with merge-duplicates\n- Updates existing posts if found\n- Creates new posts if not found\n\n⚠️ Requires Supabase API credentials\n💡 Check Supabase dashboard for data"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "nova-fast",
+          "mode": "list",
+          "cachedResultName": "nova-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1072,
+        1376
+      ],
+      "id": "5c81f20c-1744-4826-aba5-3bc8db510cdd",
+      "name": "OpenAI Chat Model2",
+      "notes": "🤖 CLAUDE LANGUAGE MODEL - TWITTER/X\n\nProvides Claude AI model for Twitter/X post analysis:\n- Model: claude\n- Used by: AI Agent for Twitter\n- Purpose: Powers AI content analysis for Twitter/X posts\n\n⚠️ Requires valid OpenAI/Claude API credentials"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai-fast",
+          "mode": "list",
+          "cachedResultName": "openai-fast"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1280,
+        1584
+      ],
+      "id": "53fd7a16-b111-4fe8-9b12-f72a8f5ded05",
+      "name": "OpenAI Chat Model3",
+      "notes": "🤖 OPENAI LANGUAGE MODEL - TWITTER/X\n\nProvides OpenAI language model for Twitter/X post analysis:\n- Model: openai-fast\n- Used by: Structured Output Parser1 → AI Agent for Twitter\n- Purpose: Powers AI content analysis for Twitter/X posts\n\n⚠️ Requires valid OpenAI API credentials"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "  {\n    \"post_type\": \"expertise\",\n    \"hook\": \"The exact opening hook text from the post\",\n    \"format\": \"carousel\",\n    \"cta\": \"Save this post for later\",\n    \"engagement_mechanics\": [\"question-driven\", \"value-first\", \"personal story\"],\n    \"opportunity_type\": \"lead_magnet\",\n    \"lead_magnet_subtype\": \"checklist\",\n    \"post_url\": \"https://www.linkedin.com/posts/example\"\n  }",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        1376
+      ],
+      "id": "2fc23155-dad7-4527-9e14-8b62d4a15097",
+      "name": "Structured Output Parser1",
+      "notes": "📋 STRUCTURED OUTPUT PARSER - TWITTER/X\n\nParses AI model output into structured JSON format:\n- Ensures consistent data structure\n- Validates output schema\n- Used by: AI Agent for Twitter\n\nOutput format includes:\n- post_type, hook, format, cta\n- engagement_mechanics, opportunity_type\n- lead_magnet_subtype, post_url"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oqlvyggtsytqjmkpkpoc.supabase.co/rest/v1/competitor_x_posts?on_conflict=post_id",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "resolution=merge-duplicates,return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.jsonBody }}",
+        "options": {}
+      },
+      "id": "25e5289e-e3a4-477c-b5ac-ffbeca252167",
+      "name": "Bulk Upsert Posts1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        1152
+      ],
+      "notes": "💾 SAVE TO DATABASE - TWITTER/X\n\nStores analyzed posts in Supabase:\n- Table: competitor_x_posts\n- Method: POST with merge-duplicates\n- Updates existing posts if found\n- Creates new posts if not found\n\n⚠️ Requires Supabase API credentials\n💡 Check Supabase dashboard for data"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all competitors and select the one at current index based on $runIndex\nconst allCompetitors = $('Get many rows').all();\nconst linkedinCompetitors = allCompetitors.filter(item => item.json.platform === 'linkedin');\nconst currentIndex = $runIndex || 0;\nconst totalCount = linkedinCompetitors.length;\n\nif (currentIndex >= totalCount || totalCount === 0) {\n  return [];\n}\n\nconst currentCompetitor = linkedinCompetitors[currentIndex];\n\nreturn [{\n  json: {\n    ...currentCompetitor.json,\n    _total_competitors: totalCount,\n    _current_index: currentIndex\n  }\n}];"
+      },
+      "id": "da61f576-9b71-4385-862b-db53016a3e43",
+      "name": "Get Competitor by Index",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        176
+      ],
+      "notes": "🔄 LINKEDIN LOOP CONTROL\n\nSelects current LinkedIn competitor based on $runIndex:\n- Run 0: First LinkedIn competitor\n- Run 1: Second LinkedIn competitor\n- etc.\n\nPreserves loop variables:\n- _total_competitors: Total count\n- _current_index: Current position\n\n⚠️ This node loops back from \"Check Loop\" node"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{$node['Get Competitor by Index'].runIndex}}",
+              "rightValue": "={{$('Get Competitor by Index').first().json._total_competitors || $('Get many rows').all().filter(item => item.json.platform === 'linkedin').length || 1}}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fcba92e6-cafc-49b8-8b7b-f1d46000d6ee",
+      "name": "Check Loop",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3008,
+        176
+      ],
+      "notes": "🔄 LOOP CONTROL - LINKEDIN\n\nChecks if more LinkedIn competitors exist:\n\nCondition: $runIndex < total_competitors\n\n✅ TRUE: Loop back to \"Get Competitor by Index\"\n   → Processes next LinkedIn competitor\n\n❌ FALSE: End LinkedIn branch\n   → Workflow completes\n\nThis creates automatic iteration through all competitors."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all competitors and select the one at current index based on $runIndex (for Twitter)\nconst allCompetitors = $('Get many rows').all();\nconst twitterCompetitors = allCompetitors.filter(item => item.json.platform === 'twitter' || item.json.platform === 'x');\nconst currentIndex = $runIndex || 0;\nconst totalCount = twitterCompetitors.length;\n\nif (currentIndex >= totalCount || totalCount === 0) {\n  return [];\n}\n\nconst currentCompetitor = twitterCompetitors[currentIndex];\n\nreturn [{\n  json: {\n    ...currentCompetitor.json,\n    _total_competitors: totalCount,\n    _current_index: currentIndex\n  }\n}];"
+      },
+      "id": "3e736e0f-6007-4072-9355-0de5f16ddd05",
+      "name": "Get Competitor by Index (Twitter)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        1328
+      ],
+      "notes": "🔄 TWITTER LOOP CONTROL\n\nSelects current Twitter/X competitor based on $runIndex:\n- Run 0: First Twitter competitor\n- Run 1: Second Twitter competitor\n- etc.\n\nPreserves loop variables:\n- _total_competitors: Total count\n- _current_index: Current position\n\n⚠️ This node loops back from \"Check Loop (Twitter)\" node"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{$node['Get Competitor by Index (Twitter)'].runIndex}}",
+              "rightValue": "={{$('Get Competitor by Index (Twitter)').first().json._total_competitors || $('Get many rows').all().filter(item => item.json.platform === 'twitter' || item.json.platform === 'x').length || 1}}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6846ebf2-75f2-4f13-ab14-6403a495daa3",
+      "name": "Check Loop (Twitter)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2384,
+        1328
+      ],
+      "notes": "🔄 LOOP CONTROL - TWITTER/X\n\nChecks if more Twitter/X competitors exist:\n\nCondition: $runIndex < total_competitors\n\n✅ TRUE: Loop back to \"Get Competitor by Index (Twitter)\"\n   → Processes next Twitter competitor\n\n❌ FALSE: End Twitter branch\n   → Workflow completes\n\nThis creates automatic iteration through all competitors."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Function to extract username from Twitter/X profile URL\nfunction getUsernameFromTwitterUrl(url) {\n  if (!url) return null;\n  \n  // Match patterns:\n  // https://x.com/{username}\n  // https://twitter.com/{username}\n  // https://x.com/{username}/\n  // https://twitter.com/{username}/\n  const match = url.match(/(?:x\\.com|twitter\\.com)\\/([^/\\?]+)/);\n  \n  if (match && match[1]) {\n    return match[1];\n  }\n  \n  return null;\n}\n\n// Process current item\nconst item = $input.item;\nconst profileUrl = item.json.profile_url;\n\n// Preserve loop control variables\nreturn [{\n  json: {\n    ...item.json,\n    username: getUsernameFromTwitterUrl(profileUrl),\n    _total_competitors: item.json._total_competitors || 1,\n    _current_index: item.json._current_index || 0\n  }\n}];"
+      },
+      "id": "1ead57e6-5cef-4fde-92df-f6ed8ba7edba",
+      "name": "Extract Twitter Username",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        1152
+      ],
+      "notes": "🔧 EXTRACT TWITTER USERNAME\n\nExtracts username from Twitter/X profile URL:\nInput: https://x.com/username or https://twitter.com/username\nOutput: username\n\nUsed by Apify scraper to fetch posts.\n\nPreserves loop control variables for next iteration."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Structure Twitter data and keep only required fields\nconst items = $input.all();\n\nconst now = new Date().toISOString();\n\n// Get competitor_id from Get Competitor by Index (Twitter)\nlet competitor_id = null;\nlet total_competitors = 1;\nlet current_index = 0;\n\ntry {\n  const competitorNode = $('Get Competitor by Index (Twitter)').first();\n  if (competitorNode) {\n    competitor_id = competitorNode.json.id;\n    total_competitors = competitorNode.json._total_competitors || 1;\n    current_index = competitorNode.json._current_index || 0;\n  }\n} catch (error) {\n  // Fallback if Get Competitor by Index (Twitter) not accessible\n  const competitors = $('Get many rows').all();\n  const twitterCompetitor = competitors.find(c => c.json.platform === 'twitter' || c.json.platform === 'x');\n  competitor_id = twitterCompetitor?.json.id || competitors[0]?.json.id || null;\n}\n\nconst structuredItems = items.map(item => {\n  const post = item.json;\n  \n  // Extract media_type from media array\n  let media_type = null;\n  if (post.media && post.media.length > 0) {\n    // Get the first media type, or 'carousel' if multiple photos\n    const firstMedia = post.media[0];\n    if (firstMedia.type === 'photo' && post.media.length > 1) {\n      media_type = 'carousel';\n    } else {\n      media_type = firstMedia.type; // 'photo', 'video', etc.\n    }\n  }\n  \n  // Determine if original post (conversationId === postId means it's original)\n  const is_original = post.conversationId === post.postId;\n  \n  // Extract post_id from postId or postUrl\n  let post_id = post.postId || null;\n  if (!post_id && post.postUrl) {\n    // Extract ID from URL (e.g., 'https://x.com/username/status/2006989098951782766' -> '2006989098951782766')\n    const urlMatch = post.postUrl.match(/\\/status\\/(\\d+)/);\n    post_id = urlMatch ? urlMatch[1] : null;\n  }\n  \n  // Structure only the required fields\n  return {\n    json: {\n      competitor_id: competitor_id,\n      post_id: post_id || null,\n      post_url: post.postUrl || null,\n      post_content: post.postText || null,\n      media_type: media_type,\n      impressions: null, // Not available in scraped data\n      reactions: null, // Not available in scraped data\n      comments: post.replyCount || 0,\n      quotes: post.quoteCount || 0,\n      retweets: post.repostCount || 0,\n      bookmarks: null, // Not available in scraped data\n      is_original: is_original,\n      hook: null, // Will be filled by AI Agent later\n      format: null, // Will be filled by AI Agent later\n      cta: null, // Will be filled by AI Agent later\n      engagement_mechanics: null, // Will be filled by AI Agent later\n      opportunity_type: null, // Will be filled by AI Agent later\n      lead_magnet_subtype: null, // Will be filled by AI Agent later\n      raw_json: JSON.stringify(post), // Store entire original JSON\n      _total_competitors: total_competitors, // Preserve for loop\n      _current_index: current_index, // Preserve for loop\n      created_at: now,\n      updated_at: now\n    }\n  };\n});\n\nreturn structuredItems;"
+      },
+      "id": "1d337653-c5c7-4e6f-8a56-6333db026457",
+      "name": "Structure Data twitter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        1152
+      ],
+      "notes": "📦 DATA STRUCTURING - TWITTER/X\n\nTransforms scraped data into database format:\n- Extracts post_id from URL\n- Maps engagement metrics (comments, quotes, retweets)\n- Detects media type (photo/video/carousel)\n- Initializes AI fields\n- Preserves loop control variables\n\nOutput ready for AI analysis."
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following Twitter/X post and provide comprehensive insights.\n\n## POST DATA\n\nPost Content: {{ $json.post_content }}\nPost URL: {{ $json.post_url }}\n\nEngagement Metrics:\n- Impressions: {{ $json.impressions || \"Not available\" }}\n- Reactions: {{ $json.reactions || \"Not available\" }}\n- Comments/Replies: {{ $json.comments }}\n- Quotes: {{ $json.quotes || 0 }}\n- Retweets: {{ $json.retweets || 0 }}\n- Bookmarks: {{ $json.bookmarks || \"Not available\" }}\n- Media Type: {{ $json.media_type }}\n\nReturn your analysis as a structured JSON response following the framework provided in the system message.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert social media strategist and content analyst specializing in Twitter/X content performance analysis. Your task is to analyze competitor posts to identify patterns, opportunities, and strategic insights.\n\n## ANALYSIS FRAMEWORK\n\nFollow this Chain-of-Thought reasoning process:\n\n### STEP 1: Performance Analysis\nAnalyze the engagement metrics and assess performance:\n- **Impressions**: Evaluate impression count (if available) relative to typical Twitter/X benchmarks\n- **Reactions**: Evaluate reaction count (if available) relative to typical Twitter/X benchmarks\n- **Comments/Replies**: Assess reply engagement (quality indicator - high replies indicate strong engagement)\n- **Quotes**: Evaluate quote count (indicates content value and discussion potential)\n- **Retweets**: Evaluate retweet count (indicates content value and virality potential)\n- **Bookmarks**: Evaluate bookmark count (if available) - indicates content value for future reference\n- Consider media type impact on engagement\n- Identify performance strengths and weaknesses\n- Calculate engagement rate if possible (reactions + comments + quotes + retweets relative to impressions)\n\n### STEP 2: Post Type Detection\nCategorize the post into ONE primary type based on these specific criteria:\n\n**expertise** - Choose this if:\n- Post teaches something, explains a concept, or shares knowledge\n- Contains educational content, tips, tutorials, or how-to information\n- Focuses on sharing expertise or skills\n- Examples: \"Here's how to...\", \"5 ways to...\", \"The key to...\", technical explanations, step-by-step guides\n\n**storytelling** - Choose this if:\n- Post tells a personal story, anecdote, or narrative\n- Contains \"I\", \"we\", \"my experience\", personal journey, or first-person perspective\n- Focuses on personal experiences, challenges, outcomes, or life lessons\n- Examples: \"Last week I...\", \"When I started...\", \"My journey...\", personal anecdotes, case studies with personal elements\n\n**opinion** - Choose this if:\n- Post shares a perspective, viewpoint, or thought leadership\n- Contains strong opinions, takes a stance, or debates a topic\n- Focuses on \"I believe\", \"I think\", controversial takes, industry commentary, or editorial content\n- Examples: \"Here's why I disagree...\", \"The industry needs to...\", \"My take on...\", opinion pieces, hot takes, industry critiques\n\n**lead_magnet** - Choose this if:\n- Post explicitly offers free resources, downloads, or lead capture mechanisms\n- Contains CTAs like \"Download\", \"Get free\", \"Sign up\", \"Grab your copy\", \"Free guide\", \"Free template\"\n- **IMPORTANT**: If the post text contains the word \"comment\" or \"reply\" (in any form), automatically classify as **lead_magnet**\n- Focuses on capturing emails or leads through freebies, giveaways, downloadable content, or comment-based lead capture\n- Examples: \"Download my free guide\", \"Get this template\", \"Free checklist\", \"Sign up for...\", \"Reply 'YES' to get...\", \"Reply below\", \"What do you think? Reply below\", any post containing the word \"comment\" or \"reply\"\n\n**Decision Process:**\n1. **First Priority**: Check if post text contains the word \"comment\" or \"reply\" (case-insensitive) → **lead_magnet**\n2. **Second Priority**: Check for other explicit lead capture language (download, free, sign up, get) → **lead_magnet**\n3. **Third Priority**: Check for personal pronouns (I, we, my) and narrative structure → **storytelling**\n4. **Fourth Priority**: Check for opinion language (I believe, I think, my take) and stance-taking → **opinion**\n5. **Default**: If educational/informational without personal story or opinion → **expertise**\n6. **Fallback**: If unclear or mixed signals, default to **expertise**\n\n### STEP 3: Pattern Extraction\nIdentify key content patterns using these specific extraction methods:\n\n**Hook Extraction:**\n- **Location**: Extract the first 1-2 sentences (or first 50-100 characters) of the post\n- **Types to identify**:\n  - Question hooks: \"What if...\", \"Have you ever...\", \"Why do...\"\n  - Bold statement hooks: \"The biggest mistake...\", \"Nobody talks about...\"\n  - Number/statistic hooks: \"5 ways to...\", \"90% of people...\"\n  - Personal story hooks: \"Last week I...\", \"When I started...\"\n  - Controversy hooks: \"Everyone says X, but...\", \"I disagree with...\"\n- **Extraction rule**: Copy the EXACT text from the post - do not paraphrase or summarize\n- **If no clear hook**: Use the first sentence as the hook\n\n**Format Detection:**\n- **Primary source**: Use the `media_type` field from the input data\n- **Mapping rules**:\n  - `media_type: \"photo\"` or `media_type: \"image\"` → format: \"image\"\n  - `media_type: \"video\"` → format: \"video\"\n  - `media_type: \"carousel\"` or multiple photos → format: \"carousel\"\n  - `media_type: null` or no media → format: \"text\"\n  - Multiple different media types → format: \"mixed\"\n- **Fallback**: If `media_type` is unavailable, infer from post description or content\n\n**CTA Identification:**\n- **Where to look**:\n  - End of post (most common)\n  - Middle section (embedded CTAs)\n  - Beginning (rare but possible)\n- **Common CTA patterns**:\n  - Direct action: \"Download\", \"Sign up\", \"Get free\", \"Reply\", \"Share\", \"Click here\"\n  - Soft engagement: \"Save this post\", \"Follow for more\", \"Let me know your thoughts\"\n  - Question-based: \"What do you think?\", \"Have you tried this?\", \"Reply below\"\n  - Lead capture: \"Reply 'YES' to get...\", \"DM me for...\"\n- **Extraction rule**: Copy the EXACT CTA text, or use `null` if no CTA is present\n- **Multiple CTAs**: Extract the primary/most prominent one\n\n**Engagement Mechanics:**\nIdentify 2-4 most prominent techniques used in the post:\n- **question-driven**: Post asks questions to prompt responses\n- **value-first**: Leads with actionable tips, insights, or educational content\n- **controversy**: Takes strong stance, challenges conventional wisdom, creates debate\n- **personal story**: Shares personal experience, anecdote, or journey\n- **data-driven**: Uses statistics, numbers, research, or data to support points\n- **emotional appeal**: Triggers emotions (fear, hope, excitement, curiosity, anger)\n- **social proof**: Mentions testimonials, case studies, client results, endorsements\n- **urgency/scarcity**: Creates urgency (\"limited time\", \"only 5 spots\", \"ends today\")\n- **storytelling arc**: Uses narrative structure with beginning/middle/end\n- **list format**: Organized as numbered or bulleted list\n- **before/after**: Shows transformation, comparison, or improvement\n- **humor**: Uses jokes, wit, or lighthearted content\n- **call-to-comment**: Explicitly asks for replies/comments (already covered by lead_magnet detection)\n- **visual storytelling**: Relies heavily on images/videos to convey message\n\n### STEP 4: Opportunity Recommendation\nBased on your analysis, recommend the best content opportunity type using these decision criteria:\n\n**Decision Framework:**\n\n1. **Check Post Type First:**\n   - If `post_type` is `lead_magnet` → Recommend `opportunity_type: \"lead_magnet\"` with appropriate subtype\n   - If `post_type` is `expertise` → Consider `lead_magnet` (checklist, guide, framework, educational_resource) or `standard_post`\n   - If `post_type` is `storytelling` or `opinion` → Usually `standard_post`, but can be `lead_magnet` if valuable insights\n\n2. **Evaluate Content Value:**\n   - **High value content** (actionable tips, step-by-step, frameworks, templates) → `lead_magnet`\n   - **General content** (thoughts, opinions, stories without actionable value) → `standard_post`\n\n3. **Determine Lead Magnet Subtype:**\n   - **checklist** - Choose if:\n     - Post contains a list of items, steps, or points\n     - Content is organized as numbered/bulleted list\n     - Can be converted to a quick-reference checklist\n     - Examples: \"5 ways to...\", \"10 tips for...\", \"7 mistakes to avoid\"\n   \n   - **guide** - Choose if:\n     - Post provides step-by-step instructions or comprehensive how-to\n     - Content is educational and can be expanded into detailed guide\n     - Contains multiple sections or detailed explanations\n     - Examples: \"How to...\", \"Complete guide to...\", \"Step-by-step process\"\n   \n   - **framework** - Choose if:\n     - Post presents a structured methodology or system\n     - Content can be reused as a template for similar situations\n     - Contains a model, process, or approach that can be applied\n     - Examples: \"The X Framework\", \"A 3-step process\", \"This model helps...\"\n   \n   - **template** - Choose if:\n     - Post provides a format that can be copied and reused\n     - Content is a structure/formula that others can follow\n     - Contains fill-in-the-blank style content\n     - Examples: \"Email template\", \"Meeting agenda\", \"Content formula\"\n   \n   - **educational_resource** - Choose if:\n     - Post teaches concepts, explains topics, or shares knowledge\n     - Content is educational but doesn't fit checklist/guide/framework/template\n     - Can be developed into course material, ebook, or learning resource\n     - Examples: Educational posts, concept explanations, knowledge sharing\n\n4. **Consider Format Impact:**\n   - **Carousel** → Often good for checklist, guide, or framework\n   - **Video** → Can be educational_resource or guide\n   - **Image** → Could be template or checklist\n   - **Text-only** → Usually standard_post or guide\n\n5. **Consider Engagement Mechanics:**\n   - High engagement (impressions, reactions, comments, quotes, retweets) → More likely to be valuable as `lead_magnet`\n   - Question-driven or value-first → Often good for lead magnet conversion\n   - Personal story → Usually `standard_post` unless contains actionable insights\n\n**Recommendation Rules:**\n- If recommending `lead_magnet`, MUST specify `lead_magnet_subtype`\n- If recommending `standard_post`, set `lead_magnet_subtype` to `null`\n- Prioritize lead magnet opportunities for high-value, actionable content\n- Consider post performance metrics when deciding value\n\n## OUTPUT REQUIREMENTS\n\nProvide your analysis as a valid JSON object with this exact structure:\n\n{\n  \"post_type\": \"expertise|storytelling|opinion|lead_magnet\",\n  \"hook\": \"The exact opening hook text from the post\",\n  \"format\": \"carousel|image|video|text|mixed\",\n  \"cta\": \"Exact CTA text if present, or null if none\",\n  \"engagement_mechanics\": [\"technique1\", \"technique2\", \"technique3\"],\n  \"opportunity_type\": \"standard_post|lead_magnet|checklist|guide|framework|template|educational_resource\",\n  \"lead_magnet_subtype\": \"checklist|guide|framework|template|educational_resource|null\",\n  \"post_url\": \"{{$json.post_url}}\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1104,
+        1152
+      ],
+      "id": "5e9c8fa9-f967-453e-9d58-c3fe04e5050e",
+      "name": "AI Agent for Twitter",
+      "notes": "🤖 AI CONTENT ANALYSIS - TWITTER/X\n\nAnalyzes each post using OpenAI/Claude:\n\nExtracts:\n- Post type (expertise/storytelling/opinion/lead_magnet)\n- Hook (opening line)\n- Format (image/video/carousel/text)\n- CTA (call-to-action)\n- Engagement mechanics\n- Opportunity type\n- Lead magnet subtype\n\nUses structured output parser for consistent JSON format."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge Structure Data with AI Agent output\n// Get original posts from Structure Data1\nconst originalPosts = $('Structure Data twitter').all();\n\n// Get AI Agent output\nconst aiOutputs = $input.all();\n\n// Create a map of post_url to AI output for matching\nconst aiOutputMap = new Map();\naiOutputs.forEach(item => {\n  // AI Agent output is in item.json.output\n  const output = item.json.output || item.json;\n  if (output && output.post_url) {\n    aiOutputMap.set(output.post_url, output);\n  }\n});\n\n// Merge: original posts + AI analysis\nconst mergedPosts = originalPosts.map((originalItem) => {\n  const original = originalItem.json;\n  \n  // Try to match AI output by post_url (exact match or partial match)\n  let aiData = aiOutputMap.get(original.post_url);\n  \n  // If exact match not found, try partial match (in case URLs have query params differences)\n  if (!aiData && original.post_url) {\n    // Extract base URL without query params for matching\n    const baseUrl = original.post_url.split('?')[0];\n    for (const [url, data] of aiOutputMap.entries()) {\n      if (url.split('?')[0] === baseUrl) {\n        aiData = data;\n        break;\n      }\n    }\n  }\n  \n  // Merge AI analysis fields with original data\n  return {\n    json: {\n      ...original,\n      post_type: aiData?.post_type || null,\n      hook: aiData?.hook || null,\n      format: aiData?.format || null,\n      cta: aiData?.cta === 'null' || aiData?.cta === null || aiData?.cta === '' ? null : (aiData?.cta || null),\n      engagement_mechanics: aiData?.engagement_mechanics ? (Array.isArray(aiData.engagement_mechanics) ? JSON.stringify(aiData.engagement_mechanics) : aiData.engagement_mechanics) : null,\n      opportunity_type: aiData?.opportunity_type || null,\n      lead_magnet_subtype: aiData?.lead_magnet_subtype === 'null' || aiData?.lead_magnet_subtype === null || aiData?.lead_magnet_subtype === '' ? null : (aiData?.lead_magnet_subtype || null),\n      updated_at: new Date().toISOString()\n    }\n  };\n});\n\nreturn mergedPosts;"
+      },
+      "id": "a2c53037-46d9-47c1-baf8-9845b8e9a256",
+      "name": "Merge AI Output for Twitter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        1152
+      ],
+      "notes": "🔗 MERGE AI ANALYSIS - TWITTER/X\n\nCombines original post data with AI analysis:\n- Matches by post_url\n- Handles URL query parameter differences\n- Merges all AI-extracted fields\n- Updates timestamp\n\nFinal data ready for database storage."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare JSON array for bulk upsert to Supabase\n// Get all items from Merge AI Output\nconst items = $input.all();\n\n// Get loop control variables from Structure Data1\nconst total_competitors = $('Structure Data twitter').first()?.json._total_competitors || $('Get Competitor by Index (Twitter)').first()?.json._total_competitors || 1;\nconst current_index = $('Structure Data twitter').first()?.json._current_index || $('Get Competitor by Index (Twitter)').first()?.json._current_index || 0;\n\n// Map to array of objects with all required fields for Twitter/X posts\nconst postsArray = items.map(item => {\n  const data = item.json;\n  return {\n    competitor_id: data.competitor_id || null,\n    post_id: data.post_id,\n    post_url: data.post_url || null,\n    post_content: data.post_content || null,\n    media_type: data.media_type || null,\n    impressions: data.impressions || null,\n    reactions: data.reactions || null,\n    comments: data.comments || 0,\n    quotes: data.quotes || 0,\n    retweets: data.retweets || 0,\n    bookmarks: data.bookmarks || null,\n    is_original: data.is_original || false,\n    hook: data.hook || null,\n    format: data.format || null,\n    cta: data.cta || null,\n    engagement_mechanics: data.engagement_mechanics || null,\n    opportunity_type: data.opportunity_type || null,\n    lead_magnet_subtype: data.lead_magnet_subtype || null,\n    raw_json: data.raw_json || null,\n    created_at: data.created_at || new Date().toISOString(),\n    updated_at: data.updated_at || new Date().toISOString()\n  };\n});\n\n// Return as JSON string for HTTP Request body, preserving loop control\nreturn [{\n  json: {\n    postsArray: postsArray,\n    jsonBody: JSON.stringify(postsArray),\n    _total_competitors: total_competitors,\n    _current_index: current_index\n  }\n}];"
+      },
+      "id": "013c98da-fe8e-436c-9122-2e325ae97263",
+      "name": "Prepare Bulk Upsert for twitter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        1152
+      ],
+      "notes": "📋 PREPARE DATABASE PAYLOAD - TWITTER/X\n\nFormats data for Supabase bulk upsert:\n- Maps all required fields (Twitter-specific)\n- Creates JSON array\n- Preserves loop control variables\n- Handles null values\n\nOutput: JSON string ready for HTTP Request."
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-opus-4-5-20251101",
+          "mode": "list",
+          "cachedResultName": "Claude Opus 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -944,
+        1328
+      ],
+      "id": "c3324ce4-1349-4d5a-bfac-ae84e455ef8e",
+      "name": "Anthropic Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-haiku-20240307",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 3"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        -944,
+        1536
+      ],
+      "id": "4101ba16-b1bb-4ab7-b481-2552c181d7e4",
+      "name": "Anthropic Chat Model1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "linkedin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "0fb0b0bb-c0ca-405e-a844-4451b8b4456d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Linkedin"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "aa5df846-3d0f-4c37-82ee-88f4f7a1a48e",
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "x",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Twiiter"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "935bf91c-2295-4f21-929c-3a548d77e6bc",
+                    "leftValue": "={{ $json.platform }}",
+                    "rightValue": "twitter",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Twitter"
+            }
+          ]
+        },
+        "options": {
+          "allMatchingOutputs": true
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -496,
+        704
+      ],
+      "id": "815b2d87-1388-4b59-b651-452c32d8334f",
+      "name": "Switch"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Reposts": {
+      "main": [
+        [
+          {
+            "node": "Filter Non-Reposts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Non-Reposts": {
+      "main": [
+        [
+          {
+            "node": "Sort Posts by Performance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape LinkedIn Posts": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Detect Reposts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort Posts by Performance": {
+      "main": [
+        [
+          {
+            "node": "Structure Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Data": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge AI Output": {
+      "main": [
+        [
+          {
+            "node": "Prepare Bulk Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Bulk Upsert": {
+      "main": [
+        [
+          {
+            "node": "Bulk Upsert Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "Structure Data twitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent for Twitter",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent for Twitter",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bulk Upsert Posts": {
+      "main": [
+        [
+          {
+            "node": "Check Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Scrape LinkedIn Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitor by Index": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Loop": {
+      "main": [
+        [
+          {
+            "node": "Get Competitor by Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Competitor by Index (Twitter)": {
+      "main": [
+        [
+          {
+            "node": "Extract Twitter Username",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bulk Upsert Posts1": {
+      "main": [
+        [
+          {
+            "node": "Check Loop (Twitter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Loop (Twitter)": {
+      "main": [
+        [
+          {
+            "node": "Get Competitor by Index (Twitter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Twitter Username": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Data twitter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent for Twitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent for Twitter": {
+      "main": [
+        [
+          {
+            "node": "Merge AI Output for Twitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge AI Output for Twitter": {
+      "main": [
+        [
+          {
+            "node": "Prepare Bulk Upsert for twitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Bulk Upsert for twitter": {
+      "main": [
+        [
+          {
+            "node": "Bulk Upsert Posts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get Competitor by Index",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Competitor by Index (Twitter)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Competitor by Index (Twitter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "2b83fa3b-aa1f-4086-90ab-6e6103263dd2",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-14T17:27:31.183Z",
+      "createdAt": "2026-01-14T17:27:31.183Z",
+      "role": "workflow:owner",
+      "workflowId": "h1XgLfQ0lfFYcee-09dCY",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
