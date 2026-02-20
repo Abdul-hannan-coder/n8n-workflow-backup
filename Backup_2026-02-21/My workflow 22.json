@@ -1,0 +1,106 @@
+{
+  "updatedAt": "2026-01-16T16:41:17.389Z",
+  "createdAt": "2026-01-16T16:40:30.447Z",
+  "id": "WxmUuM_Pgt0T_YJUe2B80",
+  "name": "My workflow 22",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "39ca5e3b-7b32-4836-bf66-308952f6eabe",
+      "name": "When chat message received",
+      "webhookId": "fbab2ddc-bb5d-4e4c-b267-b8d8002db405"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "who are u ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b5a17b14-6ac0-45dc-8c76-86e42541f9db",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude",
+          "mode": "list",
+          "cachedResultName": "claude"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "766e7e5b-6722-402e-9105-0c4ab7bc8631",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "iM0SEOecqDIQe1qI",
+          "name": "Pollination"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "983c441f-b025-4d41-8a89-ff8fe81493c7",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-16T16:40:30.450Z",
+      "createdAt": "2026-01-16T16:40:30.450Z",
+      "role": "workflow:owner",
+      "workflowId": "WxmUuM_Pgt0T_YJUe2B80",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
