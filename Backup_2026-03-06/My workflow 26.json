@@ -1,0 +1,121 @@
+{
+  "updatedAt": "2026-03-04T09:11:26.000Z",
+  "createdAt": "2026-03-04T09:11:26.293Z",
+  "id": "yJZQsZM2mANOIPViAapee",
+  "name": "My workflow 26",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "e645f3f3-eef0-4ab8-91d7-31a842e3de2e",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "8c94a89d-7ed1-420c-8efe-dab86f4d486a",
+      "name": "When chat message received",
+      "webhookId": "e494d79e-1fd1-4a9e-8fbd-32ccd64b25e2"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        144,
+        -16
+      ],
+      "id": "afdfdbcc-a7c6-4ae3-881e-fbb35466cf90",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai",
+          "mode": "list",
+          "cachedResultName": "openai"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        176
+      ],
+      "id": "09c3b312-eee3-4f02-b9d3-611e3cb13136",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "iM0SEOecqDIQe1qI",
+          "name": "Pollination"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "b2f86fbd-ecd4-4be5-81a8-8e0d22ad3e44",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-04T09:11:26.297Z",
+      "createdAt": "2026-03-04T09:11:26.297Z",
+      "role": "workflow:owner",
+      "workflowId": "yJZQsZM2mANOIPViAapee",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
