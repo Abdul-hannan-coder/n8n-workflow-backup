@@ -1,0 +1,277 @@
+{
+  "updatedAt": "2026-03-06T22:36:29.180Z",
+  "createdAt": "2026-02-25T12:44:02.921Z",
+  "id": "v6eJzITi5T1bHRn8OqoW_",
+  "name": "HR",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5d270eb0-722d-492c-9189-552d825a236d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -48
+      ],
+      "id": "7497a82b-58cc-4b86-bab8-7b816e796f43",
+      "name": "Webhook",
+      "webhookId": "5d270eb0-722d-492c-9189-552d825a236d"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        -48
+      ],
+      "id": "b46fbaf7-47f2-42f3-84ba-a7b579392b12",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Name",
+              "description": "The full name of the candidate found in the CV."
+            },
+            {
+              "name": "Email",
+              "description": "The primary email address of the candidate."
+            },
+            {
+              "name": "Phone",
+              "description": "The contact or mobile phone number of the candidate."
+            },
+            {
+              "name": "Gender",
+              "description": "The gender of the candidate (if explicitly mentioned)."
+            },
+            {
+              "name": "Skills",
+              "description": "A list of technical and soft skills (e.g., SEO, Digital Marketing, Python)."
+            },
+            {
+              "name": "City",
+              "description": "The city where the candidate is currently located"
+            },
+            {
+              "name": "State",
+              "description": "The state or province of the candidate's location."
+            },
+            {
+              "name": "Country",
+              "description": "The country where the candidate resides."
+            },
+            {
+              "name": "Work History",
+              "description": "A concise summary of the candidate's previous job roles, companies, and professional experience."
+            },
+            {
+              "name": "Locality",
+              "description": "Area or neighborhood within city"
+            },
+            {
+              "name": "FullAddress",
+              "description": "Complete address including city, state, country"
+            },
+            {
+              "name": "PostalCode",
+              "description": "ZIP or postal code"
+            },
+            {
+              "name": "PositionTitle",
+              "description": "Current or most recent job title"
+            },
+            {
+              "name": "CurrentOrganization",
+              "description": "Current or most recent company name"
+            },
+            {
+              "name": "TotalExperience",
+              "description": "Total years of work experience, e.g. \"5 Years\""
+            },
+            {
+              "name": "Summary",
+              "description": "Professional summary or objective statement"
+            },
+            {
+              "name": "Skills",
+              "description": "Comma separated list of all technical and soft skills"
+            },
+            {
+              "name": "LinkedInUrl",
+              "description": "LinkedIn profile URL if mentioned"
+            },
+            {
+              "name": "Education",
+              "description": "Array of all education entries. Each item must have: degree (e.g. Bachelor of Commerce), institution (college or university name), year (e.g. \"2003\"), field (specialization subject)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "776a271e-64de-4dc8-bbd1-fc9c02256227",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "id": "2da5af4d-3e45-464d-acc9-455751d0567d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        352,
+        -48
+      ],
+      "id": "46aef2f2-532e-48a3-a595-8a07f78122b1",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Extract from File": [
+      {
+        "json": {
+          "numpages": 1,
+          "numrender": 1,
+          "info": {
+            "PDFFormatVersion": "1.7",
+            "Language": "en",
+            "EncryptFilterName": null,
+            "IsLinearized": false,
+            "IsAcroFormPresent": false,
+            "IsXFAPresent": false,
+            "IsCollectionPresent": false,
+            "IsSignaturesPresent": false,
+            "CreationDate": "D:20260222040607+00'00'",
+            "ModDate": "D:20260222040607+00'00'"
+          },
+          "metadata": {
+            "xmp:createdate": "2026-02-22T04:06:07+00:00",
+            "xmp:modifydate": "2026-02-22T04:06:07+00:00",
+            "xmpmm:documentid": "uuid:FDE7B53B-4D9B-4936-A7FA-8E4C92634CAB",
+            "xmpmm:instanceid": "uuid:FDE7B53B-4D9B-4936-A7FA-8E4C92634CAB"
+          },
+          "text": "Kalrav Vyas\nAn experienced professional in supply chain management, data management and analysis, and client\nrelationship management. I love working on complex and challenging projects across different industries. I\nthrive on helping establish and streamline supply chain and client relations for start-ups and/or new projects,\nboth domestic and international.\nEducation\nIIT, GUWAHATI\nAdvanced Executive Certificate,\nSupply Chain Strategy and\nOperations Management\n2024\nIIM, KOZHIKODE\nProfessional Certificate Program,\nData Analytics for Business\nStrategy - 2023\nBUSINESS AND MANAGEMENT\nUNIVERSITY, GENEVA,\nSWITZERLAND\nMaster of Science in Finance\n2006\nNIIT, GANDHINAGAR, GJ\nDiploma in Information\nTechnology\n2003\nGUJARAT UNIVERSITY\nBachelor of Commerce\n2002\nSSI, GANDHINAGAR, GJ\nOracle 8i and PL SQL\n2001\nSkills & Competencies\nData and Process Management\nData Analysis & Warehousing\nAdvanced Excel\nTableau / Power BI\nProblem Solving\nPython / R\nProcess Definition &\nImplementation\nCross-cultural Communication\nAccount Management\nContact\nkalravyas@gmail.com\n+91-971 278 2244\nwww.linkedin.com/in/kalravyas/\nGandhinagar, Gujarat, India\nExperience\nTEAM LEADER AARVEE ASSOCIATES ARCHITECTS ENGINEERS &\nCONSULTANTS PVT LTD, - OCT’22–OCT’25\nSuccessfully conceptualized and constructed tables/data structures in\nExcel for Business Analytics.\nDeveloped and maintained the data warehouse in Excel for easier\ntracking of historical data and analysis thereof.\nEducated and trained the team of 6, on correctly updating the database.\nDY. MANAGER MAYUR UNIQUOTERS LTD - DEC’18–SEP’22\nHelped establish and streamline operations at Mayur Uniquoters SA\n(Pty) Ltd. in South Africa, leveraging strong Forecasting and Supply\nChain Management skills.\nIdentifying the production and raw materials requirements based on\nanalysis of the customer’s demand forecast and past pulls, while\nmaintaining minimum stock levels, as permissible by the contract,\ndespite the challenges from the COVID-19 restrictions.\nBUSINESS CONSULTANT MIVAAN ENERGY PVT. LTD. - JUL’16-NOV’18\nGuided and supported business expansion initiative of Mivaan Energy\n(earlier Jiyani Solar), in system establishment and operation\nstreamlining to align with their business objectives.\nConducted Market and Competitor Analysis to formulate effective\nbusiness strategies.\nDY. MANAGER MAYUR UNIQUOTERS LTD - DEC’14–JUN’16\nDirected production planning and raw material forecasting, ensuring a\nwell-stocked supply chain pipeline.\nManaged roll-wise inventory and statistical analysis thereof in\nQuickBooks and MS Excel for Mayur Uniquoters Corp., a subsidiary\ncompany registered in US and having its warehouse in Mexico.\nPROCESS CONSULTANT MITKAT ADVISORY SERVICES - JUL’13-NOV’14\nWorked on multiple projects involving Occupational Health & safety and\nbusiness continuity with MitKat Advisory Services.\nCHIEF COORDINATOR SAATH CHARITABLE TRUST - JAN’12-JUN’13\nCreated market presence of Griha Pravesh by establishing and\nmanaging centers to provide education and information on affordable\nhousing solutions.\nAPAC REPRESENTATIVE GOEDECKE & ASSOCIATES, INC - DEC’09-\nDEC’11\nEstablished and managed the back office for the US-based company in\nIndia, handling bidding, billing, procurement, and deliveries globally.\nRESEARCH ANALYST RSM MCGLADREY FPO INDIA PVT. LTD. -\nDEC’06-OCT’09\nSupported senior bankers on M&A transactions, preparing marketing\ndocuments and industry reports across various sectors, identifying\npotential buyers/targets for client companies.",
+          "version": "5.3.31"
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "fdc31ac7-c4f2-4713-8964-ea6dcbc08092",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-25T12:44:02.934Z",
+      "createdAt": "2026-02-25T12:44:02.934Z",
+      "role": "workflow:owner",
+      "workflowId": "v6eJzITi5T1bHRn8OqoW_",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
