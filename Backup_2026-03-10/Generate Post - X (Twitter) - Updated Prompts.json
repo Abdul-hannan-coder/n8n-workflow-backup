@@ -1,0 +1,840 @@
+{
+  "updatedAt": "2026-01-14T17:23:21.000Z",
+  "createdAt": "2026-01-12T18:58:55.523Z",
+  "id": "gMTBEwF00XASQl4t",
+  "name": "Generate Post - X (Twitter) - Updated Prompts",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-post",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7c4616fc-8a65-486e-bfe2-abe96d815a74",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        -592
+      ],
+      "webhookId": "sample-webhook-id"
+    },
+    {
+      "parameters": {
+        "tableId": "generated_posts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "post_content"
+            }
+          ]
+        }
+      },
+      "id": "d69eead4-d9e1-44a2-a15a-fb8773e141ab",
+      "name": "Supabase - Insert Draft",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        -592
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "generated_posts",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "is",
+              "keyValue": "={{ $('Supabase - Insert Draft').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "post_content",
+              "fieldValue": "={{ $json['Post Content '] }}"
+            },
+            {
+              "fieldId": "platform",
+              "fieldValue": "={{ $json['Platform '] }}"
+            },
+            {
+              "fieldId": "hook",
+              "fieldValue": "={{ $json.Hook }}"
+            },
+            {
+              "fieldId": "cta",
+              "fieldValue": "={{ $json.CTA }}"
+            },
+            {
+              "fieldId": "image_prompt",
+              "fieldValue": "={{ $json['image Prompt'] }}"
+            },
+            {
+              "fieldId": "image_url",
+              "fieldValue": "={{ $json['Image Url'] }}"
+            },
+            {
+              "fieldId": "full_post",
+              "fieldValue": "={{ $json.Post }}"
+            },
+            {
+              "fieldId": "post_type",
+              "fieldValue": "={{ $json['Post Type'] }}"
+            }
+          ]
+        }
+      },
+      "id": "8afa2cc4-0304-4f25-90bc-4e3aabc6eee5",
+      "name": "Supabase - Update Final",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        5536,
+        -592
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "mLH9b9DGyrTELyZK",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "800c4929-3a45-4d6d-8b8c-4d430692e2f1",
+              "name": "post_content",
+              "value": "AI is moving too fast for traditional education to keep up. University degrees in CS will be obsolete by 2030. Here is the new roadmap for self-taught engineers.",
+              "type": "string"
+            },
+            {
+              "id": "fe1445e5-f9c6-4d27-9833-fcd53693dfd7",
+              "name": "platform",
+              "value": "X",
+              "type": "string"
+            },
+            {
+              "id": "75b4a77c-0f84-4672-b59a-dd5f2711a801",
+              "name": "post_type",
+              "value": "leadmagnet",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        -592
+      ],
+      "id": "da7aee7d-2dab-4c26-af14-49a68a2e44f7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"CTA\":\"\"}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3048,
+        -368
+      ],
+      "id": "c9ee6215-5a39-4299-8ab9-6832b6515f63",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post Type:\n{{ $('Edit Fields').item.json.post_type }}\n\nHook:\n{{ $json.output.Hook }}\n\nContext:\n{{ $('Edit Fields').item.json.post_content }}\n\nTask:\nGenerate the single most effective CTA for this post.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert conversion copywriter for Twitter/X.\n\nYour sole objective is to generate ONE high-converting CTA.\n\nThink before you write:\n- Identify the post type\n- Match the CTA goal exactly to the post intent\n- Keep it short, clear, and action-driven\n\nCTA LOGIC (must follow):\n\nIF post_type is \"leadmagnet\":\n- Primary goal: Comments → DM trigger\n- CTA must explicitly ask users to comment or reply\n- Use simple trigger words like SEND, GO, LINK\n- Example styles:\n  - Comment \"SEND\" and I'll DM you the link.\n  - Reply \"GO\" to get the free guide.\n\nIF post_type is \"normal\":\n- Primary goal: Engagement or follower growth\n- CTA should encourage replies, opinions, or follows\n- Example styles:\n  - What's your take on this?\n  - Follow for more insights like this.\n\nOUTPUT RULES (strict):\n- Output ONLY the CTA text\n- No quotes\n- No emojis\n- No hashtags\n- No explanations\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2912,
+        -592
+      ],
+      "id": "1342b13b-cc0c-4d4e-bc29-64b3e58c86e0",
+      "name": "CTA Generation"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"Hook\":\"\"}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        2696,
+        -368
+      ],
+      "id": "456ffcb5-c6c2-47ae-bc08-4ab285c07c4a",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Context:\n{{ $json.post_content }}\n\nPost Type:\n{{ $json.post_type }}\n\nTask:\n1. Generate 3 distinct, high-impact hook variations based on the context.\n2. Internally evaluate them for curiosity, clarity, and scroll-stopping power.\n3. Select the SINGLE strongest hook.\n\nOutput:\nReturn ONLY the final selected hook.\nNothing else.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an elite viral Twitter/X ghostwriter.\n\nYour sole objective is to STOP THE SCROLL and maximize engagement.\n\nYou think in hooks first, not sentences.\nYou prioritize clarity, curiosity, and contrast.\n\nSTRICT RULES (must follow):\n\n1. Platform: X (Twitter)\n2. Length: STRICTLY under 140 characters.\n3. Tone: Punchy, bold, controversial, or high-value.\n4. Style: Direct, confident, no fluff.\n5. Formatting: Plain text only — no emojis, no hashtags, no quotation marks.\n6. Patterns you may use:\n   - \"Stop doing X\"\n   - \"Everyone thinks X. They're wrong.\"\n   - \"I wasted X years before learning this\"\n   - \"If you're doing X, read this\"\n7. Output MUST be a single standalone hook.\n8. Do NOT explain. Do NOT add options. Do NOT add context.\n\nFailure to follow any rule is incorrect.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2560,
+        -592
+      ],
+      "id": "7860eb33-059f-4089-8cd2-935225c19b72",
+      "name": "Hook Generator1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Post Type:\n{{ $('Edit Fields').item.json.post_type }}\n\nHook:\n{{ $('Hook Generator1').item.json.output.Hook }}\n\nCTA:\n{{ $json.output.CTA }}\n\nCore Context:\n{{ $('Edit Fields').item.json.post_content }}\n\nTask:\nConstruct the final X post (or thread) following the formatting rules exactly.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert Twitter/X post and thread writer.\n\nYour objective is to construct the FINAL publish-ready X post using the provided Hook, CTA, and Context.\nYou prioritize clarity, flow, readability, and engagement.\n\nYou MUST strictly follow the formatting logic below.\nThink internally before writing, but NEVER show reasoning.\n\n────────────────────────────\nFORMATTING LOGIC (STRICT)\n────────────────────────────\n\nIF post_type = \"normal\":\n\n- Output a SINGLE tweet only\n- Structure MUST be exactly:\n\n[Hook]\n\n[One concise, punchy supporting insight derived from the Core Context]\n\n[CTA]\n\nRules:\n- No numbering\n- No emojis\n- No hashtags\n- Each section separated by a blank line\n- Supporting sentence must add value, not repeat the hook\n\n────────────────────────────\n\nIF post_type = \"leadmagnet\":\n\n- Output a THREAD of 5–10 tweets\n- Structure MUST be exactly:\n\n1/ [Hook]\n\n2/ [Insight or problem framing]\n\n3/ [Key insight or realization]\n\n4/ [Practical takeaway or breakdown]\n\n5/ [Optional example, mistake, or clarification]\n\n6/ [Optional advanced insight or reinforcement]\n\n7/ [Optional summary or mental model]\n\n8/ [Optional recap or bridge]\n\n9/ [High-value summary or conclusion]\n\n10/ [CTA]\n\nRules:\n- Use numbering format exactly: 1/, 2/, 3/, etc.\n- Each tweet separated by a blank line\n- Flow must be educational, logical, and progressive\n- No filler tweets\n- CTA must ONLY appear in the final tweet\n- No emojis\n- No hashtags\n\n────────────────────────────\nOUTPUT RULES (NON-NEGOTIABLE)\n────────────────────────────\n\n- Output ONLY the raw post text\n- No explanations\n- No commentary\n- No markdown\n- No extra spacing before or after\n- Failure to follow format is incorrect\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        3264,
+        -592
+      ],
+      "id": "872675da-d38a-4481-87e0-d84b0900d86e",
+      "name": "Post Generation"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Context of Post:\n{{ $('Post Generation').item.json.output['Full Post'] || $('Post Generation').item.json.output }}\n\nHook:\n{{ $('Hook Generator1').item.json.output.Hook }}\n\nTask:\nWrite a scroll-stopping visual prompt using a clear metaphor that matches the post's core idea.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an AI Art Director specializing in minimalist, Notion-style vector visuals for social media.\n\nYour task is to write ONE concise image-generation prompt optimized for NanoBanana.\n\nYou think visually and metaphor-first:\n- Identify the core theme (growth, focus, clarity, systems, leverage, chaos, progress, etc.)\n- Translate the theme into a strong visual metaphor\n- Describe composition, style, and mood clearly\n\nVISUAL STYLE RULES (STRICT):\n- Flat, minimalist vector illustration\n- High contrast black & white with ONE accent color (blue or orange)\n- Abstract shapes, symbols, charts, or objects\n- NO realistic photos\n- NO people\n- NO text inside the image\n\nOUTPUT RULES:\n- Under 50 words\n- Output ONLY the prompt text\n- No explanations\n- No formatting\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        3616,
+        -592
+      ],
+      "id": "1c9173cb-c800-4797-a34b-e54f6ffc1def",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"prompt\":\"This is prompt\"}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3752,
+        -368
+      ],
+      "id": "a8f19841-bc7b-44d8-88ae-671a1f52aefa",
+      "name": "Structured Output Parser4"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-haiku-20240307",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 3"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2920,
+        -368
+      ],
+      "id": "e96eacc8-f981-4ed6-b94a-ab04fbc405cd",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "2zkeXBcMqatxP25h",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3272,
+        -368
+      ],
+      "id": "03806e4d-5099-40e1-8afb-c07b8543c1bc",
+      "name": "Anthropic Chat Model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "2zkeXBcMqatxP25h",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        3624,
+        -368
+      ],
+      "id": "ec43790d-3786-4661-8c06-c1dd78d52d4d",
+      "name": "Anthropic Chat Model2",
+      "credentials": {
+        "anthropicApi": {
+          "id": "2zkeXBcMqatxP25h",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d404f6bf-0ace-4b4c-a068-3bcfe4561e60",
+              "name": "Post Content ",
+              "value": "={{ $('Edit Fields').item.json.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "6d7d0264-253d-4f15-b0f1-13dd881321de",
+              "name": "Platform ",
+              "value": "={{ $('Edit Fields').item.json.platform }}",
+              "type": "string"
+            },
+            {
+              "id": "5e9270d5-ab8b-4ea3-80f2-4cd8edeb9dcc",
+              "name": "Post Type",
+              "value": "={{ $('Edit Fields').item.json.post_type }}",
+              "type": "string"
+            },
+            {
+              "id": "82dc4769-d41e-4699-92c2-7869dedc45ee",
+              "name": "Hook",
+              "value": "={{ $('Hook Generator1').item.json.output.Hook }}",
+              "type": "string"
+            },
+            {
+              "id": "ccce207b-620f-4ce5-8d76-12b524e058a9",
+              "name": "CTA",
+              "value": "={{ $('CTA Generation').item.json.output.CTA }}",
+              "type": "string"
+            },
+            {
+              "id": "46b582f7-86a9-40f8-ad05-0623d9fb8157",
+              "name": "Post",
+              "value": "={{ $('Post Generation').item.json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "3365f865-f892-4d81-9ded-92fe30f6443b",
+              "name": "image Prompt",
+              "value": "={{ $('AI Agent').item.json.output.prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "ea0182c8-89e5-4b79-b803-caa94f9cf3f8",
+              "name": "Image Url",
+              "value": "={{ $('Edit Fields2').item.json.Link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5312,
+        -592
+      ],
+      "id": "c1474e08-f480-4a3b-a5e6-40452b7c413f",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-3-haiku-20240307",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 3"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        2568,
+        -368
+      ],
+      "id": "7ccb149e-3c3a-48a7-858f-39f46bc7f1b9",
+      "name": "Anthropic Chat Model3",
+      "credentials": {
+        "anthropicApi": {
+          "id": "2zkeXBcMqatxP25h",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\"Full Post\":\"This is post....\"}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3400,
+        -368
+      ],
+      "id": "6f56b86a-4e19-4f12-81ab-c4d9dcb49a87",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3968,
+        -592
+      ],
+      "id": "2cbb75aa-c9b9-48c2-ba52-5425e9a0c231",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/jobs/createTask",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"google/nano-banana\",\n  \"callBackUrl\": \"https://your-domain.com/api/callback\",\n  \"input\": {\n    \"prompt\": \"{{ $json.output.prompt }}\",\n    \"output_format\": \"png\",\n    \"image_size\": \"16:9\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4192,
+        -592
+      ],
+      "id": "588d7774-5a96-4087-b009-537a72088f8e",
+      "name": "Create Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PxYBErJBGaTdwww1",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 20,
+        "unit": "seconds"
+      },
+      "id": "96ff3487-aad8-4a65-8990-3e1d04d2a6bd",
+      "name": "Wait 20 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        4416,
+        -592
+      ],
+      "webhookId": "18002bae-7f59-43f6-a48f-96e58d0176d3"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/jobs/recordInfo",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4640,
+        -592
+      ],
+      "id": "5ab17fd6-64b0-46c7-ab1b-c24f9736aa3c",
+      "name": "Fetch Image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "PxYBErJBGaTdwww1",
+          "name": "Header Auth account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5a64cfe4-4eb2-4f94-bfb5-fc82772c4d12",
+              "name": "Link",
+              "value": "={{ JSON.parse($json.data.resultJson).resultUrls[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4864,
+        -592
+      ],
+      "id": "c80e7e9a-102e-4641-aa71-ce3e9e7214c1",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        5088,
+        -592
+      ],
+      "id": "2ade5f0a-b0dc-4269-bb96-f24110b527f2",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Insert Draft": {
+      "main": [
+        [
+          {
+            "node": "Hook Generator1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Insert Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "CTA Generation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CTA Generation": {
+      "main": [
+        [
+          {
+            "node": "Post Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Hook Generator1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hook Generator1": {
+      "main": [
+        [
+          {
+            "node": "CTA Generation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Generation": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser4": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CTA Generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Post Generation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Update Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Hook Generator1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Post Generation",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Create Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image": {
+      "main": [
+        [
+          {
+            "node": "Wait 20 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 20 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Fetch Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Image": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Edit Fields": [
+      {
+        "json": {
+          "post_content": "AI is moving too fast for traditional education to keep up. University degrees in CS will be obsolete by 2030. Here is the new roadmap for self-taught engineers.",
+          "platform": "X",
+          "post_type": "leadmagnet"
+        }
+      }
+    ]
+  },
+  "versionId": "7884f5b8-f7f0-4576-a179-12dfebf63cbb",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-12T18:58:55.527Z",
+      "createdAt": "2026-01-12T18:58:55.527Z",
+      "role": "workflow:owner",
+      "workflowId": "gMTBEwF00XASQl4t",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
