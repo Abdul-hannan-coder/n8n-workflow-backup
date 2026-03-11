@@ -1,0 +1,73 @@
+{
+  "updatedAt": "2026-03-09T16:34:26.000Z",
+  "createdAt": "2026-03-09T16:34:26.363Z",
+  "id": "3iU7YJqoRFqfLzk0uU459",
+  "name": "My workflow 27",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "automation-email",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -208,
+        -16
+      ],
+      "id": "4e6fae6d-efd1-46cf-9fbb-9c3feb972d3d",
+      "name": "Webhook",
+      "webhookId": "df6e514d-477d-4ee1-93c8-829c4fe6f8ac"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\nconst automations = body.automations;\nconst opportunity = body.opportunity;\nconst stageName = body.stage_name;\nconst pipelineName = body.pipeline_name;\n\nconst emails = [];\n\nfor (const rule of automations) {\n  let toEmail = '';\n  \n  if (rule.email_to_type === 'candidate') {\n    toEmail = opportunity.email || '';\n  } else if (rule.email_to_type === 'contact') {\n    toEmail = opportunity.email || '';\n  } else if (rule.email_to_type === 'custom') {\n    toEmail = rule.email_to || '';\n  }\n\n  // Variables replace karo\n  let subject = rule.email_subject || '';\n  let body = rule.email_body || '';\n  \n  subject = subject.replace('{{candidate_name}}', opportunity.contact_name || '');\n  subject = subject.replace('{{stage_name}}', stageName || '');\n  subject = subject.replace('{{pipeline_name}}', pipelineName || '');\n  \n  body = body.replace('{{candidate_name}}', opportunity.contact_name || '');\n  body = body.replace('{{candidate_email}}', opportunity.email || '');\n  body = body.replace('{{stage_name}}', stageName || '');\n  body = body.replace('{{pipeline_name}}', pipelineName || '');\n\n  if (toEmail) {\n    emails.push({\n      to: toEmail,\n      cc: rule.email_cc || '',\n      from: rule.smtp_from || '',\n      subject: subject,\n      body: body\n    });\n  }\n}\n\nreturn emails.map(e => ({ json: e }));\n```\n\n---\n\n**Node 3 — Send Email (SMTP)**\n- Node add karo: `Send Email`\n- Credentials mein SMTP details daalo\n- Fields:\n  - **To:** `{{ $json.to }}`\n  - **CC:** `{{ $json.cc }}`\n  - **From:** `{{ $json.from }}`\n  - **Subject:** `{{ $json.subject }}`\n  - **Text/HTML:** `{{ $json.body }}`\n\n---\n\n**Connection:**\n```\nWebhook → Code → Send Email"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "2715c556-97f5-4298-be6e-d7138c64398f",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "4873d1d5-ce65-432b-812d-a191fc7d2524",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-09T16:34:26.369Z",
+      "createdAt": "2026-03-09T16:34:26.369Z",
+      "role": "workflow:owner",
+      "workflowId": "3iU7YJqoRFqfLzk0uU459",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
