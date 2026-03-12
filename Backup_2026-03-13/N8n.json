@@ -1,0 +1,183 @@
+{
+  "updatedAt": "2026-03-12T11:34:34.006Z",
+  "createdAt": "2026-03-09T16:34:26.363Z",
+  "id": "3iU7YJqoRFqfLzk0uU459",
+  "name": "N8n",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "automation-email",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -16
+      ],
+      "id": "4e6fae6d-efd1-46cf-9fbb-9c3feb972d3d",
+      "name": "Webhook",
+      "webhookId": "df6e514d-477d-4ee1-93c8-829c4fe6f8ac"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst data = items[0].json;\n\nconst automations = data.body?.automations || data.automations || [];\nconst opportunity = data.body?.opportunity || data.opportunity || {};\nconst stageName = data.body?.stage_name || data.stage_name || '';\nconst pipelineName = data.body?.pipeline_name || data.pipeline_name || '';\n\nconst emails = [];\n\nfor (const rule of automations) {\n  let toEmail = '';\n  if (rule.email_to_type === 'custom') {\n    toEmail = rule.email_to || '';\n  } else {\n    toEmail = opportunity.email || '';\n  }\n\n  const subject = (rule.email_subject || '')\n    .replace('{{candidate_name}}', opportunity.contact_name || '')\n    .replace('{{stage_name}}', stageName)\n    .replace('{{pipeline_name}}', pipelineName)\n    .replace('{{opp_name}}', opportunity.opp_name || '');\n\n  const body = (rule.email_body || '')\n    .replace('{{candidate_name}}', opportunity.contact_name || '')\n    .replace('{{candidate_email}}', opportunity.email || '')\n    .replace('{{stage_name}}', stageName)\n    .replace('{{pipeline_name}}', pipelineName)\n    .replace('{{opp_name}}', opportunity.opp_name || '');\n\n  if (toEmail) {\n    emails.push({\n      to: toEmail,\n      cc: rule.email_cc || '',\n      from: rule.smtp_from || '',\n      subject: subject,\n      body: body,\n      // SMTP details directly pass karo\n      smtp_host: rule.smtp_host || '',\n      smtp_port: rule.smtp_port || 587,\n      smtp_user: rule.smtp_user || '',\n      smtp_password: rule.smtp_password || ''\n    });\n  }\n}\n\nreturn emails.map(e => ({ json: e }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "2715c556-97f5-4298-be6e-d7138c64398f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        96
+      ],
+      "id": "0407b152-bb94-4673-82d9-648324578350",
+      "name": "Send email",
+      "webhookId": "24382451-b764-4bbd-8fef-f112a1aae75b",
+      "credentials": {
+        "smtp": {
+          "id": "VTrIwSIdretn9oWO",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.srv990213.hstgr.cloud",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+            "content-length": "1160",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/json",
+            "origin": "http://localhost:3000",
+            "priority": "u=1, i",
+            "referer": "http://localhost:3000/",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Microsoft Edge\";v=\"145\", \"Chromium\";v=\"145\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "89.211.95.252",
+            "x-forwarded-host": "n8n.srv990213.hstgr.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "6194cf021e42",
+            "x-real-ip": "89.211.95.252"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "automations": [
+              {
+                "id": "49b39577-719f-488b-a0d9-7a8a629a99dd",
+                "pipeline_id": "2ec7bc68-f50c-4802-91c3-e80080219ef3",
+                "pipeline_name": "Off-Limits Status",
+                "stage_id": "1772908737099",
+                "stage_name": " Existing Customer",
+                "trigger_event": "stage_change",
+                "action_type": "send_email",
+                "email_to": "",
+                "email_to_type": "candidate",
+                "email_subject": "hi",
+                "email_body": "hi",
+                "email_cc": "",
+                "smtp_from": "",
+                "is_active": true,
+                "created_at": "2026-03-12T11:31:51.475+00:00",
+                "smtp_host": "",
+                "smtp_port": 587,
+                "smtp_user": "",
+                "smtp_password": "",
+                "smtp_auth_type": "manual",
+                "smtp_settings_id": null
+              }
+            ],
+            "opportunity": {
+              "id": "678687de-ecb6-4276-b1c5-575edab14db8",
+              "contact_id": "df176c37-bc4e-4009-8fdb-170b6c581a41",
+              "contact_name": "Omar Farooq",
+              "email": "omar.f@email.com",
+              "phone": "923006661122",
+              "opp_name": "ab",
+              "pipeline_id": "2ec7bc68-f50c-4802-91c3-e80080219ef3",
+              "stage_id": "1772908737097",
+              "status": "Open",
+              "value": "",
+              "owner": "Unassigned",
+              "followers": null,
+              "business_name": null,
+              "source": null,
+              "tags": null,
+              "created_at": "2026-03-12T10:13:58.069+00:00",
+              "workspace_id": null
+            },
+            "stage_name": " Existing Customer",
+            "pipeline_name": "Off-Limits Status",
+            "candidate_name": "Omar Farooq",
+            "candidate_email": "omar.f@email.com"
+          },
+          "webhookUrl": "https://n8n.srv990213.hstgr.cloud/webhook-test/automation-email",
+          "executionMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "3396fda8-f092-46e3-a36f-cd06872d8a22",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-09T16:34:26.369Z",
+      "createdAt": "2026-03-09T16:34:26.369Z",
+      "role": "workflow:owner",
+      "workflowId": "3iU7YJqoRFqfLzk0uU459",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
