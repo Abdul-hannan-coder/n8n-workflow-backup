@@ -1,0 +1,95 @@
+{
+  "updatedAt": "2026-03-13T11:27:24.475Z",
+  "createdAt": "2026-03-09T16:34:26.363Z",
+  "id": "3iU7YJqoRFqfLzk0uU459",
+  "name": "N8n",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "automation-email",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -16
+      ],
+      "id": "4e6fae6d-efd1-46cf-9fbb-9c3feb972d3d",
+      "name": "Webhook",
+      "webhookId": "df6e514d-477d-4ee1-93c8-829c4fe6f8ac"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst data = items[0].json;\n\nconst automations = data.body?.automations || data.automations || [];\nconst opportunity = data.body?.opportunity || data.opportunity || {};\nconst stageName = data.body?.stage_name || data.stage_name || '';\nconst pipelineName = data.body?.pipeline_name || data.pipeline_name || '';\n\nconst emails = [];\n\nfor (const rule of automations) {\n  let toEmail = '';\n  if (rule.email_to_type === 'custom') {\n    toEmail = rule.email_to || '';\n  } else {\n    toEmail = opportunity.email || '';\n  }\n\n  const subject = (rule.email_subject || '')\n    .replace('{{candidate_name}}', opportunity.contact_name || '')\n    .replace('{{stage_name}}', stageName)\n    .replace('{{pipeline_name}}', pipelineName)\n    .replace('{{opp_name}}', opportunity.opp_name || '');\n\n  const body = (rule.email_body || '')\n    .replace('{{candidate_name}}', opportunity.contact_name || '')\n    .replace('{{candidate_email}}', opportunity.email || '')\n    .replace('{{stage_name}}', stageName)\n    .replace('{{pipeline_name}}', pipelineName)\n    .replace('{{opp_name}}', opportunity.opp_name || '');\n\n  if (toEmail) {\n    emails.push({\n      to: toEmail,\n      cc: rule.email_cc || '',\n      from: rule.smtp_from || '',\n      subject: subject,\n      body: body,\n      // SMTP details directly pass karo\n      smtp_host: rule.smtp_host || '',\n      smtp_port: rule.smtp_port || 587,\n      smtp_user: rule.smtp_user || '',\n      smtp_password: rule.smtp_password || ''\n    });\n  }\n}\n\nreturn emails.map(e => ({ json: e }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "2715c556-97f5-4298-be6e-d7138c64398f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        96
+      ],
+      "id": "0407b152-bb94-4673-82d9-648324578350",
+      "name": "Send email",
+      "webhookId": "24382451-b764-4bbd-8fef-f112a1aae75b",
+      "credentials": {
+        "smtp": {
+          "id": "VTrIwSIdretn9oWO",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "3396fda8-f092-46e3-a36f-cd06872d8a22",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-03-09T16:34:26.369Z",
+      "createdAt": "2026-03-09T16:34:26.369Z",
+      "role": "workflow:owner",
+      "workflowId": "3iU7YJqoRFqfLzk0uU459",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
