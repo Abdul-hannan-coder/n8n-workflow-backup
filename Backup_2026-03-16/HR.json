@@ -1,0 +1,274 @@
+{
+  "updatedAt": "2026-03-09T16:33:09.249Z",
+  "createdAt": "2026-02-25T12:44:02.921Z",
+  "id": "v6eJzITi5T1bHRn8OqoW_",
+  "name": "HR",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5d270eb0-722d-492c-9189-552d825a236d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        -48
+      ],
+      "id": "7497a82b-58cc-4b86-bab8-7b816e796f43",
+      "name": "Webhook",
+      "webhookId": "5d270eb0-722d-492c-9189-552d825a236d"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "b46fbaf7-47f2-42f3-84ba-a7b579392b12",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Name",
+              "description": "The full name of the candidate found in the CV."
+            },
+            {
+              "name": "Email",
+              "description": "The primary email address of the candidate."
+            },
+            {
+              "name": "Phone",
+              "description": "The contact or mobile phone number of the candidate."
+            },
+            {
+              "name": "Gender",
+              "description": "The gender of the candidate (if explicitly mentioned)."
+            },
+            {
+              "name": "Skills",
+              "description": "A list of technical and soft skills (e.g., SEO, Digital Marketing, Python)."
+            },
+            {
+              "name": "City",
+              "description": "The city where the candidate is currently located"
+            },
+            {
+              "name": "State",
+              "description": "The state or province of the candidate's location."
+            },
+            {
+              "name": "Country",
+              "description": "The country where the candidate resides."
+            },
+            {
+              "name": "Work History",
+              "description": "A concise summary of the candidate's previous job roles, companies, and professional experience."
+            },
+            {
+              "name": "Locality",
+              "description": "Area or neighborhood within city"
+            },
+            {
+              "name": "FullAddress",
+              "description": "Complete address including city, state, country"
+            },
+            {
+              "name": "PostalCode",
+              "description": "ZIP or postal code"
+            },
+            {
+              "name": "PositionTitle",
+              "description": "Current or most recent job title"
+            },
+            {
+              "name": "CurrentOrganization",
+              "description": "Current or most recent company name"
+            },
+            {
+              "name": "TotalExperience",
+              "description": "Total years of work experience, e.g. \"5 Years\""
+            },
+            {
+              "name": "Summary",
+              "description": "Professional summary or objective statement"
+            },
+            {
+              "name": "Skills",
+              "description": "Comma separated list of all technical and soft skills"
+            },
+            {
+              "name": "LinkedInUrl",
+              "description": "LinkedIn profile URL if mentioned"
+            },
+            {
+              "name": "Education",
+              "description": "Array of all education entries. Each item must have: degree (e.g. Bachelor of Commerce), institution (college or university name), year (e.g. \"2003\"), field (specialization subject)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -48
+      ],
+      "id": "776a271e-64de-4dc8-bbd1-fc9c02256227",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "id": "2da5af4d-3e45-464d-acc9-455751d0567d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        352,
+        -48
+      ],
+      "id": "46aef2f2-532e-48a3-a595-8a07f78122b1",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Information Extractor": [
+      {
+        "json": {
+          "output": {
+            "Name": "Kalrav Vyas",
+            "Email": "kalravyas@gmail.com",
+            "Phone": "+91-971 278 2244",
+            "Gender": "Not specified",
+            "Skills": "Data and Process Management, Data Analysis & Warehousing, Advanced Excel, Tableau / Power BI, Problem Solving, Python / R, Process Definition & Implementation, Cross-cultural Communication, Account Management",
+            "City": "Gandhinagar",
+            "State": "Gujarat",
+            "Country": "India",
+            "Work History": "TEAM LEADER at Aarvee Associates Architects Engineers & Consultants Pvt Ltd (Oct'22–Oct'25), DY. MANAGER at Mayur Uniquoters Ltd (Dec'18–Sep'22), BUSINESS CONSULTANT at Mivaan Energy Pvt. Ltd. (Jul'16-Nov'18), DY. MANAGER at Mayur Uniquoters Ltd (Dec'14–Jun'16), PROCESS CONSULTANT at MitKat Advisory Services (Jul'13-Nov'14), CHIEF COORDINATOR at Saath Charitable Trust (Jan'12-Jun'13), APAC REPRESENTATIVE at Goedecke & Associates, Inc (Dec'09-Dec'11), RESEARCH ANALYST at RSM McGladrey FPO India Pvt. Ltd. (Dec'06-Oct'09)",
+            "Locality": "Not specified",
+            "FullAddress": "Gandhinagar, Gujarat, India",
+            "PostalCode": "Not specified",
+            "PositionTitle": "TEAM LEADER",
+            "CurrentOrganization": "Aarvee Associates Architects Engineers & Consultants Pvt Ltd",
+            "TotalExperience": "Over 10 Years",
+            "Summary": "Experienced leader in data management and consulting with a proven track record in various industries.",
+            "LinkedInUrl": "Not specified",
+            "Education": "Advanced Executive Certificate, Supply Chain Strategy and Operations Management, IIT, Guwahati, 2024; Professional Certificate Program, Data Analytics for Business Strategy, IIM, Kozhikode, 2023; Master of Science in Finance, Business and Management University, Geneva, Switzerland, 2006; Diploma in Information Technology, NIIT, Gandhinagar, GJ, 2003; Bachelor of Commerce, Gujarat University, 2002; Oracle 8i and PL SQL, SSI, Gandhinagar, GJ, 2001"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "cf3f942c-1889-4f18-958e-0f8e47fa2de9",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-25T12:44:02.934Z",
+      "createdAt": "2026-02-25T12:44:02.934Z",
+      "role": "workflow:owner",
+      "workflowId": "v6eJzITi5T1bHRn8OqoW_",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
