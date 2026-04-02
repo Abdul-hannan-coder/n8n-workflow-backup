@@ -1,0 +1,408 @@
+{
+  "updatedAt": "2026-03-27T18:27:23.199Z",
+  "createdAt": "2026-02-25T12:44:02.921Z",
+  "id": "v6eJzITi5T1bHRn8OqoW_",
+  "name": "HR",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5d270eb0-722d-492c-9189-552d825a236d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        152
+      ],
+      "id": "7497a82b-58cc-4b86-bab8-7b816e796f43",
+      "name": "Webhook",
+      "webhookId": "5d270eb0-722d-492c-9189-552d825a236d"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        152
+      ],
+      "id": "b46fbaf7-47f2-42f3-84ba-a7b579392b12",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Name",
+              "description": "The full name of the candidate found in the CV."
+            },
+            {
+              "name": "Email",
+              "description": "The primary email address of the candidate."
+            },
+            {
+              "name": "Phone",
+              "description": "The contact or mobile phone number of the candidate."
+            },
+            {
+              "name": "Gender",
+              "description": "The gender of the candidate (if explicitly mentioned)."
+            },
+            {
+              "name": "Skills",
+              "description": "A list of technical and soft skills (e.g., SEO, Digital Marketing, Python)."
+            },
+            {
+              "name": "City",
+              "description": "The city where the candidate is currently located"
+            },
+            {
+              "name": "State",
+              "description": "The state or province of the candidate's location."
+            },
+            {
+              "name": "Country",
+              "description": "The country where the candidate resides."
+            },
+            {
+              "name": "Work History",
+              "description": "A concise summary of the candidate's previous job roles, companies, and professional experience."
+            },
+            {
+              "name": "Locality",
+              "description": "Area or neighborhood within city"
+            },
+            {
+              "name": "FullAddress",
+              "description": "Complete address including city, state, country"
+            },
+            {
+              "name": "PostalCode",
+              "description": "ZIP or postal code"
+            },
+            {
+              "name": "PositionTitle",
+              "description": "Current or most recent job title"
+            },
+            {
+              "name": "CurrentOrganization",
+              "description": "Current or most recent company name"
+            },
+            {
+              "name": "TotalExperience",
+              "description": "Total years of work experience, e.g. \"5 Years\""
+            },
+            {
+              "name": "Summary",
+              "description": "Professional summary or objective statement"
+            },
+            {
+              "name": "Skills",
+              "description": "Comma separated list of all technical and soft skills"
+            },
+            {
+              "name": "LinkedInUrl",
+              "description": "LinkedIn profile URL if mentioned"
+            },
+            {
+              "name": "Education",
+              "description": "Array of all education entries. Each item must have: degree (e.g. Bachelor of Commerce), institution (college or university name), year (e.g. \"2003\"), field (specialization subject)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        152
+      ],
+      "id": "776a271e-64de-4dc8-bbd1-fc9c02256227",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        200,
+        376
+      ],
+      "id": "2da5af4d-3e45-464d-acc9-455751d0567d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        480,
+        152
+      ],
+      "id": "46aef2f2-532e-48a3-a595-8a07f78122b1",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─────────────────────────────────────────────────────────\n// n8n Code Node — Resume Parser (No AI needed)\n// Input:  $json.text  (resume ka plain text)\n// Output: structured JSON with all resume fields\n// ─────────────────────────────────────────────────────────\n \nconst text = $input.item.json.text || \"\";\n \nfunction extractResumeData(text) {\n  const result = {\n    name: null,\n    email: null,\n    phone: null,\n    location: null,\n    linkedin: null,\n    github: null,\n    website: null,\n    summary: null,\n    skills: [],\n    languages: [],\n    education: [],\n    experience: [],\n    certifications: [],\n    projects: []\n  };\n \n  const lines = text.split(\"\\n\").map(l => l.trim()).filter(l => l.length > 0);\n \n  // ── 1. EMAIL ──────────────────────────────────────────\n  const emailMatch = text.match(/[\\w.\\-+]+@[\\w\\-]+\\.[a-zA-Z]{2,}/);\n  if (emailMatch) result.email = emailMatch[0];\n \n  // ── 2. PHONE ──────────────────────────────────────────\n  const phoneMatch = text.match(/(\\+?[\\d][\\d\\s\\-().]{7,}[\\d])/);\n  if (phoneMatch) result.phone = phoneMatch[0].trim();\n \n  // ── 3. LINKEDIN / GITHUB / WEBSITE ────────────────────\n  const linkedinMatch = text.match(/linkedin\\.com\\/in\\/[\\w\\-]+/i);\n  if (linkedinMatch) result.linkedin = \"https://\" + linkedinMatch[0];\n \n  const githubMatch = text.match(/github\\.com\\/[\\w\\-]+/i);\n  if (githubMatch) result.github = \"https://\" + githubMatch[0];\n \n  const websiteMatch = text.match(/https?:\\/\\/(?!linkedin|github)[\\w.\\-\\/]+/i);\n  if (websiteMatch) result.website = websiteMatch[0];\n \n  // ── 4. NAME (pehli 1-5 lines mein se) ────────────────\n  for (let i = 0; i < Math.min(5, lines.length); i++) {\n    const line = lines[i];\n    const wordCount = line.split(/\\s+/).length;\n    if (\n      !/@|http|linkedin|github|\\d{5}/.test(line) &&\n      wordCount >= 1 &&\n      wordCount <= 5 &&\n      /^[A-Z]/.test(line)\n    ) {\n      result.name = line;\n      break;\n    }\n  }\n \n  // ── 5. SECTION PARSER ─────────────────────────────────\n  const SECTION_MAP = {\n    summary:        /summary|objective|profile|about\\s*me/i,\n    skills:         /skills|technical\\s*skills|core\\s*competencies|technologies/i,\n    experience:     /experience|work\\s*experience|employment|work\\s*history/i,\n    education:      /education|academic|qualification/i,\n    certifications: /certif|licens|credential/i,\n    projects:       /projects?/i,\n    languages:      /languages?|spoken/i,\n  };\n \n  function getSections(text) {\n    const sections = {};\n    const sectionKeys = Object.keys(SECTION_MAP);\n \n    // section headings dhundho (line jo sirf heading ho)\n    const sectionPositions = [];\n    const textLines = text.split(\"\\n\");\n \n    textLines.forEach((line, idx) => {\n      const clean = line.trim();\n      if (!clean) return;\n      for (const key of sectionKeys) {\n        if (\n          SECTION_MAP[key].test(clean) &&\n          clean.length < 50 &&           // heading zyada lambi nahi hogi\n          !/[.@]/.test(clean)            // email ya sentence nahi\n        ) {\n          sectionPositions.push({ key, idx });\n          break;\n        }\n      }\n    });\n \n    for (let i = 0; i < sectionPositions.length; i++) {\n      const { key, idx } = sectionPositions[i];\n      const endIdx = i + 1 < sectionPositions.length\n        ? sectionPositions[i + 1].idx\n        : textLines.length;\n      const content = textLines.slice(idx + 1, endIdx).join(\"\\n\").trim();\n      sections[key] = content;\n    }\n \n    return sections;\n  }\n \n  const sections = getSections(text);\n \n  // ── 6. SUMMARY ────────────────────────────────────────\n  if (sections.summary) {\n    result.summary = sections.summary.replace(/\\n/g, \" \").trim();\n  }\n \n  // ── 7. SKILLS ─────────────────────────────────────────\n  if (sections.skills) {\n    let raw = sections.skills.replace(/[•\\-\\*▪◦]/g, \",\");\n    const skills = raw\n      .split(/[,\\n|\\/]/)\n      .map(s => s.trim())\n      .filter(s => s.length > 1 && s.length < 50);\n    result.skills = [...new Set(skills)]; // duplicates hatao\n  }\n \n  // ── 8. LANGUAGES ──────────────────────────────────────\n  const KNOWN_LANGS = [\n    \"english\",\"urdu\",\"arabic\",\"french\",\"german\",\n    \"spanish\",\"chinese\",\"hindi\",\"punjabi\",\"turkish\",\n    \"persian\",\"japanese\",\"portuguese\",\"russian\",\"italian\"\n  ];\n  const langSource = (sections.languages || text).toLowerCase();\n  result.languages = KNOWN_LANGS\n    .filter(l => langSource.includes(l))\n    .map(l => l.charAt(0).toUpperCase() + l.slice(1));\n \n  // ── 9. EDUCATION ──────────────────────────────────────\n  if (sections.education) {\n    const degreeRe = /bachelor|master|b\\.?s\\.?|m\\.?s\\.?|phd|b\\.?e|m\\.?b\\.?a|matric|intermediate|fsc|bsc|associate/i;\n    const yearRe   = /(19|20)\\d{2}/;\n    const eduLines = sections.education.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n \n    eduLines.forEach((line, i) => {\n      if (degreeRe.test(line)) {\n        const entry = {\n          degree:      line,\n          institution: eduLines[i + 1] || null,\n          year:        null\n        };\n        const yearMatch = line.match(yearRe) || (eduLines[i+1] || \"\").match(yearRe);\n        if (yearMatch) entry.year = yearMatch[0];\n        result.education.push(entry);\n      }\n    });\n  }\n \n  // ── 10. EXPERIENCE ────────────────────────────────────\n  if (sections.experience) {\n    const dateRe = /((jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\\s,]+\\d{4}|(\\d{4})\\s*[-–]\\s*(\\d{4}|present|current|now))/i;\n    const blocks = sections.experience.split(/\\n{2,}/);\n \n    blocks.forEach(block => {\n      const bLines = block.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n      if (!bLines.length) return;\n \n      const entry = {\n        title:       bLines[0] || null,\n        company:     bLines[1] || null,\n        duration:    null,\n        description: bLines.slice(2).join(\" \") || null\n      };\n \n      const dateMatch = block.match(dateRe);\n      if (dateMatch) entry.duration = dateMatch[0].trim();\n \n      result.experience.push(entry);\n    });\n  }\n \n  // ── 11. CERTIFICATIONS ────────────────────────────────\n  if (sections.certifications) {\n    result.certifications = sections.certifications\n      .split(\"\\n\")\n      .map(l => l.trim().replace(/^[\\-•*\\d.]+\\s*/, \"\"))\n      .filter(l => l.length > 3);\n  }\n \n  // ── 12. PROJECTS ──────────────────────────────────────\n  if (sections.projects) {\n    const projBlocks = sections.projects.split(/\\n{2,}/);\n    projBlocks.forEach(block => {\n      const pLines = block.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n      if (pLines.length) {\n        result.projects.push({\n          name:        pLines[0],\n          description: pLines.slice(1).join(\" \") || null\n        });\n      }\n    });\n  }\n \n  // ── 13. LOCATION ──────────────────────────────────────\n  const locMatch = text.match(/\\b([A-Z][a-z]+(?:\\s[A-Z][a-z]+)?,\\s*[A-Z][a-z]+(?:\\s[A-Z][a-z]+)?)\\b/);\n  if (locMatch) result.location = locMatch[0].trim();\n \n  return result;\n}\n \n// ─── Run & Return ────────────────────────────────────────\nconst extracted = extractResumeData(text);\n \nreturn {\n  json: {\n    ...extracted\n  }\n};\n "
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        928
+      ],
+      "id": "8dea24a8-aea5-4218-a9d9-1dbfd8ef848d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ─────────────────────────────────────────────────────────\n// n8n Code Node — Resume Parser\n// Output format: Affinda-style (Name, Email, Phone, Gender,\n//   Skills, City, State, Country, WorkHistory, Education, etc.)\n// ─────────────────────────────────────────────────────────\n\nconst text = $input.item.json.text || \"\";\n\nfunction extractResumeData(text) {\n\n  // ── HELPERS ───────────────────────────────────────────\n  function firstMatch(pattern, src) {\n    const m = (src || text).match(pattern);\n    return m ? m[0].trim() : null;\n  }\n\n  function getSections(txt) {\n    const SECTION_MAP = {\n      summary:        /^\\s*(summary|objective|profile|about\\s*me)\\s*:?\\s*$/i,\n      skills:         /^\\s*(skills|technical\\s*skills|core\\s*competencies|technologies|key\\s*skills)\\s*:?\\s*$/i,\n      experience:     /^\\s*(experience|work\\s*experience|employment|work\\s*history|professional\\s*experience)\\s*:?\\s*$/i,\n      education:      /^\\s*(education|academic|qualification|academic\\s*background)\\s*:?\\s*$/i,\n      certifications: /^\\s*(certif|licens|credential|courses?)\\s*:?\\s*$/i,\n      projects:       /^\\s*(projects?|personal\\s*projects?)\\s*:?\\s*$/i,\n      languages:      /^\\s*(languages?|spoken)\\s*:?\\s*$/i,\n    };\n\n    const sections = {};\n    const lines = txt.split(\"\\n\");\n    const positions = [];\n\n    lines.forEach((line, idx) => {\n      const clean = line.trim();\n      if (!clean || clean.length > 60) return;\n      for (const [key, re] of Object.entries(SECTION_MAP)) {\n        if (re.test(clean) && !/@|\\.com/.test(clean)) {\n          positions.push({ key, idx });\n          break;\n        }\n      }\n    });\n\n    positions.forEach(({ key, idx }, i) => {\n      const end = i + 1 < positions.length ? positions[i + 1].idx : lines.length;\n      sections[key] = lines.slice(idx + 1, end).join(\"\\n\").trim();\n    });\n\n    return sections;\n  }\n\n  const sections = getSections(text);\n  const lines = text.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n\n  // ── 1. NAME ───────────────────────────────────────────\n  let name = null;\n  for (let i = 0; i < Math.min(5, lines.length); i++) {\n    const line = lines[i];\n    const words = line.split(/\\s+/);\n    if (\n      !/@|http|linkedin|github|\\d{4}/.test(line) &&\n      words.length >= 2 && words.length <= 5 &&\n      /^[A-Z]/.test(line) &&\n      words.every(w => /^[A-Za-z'\\-\\.]+$/.test(w))\n    ) {\n      name = line;\n      break;\n    }\n  }\n\n  // ── 2. EMAIL ──────────────────────────────────────────\n  const email = firstMatch(/[\\w.\\-+]+@[\\w\\-]+\\.[a-zA-Z]{2,}/);\n\n  // ── 3. PHONE ──────────────────────────────────────────\n  const phone = firstMatch(/(\\+?[\\d][\\d\\s\\-().]{7,}[\\d])/);\n\n  // ── 4. LINKEDIN ───────────────────────────────────────\n  const linkedinRaw = firstMatch(/linkedin\\.com\\/in\\/[\\w\\-]+/i);\n  const linkedInUrl = linkedinRaw ? \"https://\" + linkedinRaw : null;\n\n  // ── 5. SKILLS ─────────────────────────────────────────\n  let skills = null;\n  if (sections.skills) {\n    let raw = sections.skills.replace(/[•\\-\\*▪◦]/g, \",\");\n    const arr = raw.split(/[,\\n|\\/]/)\n      .map(s => s.trim())\n      .filter(s => s.length > 1 && s.length < 60);\n    skills = [...new Set(arr)].join(\", \");\n  }\n\n  // ── 6. LOCATION ───────────────────────────────────────\n  // Try \"City, State, Country\" or \"City, Country\"\n  let city = null, state = null, country = null, fullAddress = null;\n\n  const locationPatterns = [\n    // e.g. \"Gandhinagar, Gujarat, India\"\n    /([A-Z][a-z]+(?:\\s[A-Z][a-z]+)?),\\s*([A-Z][a-z]+(?:\\s[A-Z][a-z]+)?),\\s*([A-Z][a-z]+)/,\n    // e.g. \"Gandhinagar, India\"\n    /([A-Z][a-z]+(?:\\s[A-Z][a-z]+)?),\\s*([A-Z][a-z]+)/,\n  ];\n\n  for (const pat of locationPatterns) {\n    const m = text.match(pat);\n    if (m) {\n      if (m[3]) {\n        city = m[1]; state = m[2]; country = m[3];\n        fullAddress = `${city}, ${state}, ${country}`;\n      } else {\n        city = m[1]; country = m[2];\n        fullAddress = `${city}, ${country}`;\n      }\n      break;\n    }\n  }\n\n  // known countries list se bhi try karo\n  const COUNTRIES = [\"India\",\"Pakistan\",\"USA\",\"UK\",\"Canada\",\"Australia\",\"Germany\",\"UAE\",\"Saudi Arabia\",\"Qatar\"];\n  if (!country) {\n    for (const c of COUNTRIES) {\n      if (text.includes(c)) { country = c; break; }\n    }\n  }\n\n  // ── 7. WORK HISTORY (single string, comma separated) ──\n  let workHistory = null;\n  let positionTitle = null;\n  let currentOrganization = null;\n  let totalExperience = null;\n\n  if (sections.experience) {\n    const dateRe = /((jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\\s\\-']*\\d{2,4}|\\d{4})/gi;\n    const blocks = sections.experience.split(/\\n{2,}/);\n    const workEntries = [];\n\n    blocks.forEach(block => {\n      const bLines = block.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n      if (!bLines.length) return;\n\n      const title    = bLines[0] || \"\";\n      const company  = bLines[1] || \"\";\n      const dates    = block.match(dateRe);\n      const duration = dates ? dates.slice(0, 2).join(\"-\") : \"\";\n\n      if (title) {\n        const entry = duration\n          ? `${title} at ${company} (${duration})`\n          : `${title} at ${company}`;\n        workEntries.push(entry.trim());\n      }\n    });\n\n    workHistory = workEntries.join(\", \") || null;\n\n    // First entry = current position\n    if (blocks.length > 0) {\n      const firstLines = blocks[0].split(\"\\n\").map(l => l.trim()).filter(Boolean);\n      positionTitle       = firstLines[0] || null;\n      currentOrganization = firstLines[1] || null;\n    }\n\n    // Total experience: year range detect karo\n    const allYears = sections.experience.match(/\\b(19|20)\\d{2}\\b/g);\n    if (allYears && allYears.length >= 2) {\n      const sorted = allYears.map(Number).sort((a, b) => a - b);\n      const diff = new Date().getFullYear() - sorted[0];\n      if (diff > 0) totalExperience = `Over ${diff} Years`;\n    }\n  }\n\n  // ── 8. EDUCATION (single string) ──────────────────────\n  let education = null;\n  if (sections.education) {\n    const degreeRe = /bachelor|master|b\\.?s\\.?|m\\.?s\\.?|phd|b\\.?e|m\\.?b\\.?a|matric|intermediate|fsc|bsc|associate|diploma|certificate|mba/i;\n    const eduLines = sections.education.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n    const degrees  = eduLines.filter(l => degreeRe.test(l));\n    education = degrees.length > 0\n      ? degrees.join(\"; \")\n      : eduLines.slice(0, 3).join(\"; \");\n  }\n\n  // ── 9. SUMMARY ────────────────────────────────────────\n  const summary = sections.summary\n    ? sections.summary.replace(/\\n/g, \" \").trim()\n    : null;\n\n  // ── 10. LANGUAGES ─────────────────────────────────────\n  const KNOWN_LANGS = [\"english\",\"urdu\",\"arabic\",\"french\",\"german\",\"spanish\",\"chinese\",\"hindi\",\"punjabi\",\"turkish\",\"persian\",\"japanese\",\"portuguese\",\"russian\",\"italian\"];\n  const langSrc = (sections.languages || text).toLowerCase();\n  const languages = KNOWN_LANGS\n    .filter(l => langSrc.includes(l))\n    .map(l => l.charAt(0).toUpperCase() + l.slice(1));\n\n  // ── 11. GENDER (resume mein hota kam hi hai) ──────────\n  let gender = null;\n  const genderMatch = text.match(/\\b(male|female|m|f)\\b/i);\n  if (genderMatch) gender = genderMatch[0];\n\n  // ── FINAL OUTPUT (Affinda-style format) ───────────────\n  return {\n    Name:                name            || \"Not specified\",\n    Email:               email           || \"Not specified\",\n    Phone:               phone           || \"Not specified\",\n    Gender:              gender          || \"Not specified\",\n    Skills:              skills          || \"Not specified\",\n    City:                city            || \"Not specified\",\n    State:               state           || \"Not specified\",\n    Country:             country         || \"Not specified\",\n    WorkHistory:         workHistory     || \"Not specified\",\n    Locality:            \"Not specified\",\n    FullAddress:         fullAddress     || \"Not specified\",\n    PostalCode:          \"Not specified\",\n    PositionTitle:       positionTitle   || \"Not specified\",\n    CurrentOrganization: currentOrganization || \"Not specified\",\n    TotalExperience:     totalExperience || \"Not specified\",\n    Summary:             summary         || \"Not specified\",\n    LinkedInUrl:         linkedInUrl     || \"Not specified\",\n    Education:           education       || \"Not specified\",\n    Languages:           languages.length > 0 ? languages.join(\", \") : \"Not specified\",\n  };\n}\n\n// ── Run & Return ──────────────────────────────────────────\nconst extracted = extractResumeData(text);\n\nreturn { json: extracted };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        704
+      ],
+      "id": "49fc2bbf-ccc9-45a2-bd42-c893edd62a94",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ════════════════════════════════════════════════════════\n//  n8n Code Node — Resume Parser (Deep Extraction)\n//  Fields: Name, Email, Phone, Gender, Skills, City, State,\n//          Country, WorkHistory, Locality, FullAddress,\n//          PostalCode, PositionTitle, CurrentOrganization,\n//          TotalExperience, Summary, LinkedInUrl, Education\n//  Input:  $input.item.json.text  (plain text of resume)\n// ════════════════════════════════════════════════════════\n\nconst text = $input.item.json.text || \"\";\nconst lines = text.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n\n// ── UTILITY: first regex match ────────────────────────────\nfunction match(pattern, src) {\n  const m = (src || text).match(pattern);\n  return m ? m[0].trim() : null;\n}\n\n// ════════════════════════════════════════════════════════\n// SECTION SPLITTER\n// ════════════════════════════════════════════════════════\nfunction getSections(txt) {\n  const HEADERS = {\n    summary:        /^(summary|objective|professional\\s*summary|career\\s*objective|profile|about\\s*me)$/i,\n    skills:         /^(skills|technical\\s*skills|key\\s*skills|core\\s*competencies|technologies|expertise)$/i,\n    experience:     /^(experience|work\\s*experience|professional\\s*experience|employment(\\s*history)?|work\\s*history|career\\s*history)$/i,\n    education:      /^(education|academic(\\s*background)?|qualifications?|educational\\s*details?)$/i,\n    certifications: /^(certifications?|licenses?|credentials?|courses?|training)$/i,\n    projects:       /^(projects?|personal\\s*projects?|key\\s*projects?)$/i,\n    languages:      /^(languages?|language\\s*proficiency|spoken\\s*languages?)$/i,\n  };\n\n  const secLines = txt.split(\"\\n\");\n  const positions = [];\n\n  secLines.forEach((line, idx) => {\n    const clean = line.trim().replace(/:$/, \"\");\n    if (!clean || clean.length > 60 || /@|\\.com/.test(clean)) return;\n    for (const [key, re] of Object.entries(HEADERS)) {\n      if (re.test(clean)) {\n        positions.push({ key, idx });\n        break;\n      }\n    }\n  });\n\n  const result = {};\n  positions.forEach(({ key, idx }, i) => {\n    const end = i + 1 < positions.length ? positions[i + 1].idx : secLines.length;\n    result[key] = secLines.slice(idx + 1, end).join(\"\\n\").trim();\n  });\n  return result;\n}\n\nconst SEC = getSections(text);\n\n// ════════════════════════════════════════════════════════\n// 1. NAME\n// ════════════════════════════════════════════════════════\nlet Name = null;\nfor (let i = 0; i < Math.min(6, lines.length); i++) {\n  const l = lines[i];\n  const words = l.split(/\\s+/);\n  if (\n    words.length >= 2 && words.length <= 5 &&\n    /^[A-Z]/.test(l) &&\n    !/@|http|linkedin|github|\\d/.test(l) &&\n    words.every(w => /^[A-Za-z'\\-\\.]+$/.test(w))\n  ) {\n    Name = l;\n    break;\n  }\n}\n\n// ════════════════════════════════════════════════════════\n// 2. EMAIL\n// ════════════════════════════════════════════════════════\nconst Email = match(/[\\w.\\-+]+@[\\w\\-]+\\.[a-zA-Z]{2,}/);\n\n// ════════════════════════════════════════════════════════\n// 3. PHONE\n// ════════════════════════════════════════════════════════\nconst Phone = match(/(\\+?[\\d][\\d\\s\\-().]{7,}[\\d])/);\n\n// ════════════════════════════════════════════════════════\n// 4. GENDER\n// ════════════════════════════════════════════════════════\nlet Gender = null;\nconst genderM = text.match(/\\b(male|female|man|woman|m\\/f|gender\\s*:\\s*\\w+)\\b/i);\nif (genderM) {\n  Gender = genderM[0].replace(/gender\\s*:\\s*/i, \"\").trim();\n  Gender = Gender.charAt(0).toUpperCase() + Gender.slice(1).toLowerCase();\n}\n\n// ════════════════════════════════════════════════════════\n// 5. SKILLS  → single comma-separated string\n// ════════════════════════════════════════════════════════\nlet Skills = null;\nif (SEC.skills) {\n  const raw = SEC.skills.replace(/[•\\-\\*▪◦→]/g, \",\");\n  const arr = raw.split(/[,\\n|\\/]/)\n    .map(s => s.trim())\n    .filter(s => s.length > 1 && s.length < 80);\n  Skills = [...new Set(arr)].join(\", \");\n}\n\n// ════════════════════════════════════════════════════════\n// 6. LOCATION → City, State, Country, FullAddress, PostalCode, Locality\n// ════════════════════════════════════════════════════════\nlet City = null, State = null, Country = null;\nlet FullAddress = null, PostalCode = null, Locality = null;\n\n// Postal code (PIN / ZIP)\nconst postalM = text.match(/\\b\\d{5,6}\\b/);\nif (postalM) PostalCode = postalM[0];\n\n// City, State, Country — \"Gandhinagar, Gujarat, India\" style\nconst loc3 = text.match(\n  /\\b([A-Z][a-z]+(?:[\\s\\-][A-Z][a-z]+)?),\\s*([A-Z][a-z]+(?:[\\s\\-][A-Z][a-z]+)?),\\s*(India|Pakistan|USA|UK|Canada|Australia|Germany|UAE|Saudi Arabia|Qatar|Singapore|USA|United States|United Kingdom)\\b/\n);\nconst loc2 = text.match(\n  /\\b([A-Z][a-z]+(?:[\\s\\-][A-Z][a-z]+)?),\\s*(India|Pakistan|USA|UK|Canada|Australia|Germany|UAE|Saudi Arabia|Qatar|Singapore|United States|United Kingdom)\\b/\n);\n\nif (loc3) {\n  City = loc3[1]; State = loc3[2]; Country = loc3[3];\n  FullAddress = `${City}, ${State}, ${Country}`;\n} else if (loc2) {\n  City = loc2[1]; Country = loc2[2];\n  FullAddress = `${City}, ${Country}`;\n} else {\n  // country alone\n  const COUNTRIES = [\"India\",\"Pakistan\",\"USA\",\"UK\",\"Canada\",\"Australia\",\"Germany\",\"UAE\",\"Saudi Arabia\",\"Qatar\",\"Singapore\",\"United States\",\"United Kingdom\"];\n  for (const c of COUNTRIES) {\n    if (text.includes(c)) { Country = c; break; }\n  }\n}\n\n// Locality — neighbourhood/area (optional, often not in resumes)\nconst localityM = text.match(/\\b(locality|area|sector|nagar|colony|township)\\s*[:\\-]?\\s*([A-Za-z\\s]+)/i);\nif (localityM) Locality = localityM[2].trim();\n\n// ════════════════════════════════════════════════════════\n// 7. WORK HISTORY — Smart Detection\n//    Strategy 1: Section heading mil gaya → parse karo\n//    Strategy 2: No heading → poore text se job patterns dhundo\n//    Signals: job titles, \"at\"/\"@\" company, date ranges\n// ════════════════════════════════════════════════════════\nlet WorkHistory = null;\nlet PositionTitle = null;\nlet CurrentOrganization = null;\nlet TotalExperience = null;\n\n// ── Known job title keywords ──────────────────────────\nconst JOB_TITLE_RE = /\\b(manager|engineer|developer|analyst|consultant|director|officer|executive|coordinator|specialist|associate|lead|head|intern|architect|designer|scientist|researcher|advisor|president|vp|ceo|cto|cfo|founder|partner|supervisor|administrator|assistant|representative|accountant|team\\s*leader|project\\s*manager|product\\s*manager|business\\s*analyst|data\\s*analyst|software\\s*engineer|sales\\s*manager|hr\\s*manager|marketing\\s*manager|process\\s*consultant|research\\s*analyst|apac\\s*representative|chief\\s*coordinator|dy\\.?\\s*manager|dg\\s*manager)\\b/i;\n\n// ── Date range pattern: Oct'22–Oct'25, 2018-2022, Jan 2020 - Present ──\nconst DATE_RANGE_RE = /((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z']*[\\s,]*\\d{2,4}|(?:19|20)\\d{2})\\s*[-–to]+\\s*((?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z']*[\\s,]*\\d{2,4}|(?:19|20)\\d{2}|present|current|now|till\\s*date|ongoing)/gi;\n\n// ── \"at\" company extractor ────────────────────────────\nconst AT_COMPANY_RE = /\\bat\\s+([A-Z][A-Za-z0-9\\s&,.\\-']+(?:Pvt\\.?\\s*Ltd\\.?|LLC|Inc\\.?|Corp\\.?|Limited|Services|Consulting|Solutions|Associates|Group|International|Technologies|University)?)/;\n\n// ── STEP 1: Try section-based parsing first ───────────\nfunction parseExpSection(expText) {\n  const blocks = expText.split(/\\n{2,}/);\n  const entries = [];\n  const allYears = [];\n\n  blocks.forEach(block => {\n    const bLines = block.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n    if (!bLines.length) return;\n\n    const titleLine   = bLines[0] || \"\";\n    const companyLine = bLines[1] || \"\";\n\n    // dates in this block\n    const dateMatches = [...block.matchAll(DATE_RANGE_RE)];\n    let duration = \"\";\n    if (dateMatches.length > 0) {\n      const d = dateMatches[0];\n      duration = `(${d[1]}-${d[2]})`;\n    } else {\n      const singleYear = block.match(/\\b(19|20)\\d{2}\\b/);\n      if (singleYear) duration = `(${singleYear[0]})`;\n    }\n\n    // collect years\n    const yrs = block.match(/\\b(19|20)\\d{2}\\b/g) || [];\n    yrs.forEach(y => allYears.push(parseInt(y)));\n\n    if (titleLine) {\n      const entry = companyLine\n        ? `${titleLine} at ${companyLine} ${duration}`.trim()\n        : `${titleLine} ${duration}`.trim();\n      entries.push({ title: titleLine, company: companyLine, duration, entry });\n    }\n  });\n\n  return { entries, allYears };\n}\n\n// ── STEP 2: Smart full-text scan (no section heading) ─\nfunction smartScanJobs(fullText) {\n  const entries = [];\n  const allYears = [];\n  const textLines = fullText.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n\n  for (let i = 0; i < textLines.length; i++) {\n    const line = textLines[i];\n\n    // Is this line a job title?\n    if (JOB_TITLE_RE.test(line) && line.length < 100) {\n\n      let company = null;\n      let duration = \"\";\n\n      // Check same line for \"at Company\"\n      const atMatch = line.match(AT_COMPANY_RE);\n      if (atMatch) company = atMatch[1].trim();\n\n      // Check nearby lines (next 3) for company + dates\n      const nearby = textLines.slice(i, i + 4).join(\" \");\n      const dateMatches = [...nearby.matchAll(DATE_RANGE_RE)];\n      if (dateMatches.length > 0) {\n        const d = dateMatches[0];\n        duration = `(${d[1]}-${d[2]})`;\n        nearby.match(/\\b(19|20)\\d{2}\\b/g)?.forEach(y => allYears.push(parseInt(y)));\n      }\n\n      // If company not found on same line, check next line\n      if (!company && textLines[i + 1]) {\n        const nextLine = textLines[i + 1];\n        // Next line is company if: not a job title itself, not a date, starts with capital\n        if (\n          !JOB_TITLE_RE.test(nextLine) &&\n          !/^(19|20)\\d{2}/.test(nextLine) &&\n          /^[A-Z]/.test(nextLine) &&\n          nextLine.length < 100\n        ) {\n          company = nextLine;\n        }\n      }\n\n      const entry = company\n        ? `${line} at ${company} ${duration}`.trim()\n        : `${line} ${duration}`.trim();\n\n      // Avoid duplicates\n      if (!entries.find(e => e.title === line)) {\n        entries.push({ title: line, company, duration, entry });\n      }\n    }\n  }\n\n  return { entries, allYears };\n}\n\n// ── COMBINE: use section if found, else smart scan ────\nlet parsedEntries = [];\nlet parsedYears   = [];\n\nif (SEC.experience) {\n  const { entries, allYears } = parseExpSection(SEC.experience);\n  parsedEntries = entries;\n  parsedYears   = allYears;\n}\n\n// Agar section se kuch nahi mila → poore text scan karo\nif (parsedEntries.length === 0) {\n  const { entries, allYears } = smartScanJobs(text);\n  parsedEntries = entries;\n  parsedYears   = allYears;\n}\n\n// ── Build final fields ────────────────────────────────\nif (parsedEntries.length > 0) {\n  WorkHistory         = parsedEntries.map(e => e.entry).join(\", \");\n  PositionTitle       = parsedEntries[0].title       || null;\n  CurrentOrganization = parsedEntries[0].company     || null;\n}\n\n// Total Experience calculation\nif (parsedYears.length > 0) {\n  const earliest = Math.min(...parsedYears);\n  const now      = new Date().getFullYear();\n  const diff     = now - earliest;\n  if (diff > 0 && diff < 60) TotalExperience = `Over ${diff} Years`;\n}\n\n// Fallback: scan for duration phrases like \"5 years experience\"\nif (!TotalExperience) {\n  const expPhrase = text.match(/(\\d+)\\+?\\s*years?\\s*(of\\s*)?(experience|exp)/i);\n  if (expPhrase) TotalExperience = `Over ${expPhrase[1]} Years`;\n}\n\n// ════════════════════════════════════════════════════════\n// 8. SUMMARY\n// ════════════════════════════════════════════════════════\nlet Summary = null;\nif (SEC.summary) {\n  Summary = SEC.summary.replace(/\\n/g, \" \").trim();\n}\n\n// ════════════════════════════════════════════════════════\n// 9. LINKEDIN URL\n// ════════════════════════════════════════════════════════\nlet LinkedInUrl = null;\nconst liRaw = match(/linkedin\\.com\\/in\\/[\\w\\-]+/i);\nif (liRaw) LinkedInUrl = \"https://\" + liRaw;\n\n// ════════════════════════════════════════════════════════\n// 10. EDUCATION → full string like screenshot\n// ════════════════════════════════════════════════════════\nlet Education = null;\nif (SEC.education) {\n  const degreeRe = /bachelor|master|b\\.?s\\.?|m\\.?s\\.?|phd|b\\.?e|m\\.?b\\.?a|matric|intermediate|fsc|bsc|associate|diploma|certificate|mba|pgd|msc|bca|mca|b\\.?tech|m\\.?tech/i;\n  const eduLines = SEC.education.split(\"\\n\").map(l => l.trim()).filter(Boolean);\n\n  // group: degree line + institution line pairs\n  const eduParts = [];\n  for (let i = 0; i < eduLines.length; i++) {\n    if (degreeRe.test(eduLines[i])) {\n      const yearM = eduLines[i].match(/(19|20)\\d{2}/);\n      const inst  = (!degreeRe.test(eduLines[i+1] || \"\") && eduLines[i+1]) ? eduLines[i+1] : null;\n      const year  = yearM ? yearM[0] : (eduLines[i+1]?.match(/(19|20)\\d{2}/)?.[0] || null);\n      let part    = eduLines[i];\n      if (inst)  part += `, ${inst}`;\n      if (year && !eduLines[i].includes(year)) part += `, ${year}`;\n      eduParts.push(part);\n      if (inst) i++; // skip institution line\n    }\n  }\n\n  Education = eduParts.length > 0\n    ? eduParts.join(\"; \")\n    : eduLines.slice(0, 5).join(\"; \");\n}\n\n// ════════════════════════════════════════════════════════\n// FINAL OUTPUT — exact field names from screenshot\n// ════════════════════════════════════════════════════════\nreturn {\n  json: {\n    Name:                Name                || \"Not specified\",\n    Email:               Email               || \"Not specified\",\n    Phone:               Phone               || \"Not specified\",\n    Gender:              Gender              || \"Not specified\",\n    Skills:              Skills              || \"Not specified\",\n    City:                City                || \"Not specified\",\n    State:               State               || \"Not specified\",\n    Country:             Country             || \"Not specified\",\n    WorkHistory:         WorkHistory         || \"Not specified\",\n    Locality:            Locality            || \"Not specified\",\n    FullAddress:         FullAddress         || \"Not specified\",\n    PostalCode:          PostalCode          || \"Not specified\",\n    PositionTitle:       PositionTitle       || \"Not specified\",\n    CurrentOrganization: CurrentOrganization || \"Not specified\",\n    TotalExperience:     TotalExperience     || \"Not specified\",\n    Summary:             Summary             || \"Not specified\",\n    LinkedInUrl:         LinkedInUrl         || \"Not specified\",\n    Education:           Education           || \"Not specified\",\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        480
+      ],
+      "id": "8946fb61-e4a7-4779-8ae7-103cf734d07b",
+      "name": "Code in JavaScript2"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Code in JavaScript": [
+      {
+        "json": {
+          "name": "Kalrav Vyas",
+          "email": "kalravyas@gmail.com",
+          "phone": "+91-971 278 2244",
+          "location": "Executive Certificate,\nSupply Chain",
+          "linkedin": "https://linkedin.com/in/kalravyas",
+          "github": null,
+          "website": null,
+          "summary": null,
+          "skills": [
+            "Data and Process Management",
+            "Data Analysis & Warehousing",
+            "Advanced Excel",
+            "Tableau",
+            "Power BI",
+            "Problem Solving",
+            "Python",
+            "Process Definition &",
+            "Implementation",
+            "Cross",
+            "cultural Communication",
+            "Account Management",
+            "Contact",
+            "kalravyas@gmail.com",
+            "+91",
+            "971 278 2244",
+            "www.linkedin.com",
+            "in",
+            "kalravyas",
+            "Gandhinagar",
+            "Gujarat",
+            "India"
+          ],
+          "languages": [],
+          "education": [],
+          "experience": [
+            {
+              "title": "TEAM LEADER AARVEE ASSOCIATES ARCHITECTS ENGINEERS &",
+              "company": "CONSULTANTS PVT LTD, - OCT’22–OCT’25",
+              "duration": null,
+              "description": "Successfully conceptualized and constructed tables/data structures in Excel for Business Analytics. Developed and maintained the data warehouse in Excel for easier tracking of historical data and analysis thereof. Educated and trained the team of 6, on correctly updating the database. DY. MANAGER MAYUR UNIQUOTERS LTD - DEC’18–SEP’22 Helped establish and streamline operations at Mayur Uniquoters SA (Pty) Ltd. in South Africa, leveraging strong Forecasting and Supply Chain Management skills. Identifying the production and raw materials requirements based on analysis of the customer’s demand forecast and past pulls, while maintaining minimum stock levels, as permissible by the contract, despite the challenges from the COVID-19 restrictions. BUSINESS CONSULTANT MIVAAN ENERGY PVT. LTD. - JUL’16-NOV’18 Guided and supported business expansion initiative of Mivaan Energy (earlier Jiyani Solar), in system establishment and operation streamlining to align with their business objectives. Conducted Market and Competitor Analysis to formulate effective business strategies. DY. MANAGER MAYUR UNIQUOTERS LTD - DEC’14–JUN’16 Directed production planning and raw material forecasting, ensuring a well-stocked supply chain pipeline. Managed roll-wise inventory and statistical analysis thereof in QuickBooks and MS Excel for Mayur Uniquoters Corp., a subsidiary company registered in US and having its warehouse in Mexico. PROCESS CONSULTANT MITKAT ADVISORY SERVICES - JUL’13-NOV’14 Worked on multiple projects involving Occupational Health & safety and business continuity with MitKat Advisory Services. CHIEF COORDINATOR SAATH CHARITABLE TRUST - JAN’12-JUN’13 Created market presence of Griha Pravesh by establishing and managing centers to provide education and information on affordable housing solutions. APAC REPRESENTATIVE GOEDECKE & ASSOCIATES, INC - DEC’09- DEC’11 Established and managed the back office for the US-based company in India, handling bidding, billing, procurement, and deliveries globally. RESEARCH ANALYST RSM MCGLADREY FPO INDIA PVT. LTD. - DEC’06-OCT’09 Supported senior bankers on M&A transactions, preparing marketing documents and industry reports across various sectors, identifying potential buyers/targets for client companies."
+            }
+          ],
+          "certifications": [
+            "Data Analytics for Business",
+            "Strategy - 2023",
+            "BUSINESS AND MANAGEMENT",
+            "UNIVERSITY, GENEVA,",
+            "SWITZERLAND",
+            "Master of Science in Finance",
+            "NIIT, GANDHINAGAR, GJ",
+            "Diploma in Information",
+            "Technology",
+            "GUJARAT UNIVERSITY",
+            "Bachelor of Commerce",
+            "SSI, GANDHINAGAR, GJ",
+            "Oracle 8i and PL SQL"
+          ],
+          "projects": []
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Code in JavaScript1": [
+      {
+        "json": {
+          "Name": "Kalrav Vyas",
+          "Email": "kalravyas@gmail.com",
+          "Phone": "+91-971 278 2244",
+          "Gender": "M",
+          "Skills": "Not specified",
+          "City": "Gandhinagar",
+          "State": "Gujarat",
+          "Country": "India",
+          "WorkHistory": "TEAM LEADER AARVEE ASSOCIATES ARCHITECTS ENGINEERS & at CONSULTANTS PVT LTD, - OCT’22–OCT’25",
+          "Locality": "Not specified",
+          "FullAddress": "Gandhinagar, Gujarat, India",
+          "PostalCode": "Not specified",
+          "PositionTitle": "TEAM LEADER AARVEE ASSOCIATES ARCHITECTS ENGINEERS &",
+          "CurrentOrganization": "CONSULTANTS PVT LTD, - OCT’22–OCT’25",
+          "TotalExperience": "Not specified",
+          "Summary": "Not specified",
+          "LinkedInUrl": "https://linkedin.com/in/kalravyas",
+          "Education": "Advanced Executive Certificate,; Professional Certificate Program,; Master of Science in Finance; Diploma in Information; Bachelor of Commerce",
+          "Languages": "Not specified"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Information Extractor": [
+      {
+        "json": {
+          "output": {
+            "Name": "Kalrav Vyas",
+            "Email": "kalravyas@gmail.com",
+            "Phone": "+91-971 278 2244",
+            "Gender": "Male",
+            "Skills": "Data and Process Management, Data Analysis & Warehousing, Advanced Excel, Tableau / Power BI, Problem Solving, Python / R, Process Definition & Implementation, Cross-cultural Communication, Account Management",
+            "City": "Gandhinagar",
+            "State": "Gujarat",
+            "Country": "India",
+            "Work History": "TEAM LEADER at Aarvee Associates Architects Engineers & Consultants Pvt Ltd (OCT’22–OCT’25), DY. MANAGER at Mayur Uniquoters Ltd (DEC’18–SEP’22), BUSINESS CONSULTANT at Mivaan Energy Pvt. Ltd. (JUL’16-NOV’18), DY. MANAGER at Mayur Uniquoters Ltd (DEC’14–JUN’16), PROCESS CONSULTANT at MitKat Advisory Services (JUL’13-NOV’14), CHIEF COORDINATOR at Saath Charitable Trust (JAN’12-JUN’13), APAC REPRESENTATIVE at Goedecke & Associates, Inc (DEC’09-DEC’11), RESEARCH ANALYST at RSM McGladrey FPO India Pvt. Ltd. (DEC’06-OCT’09)",
+            "Locality": "Sector 22",
+            "FullAddress": "Sector 22, Gandhinagar, Gujarat, India",
+            "PostalCode": "382022",
+            "PositionTitle": "Team Leader",
+            "CurrentOrganization": "Aarvee Associates Architects Engineers & Consultants Pvt Ltd",
+            "TotalExperience": "8 Years",
+            "Summary": "Experienced professional in project management and data analysis.",
+            "LinkedInUrl": "https://www.linkedin.com/in/kalravyas",
+            "Education": "Advanced Executive Certificate in Supply Chain Strategy and Operations Management from IIT, Guwahati (2024), Professional Certificate Program in Data Analytics for Business Strategy from IIM, Kozhikode (2023), Master of Science in Finance from Business and Management University, Geneva, Switzerland (2006), Diploma in Information Technology from NIIT, Gandhinagar, GJ (2003), Bachelor of Commerce from Gujarat University (2002), Oracle 8i and PL SQL from SSI, Gandhinagar, GJ (2001)"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "9935296a-7ee4-485f-afb2-08f8537595ac",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-25T12:44:02.934Z",
+      "createdAt": "2026-02-25T12:44:02.934Z",
+      "role": "workflow:owner",
+      "workflowId": "v6eJzITi5T1bHRn8OqoW_",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
