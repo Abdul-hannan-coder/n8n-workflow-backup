@@ -1,0 +1,776 @@
+{
+  "updatedAt": "2026-03-27T04:42:17.790Z",
+  "createdAt": "2026-02-19T06:57:03.213Z",
+  "id": "7FYW-Z_ckprx4jEfX88bo",
+  "name": "HR-focused automation pipeline with AI",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Send CV",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "CV",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cd0cdf5-b9a2-47c5-b0ad-2b02bf259b8e",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        48,
+        480
+      ],
+      "webhookId": "2a87705d-8ba1-41f1-80ef-85f364ce253e",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "=CV",
+        "options": {}
+      },
+      "id": "4605a123-0592-4982-85ff-c3fb05920711",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        400,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Educational qualification",
+              "description": "Summary of your academic career. Focus on your high school and university studies. Summarize in 100 words maximum and also include your grade if applicable.",
+              "required": true
+            },
+            {
+              "name": "Job History",
+              "description": "Work history summary. Focus on your most recent work experiences. Summarize in 100 words maximum",
+              "required": true
+            },
+            {
+              "name": "Skills",
+              "description": "Extract the candidate’s technical skills. What software and frameworks they are proficient in. Make a bulleted list.",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "id": "a3c52899-9458-4186-b883-e1d97af88ab9",
+      "name": "Qualifications",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        720,
+        592
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {
+          "summarizationMethodAndPrompts": {
+            "values": {
+              "combineMapPrompt": "=Write a concise summary of the following:\n\nCity: {{ $json.output.city }}\nBirthdate: {{ $json.output.birthdate }}\nEducational qualification: {{ $json.output[\"Educational qualification\"] }}\nJob History: {{ $json.output[\"Job History\"] }}\nSkills: {{ $json.output.Skills }}\n\nUse 100 words or less. Be concise and conversational.",
+              "prompt": "=Write a concise summary of the following:\n\nCity: {{ $json.output.city }}\nBirthdate: {{ $json.output.birthdate }}\nEducational qualification: {{ $json.output[\"Educational qualification\"] }}\nJob History: {{ $json.output[\"Job History\"] }}\nSkills: {{ $json.output.Skills }}\n\nUse 100 words or less. Be concise and conversational."
+            }
+          }
+        }
+      },
+      "id": "812ed739-3f9b-46c3-aadf-54993c0d7afe",
+      "name": "Summarization Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "position": [
+        1472,
+        464
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "ee077afc-3e07-4bf6-89bb-a3474410a5d1",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1232,
+        464
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3d049b0-5a70-4e7b-a6f2-81447da5282a",
+              "name": "profile_wanted",
+              "type": "string",
+              "value": "We are a web agency and we are looking for a full-stack web developer who knows how to use PHP, Python and Javascript. He has experience in the sector and lives in Northern Italy."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4e3cbf3e-9ae6-4924-bea3-88d5c8a5ad62",
+      "name": "Profile Wanted",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1872,
+        464
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1ssz5RvN1Hr20Q31pnYnbjCLu1MGBvoLttBAjXunMRQE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ssz5RvN1Hr20Q31pnYnbjCLu1MGBvoLttBAjXunMRQE/edit?usp=drivesdk",
+          "cachedResultName": "Ricerca WebDev"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ssz5RvN1Hr20Q31pnYnbjCLu1MGBvoLttBAjXunMRQE/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "columns": {
+          "value": {
+            "CITY": "={{ $('Merge').item.json.output.city }}",
+            "DATA": "={{ $now.format('dd/LL/yyyy') }}",
+            "NAME": "={{ $('On form submission').item.json.Nome }}",
+            "VOTE": "={{ $json.output.vote }}",
+            "EMAIL": "={{ $('On form submission').item.json.Email }}",
+            "SKILLS": "={{ $('Merge').item.json.output.Skills }}",
+            "TELEFONO": "={{ $('Merge').item.json.output.telephone }}",
+            "SUMMARIZE": "={{ $('Summarization Chain').item.json.response.text }}",
+            "EDUCATIONAL": "={{ $('Merge').item.json.output[\"Educational qualification\"] }}",
+            "JOB HISTORY": "={{ $('Merge').item.json.output[\"Job History\"] }}",
+            "DATA NASCITA": "={{ $('Merge').item.json.output.birthdate }}",
+            "CONSIDERATION": "={{ $json.output.consideration }}"
+          },
+          "schema": [
+            {
+              "id": "DATA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NAME",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "NAME",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PHONE",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "PHONE",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CITY",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CITY",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EMAIL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA NASCITA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA NASCITA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EDUCATIONAL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EDUCATIONAL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "JOB HISTORY",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "JOB HISTORY",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SKILLS",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "SKILLS",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SUMMARIZE",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "SUMMARIZE",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "VOTE",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "VOTE",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CONSIDERATION",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CONSIDERATION",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "ff684766-ec47-49b3-89ac-d067a6bc6bd1",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2528,
+        464
+      ],
+      "typeVersion": 4.5,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"vote\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"consideration\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+      },
+      "id": "d2e1edb3-9f5e-477a-a224-7d9bd3ce9de0",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        2288,
+        672
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Profilo ricercato:\n{{ $json.profile_wanted }}\n\nCandidato:\n{{ $('Summarization Chain').item.json.response.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Sei un esperto HR e devi capire se il candidato è in linea con il profilo ricercato dall'azienda.\n\nDevi dare un voto da 1 a 10 dove 1 significa che il candidato non è in linea con quanto richiesto mentre 10 significa che è il candidato ideale perchè rispecchia in toto il profilo cercato.\n\nInoltre nel campo \"consideration\" motiva il perchè hai dato quel voto. "
+            }
+          ]
+        }
+      },
+      "id": "56cbfaf2-008d-479c-9669-7900a52f7aba",
+      "name": "HR Expert",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        2128,
+        464
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"telephone\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n      \"city\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n      \"birthdate\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "id": "9a6a8573-6801-4894-b4bf-9e2ab571d176",
+      "name": "Personal Data",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        720,
+        400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "CV",
+        "name": "=CV-{{ $now.format('yyyyLLdd') }}-{{ $json.CV[0].filename }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1tzeSpx4D3EAGXa3Wg-gqGbdaUk6LIZTV",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1tzeSpx4D3EAGXa3Wg-gqGbdaUk6LIZTV",
+          "cachedResultName": "CV"
+        },
+        "options": {}
+      },
+      "id": "c7ffe795-858f-45af-91ae-abbf720bc388",
+      "name": "Upload CV",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        400,
+        304
+      ],
+      "typeVersion": 3,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "6841e4f5-1213-4c27-a44c-2ebdf20ac6f8",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1488,
+        928
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8ZVcTVhxA5p7wXCn",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## HR Expert \nThis workflow automates the process of handling job applications by extracting relevant information from submitted CVs, analyzing the candidate's qualifications against a predefined profile, and storing the results in a Google Sheet",
+        "width": 540,
+        "color": 3
+      },
+      "id": "6f98e621-8fe8-44c4-bf0b-867b771d2e02",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "The CV is uploaded to Google Drive and converted so that it can be processed\n",
+        "height": 420,
+        "width": 300
+      },
+      "id": "92c0f2d0-938c-42c8-837a-971d9d12befd",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        224
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "The essential information for evaluating the candidate is collected in two different chains",
+        "height": 440,
+        "width": 360
+      },
+      "id": "08cc8281-fa36-45a1-96ef-36e686c0c8a1",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        304
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Summary of relevant information useful for classifying the candidate",
+        "height": 240,
+        "width": 320
+      },
+      "id": "2144dd84-743e-4b30-8520-f09598c95408",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1424,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Characteristics of the profile sought by the company that intends to hire the candidate",
+        "height": 240,
+        "width": 220
+      },
+      "id": "34d546d3-6dc7-4ad3-9aa4-064c3ea8a4ad",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1808,
+        384
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Candidate evaluation with vote and considerations of the HR agent relating the profile sought with the candidate's skills",
+        "height": 240,
+        "width": 360
+      },
+      "id": "0ffea08c-291a-4092-bb61-81c372018d5f",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2064,
+        384
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Summarization Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Qualifications",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Summarization Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "HR Expert",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Personal Data",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Expert": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profile Wanted": {
+      "main": [
+        [
+          {
+            "node": "HR Expert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualifications": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Qualifications",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Personal Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarization Chain": {
+      "main": [
+        [
+          {
+            "node": "Profile Wanted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "HR Expert",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "Extract from File": [
+      {
+        "json": {
+          "numpages": 1,
+          "numrender": 1,
+          "info": {
+            "PDFFormatVersion": "1.7",
+            "Language": "en",
+            "EncryptFilterName": null,
+            "IsLinearized": false,
+            "IsAcroFormPresent": false,
+            "IsXFAPresent": false,
+            "IsCollectionPresent": false,
+            "IsSignaturesPresent": false,
+            "CreationDate": "D:20260222040607+00'00'",
+            "ModDate": "D:20260222040607+00'00'"
+          },
+          "metadata": {
+            "xmp:createdate": "2026-02-22T04:06:07+00:00",
+            "xmp:modifydate": "2026-02-22T04:06:07+00:00",
+            "xmpmm:documentid": "uuid:FDE7B53B-4D9B-4936-A7FA-8E4C92634CAB",
+            "xmpmm:instanceid": "uuid:FDE7B53B-4D9B-4936-A7FA-8E4C92634CAB"
+          },
+          "text": "Kalrav Vyas\nAn experienced professional in supply chain management, data management and analysis, and client\nrelationship management. I love working on complex and challenging projects across different industries. I\nthrive on helping establish and streamline supply chain and client relations for start-ups and/or new projects,\nboth domestic and international.\nEducation\nIIT, GUWAHATI\nAdvanced Executive Certificate,\nSupply Chain Strategy and\nOperations Management\n2024\nIIM, KOZHIKODE\nProfessional Certificate Program,\nData Analytics for Business\nStrategy - 2023\nBUSINESS AND MANAGEMENT\nUNIVERSITY, GENEVA,\nSWITZERLAND\nMaster of Science in Finance\n2006\nNIIT, GANDHINAGAR, GJ\nDiploma in Information\nTechnology\n2003\nGUJARAT UNIVERSITY\nBachelor of Commerce\n2002\nSSI, GANDHINAGAR, GJ\nOracle 8i and PL SQL\n2001\nSkills & Competencies\nData and Process Management\nData Analysis & Warehousing\nAdvanced Excel\nTableau / Power BI\nProblem Solving\nPython / R\nProcess Definition &\nImplementation\nCross-cultural Communication\nAccount Management\nContact\nkalravyas@gmail.com\n+91-971 278 2244\nwww.linkedin.com/in/kalravyas/\nGandhinagar, Gujarat, India\nExperience\nTEAM LEADER AARVEE ASSOCIATES ARCHITECTS ENGINEERS &\nCONSULTANTS PVT LTD, - OCT’22–OCT’25\nSuccessfully conceptualized and constructed tables/data structures in\nExcel for Business Analytics.\nDeveloped and maintained the data warehouse in Excel for easier\ntracking of historical data and analysis thereof.\nEducated and trained the team of 6, on correctly updating the database.\nDY. MANAGER MAYUR UNIQUOTERS LTD - DEC’18–SEP’22\nHelped establish and streamline operations at Mayur Uniquoters SA\n(Pty) Ltd. in South Africa, leveraging strong Forecasting and Supply\nChain Management skills.\nIdentifying the production and raw materials requirements based on\nanalysis of the customer’s demand forecast and past pulls, while\nmaintaining minimum stock levels, as permissible by the contract,\ndespite the challenges from the COVID-19 restrictions.\nBUSINESS CONSULTANT MIVAAN ENERGY PVT. LTD. - JUL’16-NOV’18\nGuided and supported business expansion initiative of Mivaan Energy\n(earlier Jiyani Solar), in system establishment and operation\nstreamlining to align with their business objectives.\nConducted Market and Competitor Analysis to formulate effective\nbusiness strategies.\nDY. MANAGER MAYUR UNIQUOTERS LTD - DEC’14–JUN’16\nDirected production planning and raw material forecasting, ensuring a\nwell-stocked supply chain pipeline.\nManaged roll-wise inventory and statistical analysis thereof in\nQuickBooks and MS Excel for Mayur Uniquoters Corp., a subsidiary\ncompany registered in US and having its warehouse in Mexico.\nPROCESS CONSULTANT MITKAT ADVISORY SERVICES - JUL’13-NOV’14\nWorked on multiple projects involving Occupational Health & safety and\nbusiness continuity with MitKat Advisory Services.\nCHIEF COORDINATOR SAATH CHARITABLE TRUST - JAN’12-JUN’13\nCreated market presence of Griha Pravesh by establishing and\nmanaging centers to provide education and information on affordable\nhousing solutions.\nAPAC REPRESENTATIVE GOEDECKE & ASSOCIATES, INC - DEC’09-\nDEC’11\nEstablished and managed the back office for the US-based company in\nIndia, handling bidding, billing, procurement, and deliveries globally.\nRESEARCH ANALYST RSM MCGLADREY FPO INDIA PVT. LTD. -\nDEC’06-OCT’09\nSupported senior bankers on M&A transactions, preparing marketing\ndocuments and industry reports across various sectors, identifying\npotential buyers/targets for client companies.",
+          "version": "5.3.31"
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "HR Expert": [
+      {
+        "json": {
+          "output": {
+            "vote": "2",
+            "consideration": "The candidate has experience in data analytics and knowledge of Python, which is partially relevant, but lacks core experience in web development and specific programming skills in PHP and JavaScript. Furthermore, the candidate is based in India, not Northern Italy, which does not align with the location requirement."
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Qualifications": [
+      {
+        "json": {
+          "output": {
+            "Educational qualification": "Master of Science in Finance from Business and Management University, Geneva, Switzerland (2006). Advanced Executive Certificate in Supply Chain Strategy and Operations Management from IIT, Guwahati (2024). Professional Certificate Program in Data Analytics for Business Strategy from IIM, Kozhikode (2023). Diploma in Information Technology from NIIT, Gandhinagar, GJ (2003). Bachelor of Commerce from Gujarat University (2002).",
+            "Job History": "Team Leader at Aarvee Associates Architects Engineers & Consultants Pvt Ltd (Oct'22–Oct'25), developed and maintained data structures and trained a team. Deputy Manager at Mayur Uniquoters Ltd (Dec'18–Sep'22), established operations in South Africa. Business Consultant at Mivaan Energy Pvt. Ltd. (Jul'16–Nov'18), supported business expansion. Deputy Manager at Mayur Uniquoters Ltd (Dec'14–Jun'16), directed production planning. Process Consultant at MitKat Advisory Services (Jul'13–Nov'14) and Chief Coordinator at Saath Charitable Trust (Jan'12–Jun'13). APAC Representative at Goedecke & Associates, Inc (Dec'09–Dec'11) and Research Analyst at RSM McGladrey FPO India Pvt. Ltd. (Dec'06–Oct'09).",
+            "Skills": "- Data and Process Management\n- Data Analysis & Warehousing\n- Advanced Excel\n- Tableau / Power BI\n- Problem Solving\n- Python / R\n- Process Definition & Implementation\n- Cross-cultural Communication\n- Account Management"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Personal Data": [
+      {
+        "json": {
+          "output": {
+            "telephone": "+91-971 278 2244",
+            "city": "Gandhinagar, Gujarat, India",
+            "birthdate": ""
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Merge": [
+      {
+        "json": {
+          "output": {
+            "telephone": "+91-971 278 2244",
+            "city": "Gandhinagar, Gujarat, India",
+            "birthdate": "",
+            "Educational qualification": "Master of Science in Finance from Business and Management University, Geneva, Switzerland (2006). Advanced Executive Certificate in Supply Chain Strategy and Operations Management from IIT, Guwahati (2024). Professional Certificate Program in Data Analytics for Business Strategy from IIM, Kozhikode (2023). Diploma in Information Technology from NIIT, Gandhinagar, GJ (2003). Bachelor of Commerce from Gujarat University (2002).",
+            "Job History": "Team Leader at Aarvee Associates Architects Engineers & Consultants Pvt Ltd (Oct'22–Oct'25), developed and maintained data structures and trained a team. Deputy Manager at Mayur Uniquoters Ltd (Dec'18–Sep'22), established operations in South Africa. Business Consultant at Mivaan Energy Pvt. Ltd. (Jul'16–Nov'18), supported business expansion. Deputy Manager at Mayur Uniquoters Ltd (Dec'14–Jun'16), directed production planning. Process Consultant at MitKat Advisory Services (Jul'13–Nov'14) and Chief Coordinator at Saath Charitable Trust (Jan'12–Jun'13). APAC Representative at Goedecke & Associates, Inc (Dec'09–Dec'11) and Research Analyst at RSM McGladrey FPO India Pvt. Ltd. (Dec'06–Oct'09).",
+            "Skills": "- Data and Process Management\n- Data Analysis & Warehousing\n- Advanced Excel\n- Tableau / Power BI\n- Problem Solving\n- Python / R\n- Process Definition & Implementation\n- Cross-cultural Communication\n- Account Management"
+          }
+        }
+      }
+    ],
+    "Summarization Chain": [
+      {
+        "json": {
+          "response": {
+            "text": "Based in Gandhinagar, Gujarat, this professional holds a Master of Science in Finance from the Business and Management University in Geneva (2006) and several advanced certifications in supply chain strategy, data analytics, and IT. They have extensive experience leading teams and establishing operations, notably as Team Leader at Aarvee Associates and Deputy Manager at Mayur Uniquoters. Their skills include data management, analysis, and advanced tools like Excel, Python, and Tableau, complemented by strong problem-solving and cross-cultural communication abilities. Their career spans various roles in consultancy and analysis, showcasing a solid foundation in business operations and strategy."
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Profile Wanted": [
+      {
+        "json": {
+          "profile_wanted": "We are a web agency and we are looking for a full-stack web developer who knows how to use PHP, Python and Javascript. He has experience in the sector and lives in Northern Italy."
+        }
+      }
+    ]
+  },
+  "versionId": "47eb74a4-89b3-4017-b5ed-5fd4025099ab",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T06:57:03.224Z",
+      "createdAt": "2026-02-19T06:57:03.224Z",
+      "role": "workflow:owner",
+      "workflowId": "7FYW-Z_ckprx4jEfX88bo",
+      "projectId": "DUObCiOoOXJuG68P"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
